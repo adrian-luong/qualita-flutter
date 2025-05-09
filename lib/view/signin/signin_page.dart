@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/constants/sizes.dart';
-import 'package:qualita/view/auth/signin_page.dart';
-import 'package:qualita/view/auth/signup_form.dart';
+import 'package:qualita/view/signin/signin_form.dart';
+import 'package:qualita/view/signup/signup_page.dart';
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+class SigninPage extends StatefulWidget {
+  const SigninPage({super.key});
 
   @override
   createState() => _PageState();
 }
 
-class _PageState extends State<SignupPage> {
+class _PageState extends State<SigninPage> {
   @override
   Widget build(BuildContext context) {
-    void toSignin() {
+    void toSignup() {
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => SigninPage()),
+          MaterialPageRoute(builder: (context) => SignupPage()),
         );
       }
     }
@@ -28,17 +28,17 @@ class _PageState extends State<SignupPage> {
             padding: EdgeInsets.all(defaultPaddingSize),
             child: Column(
               children: [
-                SignupForm(),
+                SigninForm(),
                 Column(
                   children: [
                     const Text('OR'),
                     TextButton(
-                      onPressed: toSignin,
+                      onPressed: toSignup,
                       child: Text.rich(
                         TextSpan(
                           children: [
-                            TextSpan(text: 'Already have an account? '),
-                            TextSpan(text: ' SIGN IN'),
+                            TextSpan(text: "Don't have an account? "),
+                            TextSpan(text: ' SIGN UP'),
                           ],
                         ),
                       ),
