@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/constants/sizes.dart';
-import 'package:qualita/view/auth/signup_controller.dart';
+import 'package:qualita/view/auth/signin_controller.dart';
 
-class SignupForm extends StatefulWidget {
-  const SignupForm({super.key});
+class SigninForm extends StatefulWidget {
+  const SigninForm({super.key});
 
   @override
   createState() => _FormState();
 }
 
-class _FormState extends State<SignupForm> {
-  final _controller = SignupController();
+class _FormState extends State<SigninForm> {
+  final _controller = SigninController();
   bool isLoading = false;
   String? errorMessage;
 
@@ -26,29 +26,42 @@ class _FormState extends State<SignupForm> {
       if (!_controller.formKey.currentState!.validate()) {
         return;
       }
-      if (_controller.password != _controller.confirm) {
-        setState(() => errorMessage = 'Passwords are not matched');
-      }
 
       setState(() {
         isLoading = true;
         errorMessage = null;
       });
 
-      String signupResult = await _controller.signup(
+      String signinResult = await _controller.signin(
         () => {
+          // 2. Navigate to another screen (e.g., HomeScreen)
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Signup successful! Welcome ${_controller.email}'),
+              content: Text(
+                'Sign-in successful! Welcome back, ${_controller.email}',
+              ),
             ),
           ),
+
+          // Replace with your actual home screen navigation
+          // Example: Check if the widget is still in the tree before navigating
+          if (mounted)
+            {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => Placeholder(),
+                ), // Replace with your actual HomeScreen
+              ),
+            },
         },
       );
-      if (signupResult != 'OK') {
-        setState(() => errorMessage = signupResult);
+      if (signinResult != 'OK') {
+        setState(() => errorMessage = signinResult);
       }
 
-      setState(() => isLoading = false);
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
     }
 
     return Container(
@@ -58,18 +71,8 @@ class _FormState extends State<SignupForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Sign-up form'),
+            Text('Sign-in form'),
             const SizedBox(height: 40),
-
-            TextFormField(
-              controller: _controller.username,
-              decoration: InputDecoration(
-                label: Text('Username'),
-                prefixIcon: Icon(Icons.person_rounded),
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
 
             TextFormField(
               controller: _controller.email,
@@ -92,17 +95,6 @@ class _FormState extends State<SignupForm> {
             ),
             const SizedBox(height: 20),
 
-            TextFormField(
-              controller: _controller.confirm,
-              obscureText: true,
-              decoration: InputDecoration(
-                label: Text('Confirm password'),
-                prefixIcon: Icon(Icons.lock),
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 30),
-
             if (errorMessage != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 15.0),
@@ -120,7 +112,7 @@ class _FormState extends State<SignupForm> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: onSubmit,
-                    child: Text('SIGN UP'),
+                    child: Text('SIGN IN'),
                   ),
                 ),
           ],

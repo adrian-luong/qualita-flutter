@@ -6,7 +6,12 @@ class AuthServices {
   final _auth = FirebaseAuth.instance;
   final _services = UserServices();
 
-  Future<void> signup(String email, String username, String password) async {
+  Future<void> signup(
+    String email,
+    String username,
+    String password,
+    Function onSuccess,
+  ) async {
     // 1. Create user with Firebase Authentication
     UserCredential cred = await _auth.createUserWithEmailAndPassword(
       email: email.trim(),
@@ -19,6 +24,20 @@ class AuthServices {
       await _services.insert(
         UserModel(id: firebaseUser.uid, username: username, email: email),
       );
+    }
+    onSuccess();
+  }
+
+  Future<void> signin(String email, String password, Function onSuccess) async {
+    // 1. Sign in user with Firebase Authentication
+    UserCredential cred = await _auth.signInWithEmailAndPassword(
+      email: email.trim(),
+      password: password,
+    );
+    User? firebaseUser = cred.user;
+
+    if (firebaseUser != null) {
+      onSuccess();
     }
   }
 }
