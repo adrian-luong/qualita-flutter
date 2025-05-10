@@ -40,4 +40,8 @@ class AuthServices {
       onSuccess();
     }
   }
+
+  Future<void> resetPassword(String email, Function onSuccess) async {
+    await _auth.sendPasswordResetEmail(email: email);
+  }
 }
