@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qualita/global_keys.dart';
 import 'package:qualita/view/auth/auth_layout.dart';
 import 'package:qualita/view/auth/reset-password/reset_password_page.dart';
 import 'package:qualita/view/auth/signin/signin_form.dart';
@@ -14,36 +15,20 @@ class SigninPage extends StatefulWidget {
 class _PageState extends State<SigninPage> {
   @override
   Widget build(BuildContext context) {
-    void toSignup() {
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => SignupPage()),
-        );
-      }
-    }
-
-    void toReset() {
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => ResetPasswordPage()),
-        );
-      }
-    }
-
     return AuthLayout(
       body: SigninForm(),
       textNavigations: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextButton(
-            onPressed: toSignup,
+            onPressed: () => navigate(SignupPage()),
             child: Text(
               "Don't have an account? SIGN UP",
               style: TextStyle(fontSize: 10, color: Colors.grey),
             ),
           ),
           TextButton(
-            onPressed: toReset,
+            onPressed: () => navigate(ResetPasswordPage()),
             child: Text(
               'Forgot your password? RESET IT',
               style: TextStyle(fontSize: 10, color: Colors.grey),
