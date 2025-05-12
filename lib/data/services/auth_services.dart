@@ -6,12 +6,7 @@ class AuthServices {
   final _auth = FirebaseAuth.instance;
   final _services = UserServices();
 
-  Future<void> signup(
-    String email,
-    String username,
-    String password,
-    Function onSuccess,
-  ) async {
+  Future<void> signup(String email, String username, String password) async {
     // 1. Create user with Firebase Authentication
     UserCredential cred = await _auth.createUserWithEmailAndPassword(
       email: email.trim(),
@@ -24,11 +19,12 @@ class AuthServices {
       await _services.insert(
         UserModel(id: firebaseUser.uid, username: username, email: email),
       );
+    } else {
+      throw Exception('Unable to create user');
     }
-    onSuccess();
   }
 
-  Future<void> signin(String email, String password, Function onSuccess) async {
+  Future<void> signin(String email, String password) async {
     // 1. Sign in user with Firebase Authentication
     UserCredential cred = await _auth.signInWithEmailAndPassword(
       email: email.trim(),
@@ -36,12 +32,12 @@ class AuthServices {
     );
     User? firebaseUser = cred.user;
 
-    if (firebaseUser != null) {
-      onSuccess();
+    if (firebaseUser == null) {
+      throw FirebaseAuthException(code: 'user-not-found');
     }
   }
 
-  Future<void> resetPassword(String email, Function onSuccess) async {
+  Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
   }
 }
