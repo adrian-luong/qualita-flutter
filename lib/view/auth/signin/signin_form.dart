@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/constants/sizes.dart';
+import 'package:qualita/global_keys.dart';
 import 'package:qualita/view/auth/signin/signin_controller.dart';
 
 class SigninForm extends StatefulWidget {
@@ -12,7 +13,6 @@ class SigninForm extends StatefulWidget {
 class _FormState extends State<SigninForm> {
   final _controller = SigninController();
   bool isLoading = false;
-  String? errorMessage;
 
   @override
   void dispose() {
@@ -27,41 +27,15 @@ class _FormState extends State<SigninForm> {
         return;
       }
 
-      setState(() {
-        isLoading = true;
-        errorMessage = null;
+      setState(() => isLoading = true);
+      await _controller.signin().then((value) {
+        if (value != 'OK') {
+          displayMessage(SnackBar(content: Text(value)));
+        } else {
+          navigate(Placeholder());
+        }
       });
-
-      String signinResult = await _controller.signin(
-        () => {
-          // 2. Navigate to another screen (e.g., HomeScreen)
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Sign-in successful! Welcome back, ${_controller.email}',
-              ),
-            ),
-          ),
-
-          // Replace with your actual home screen navigation
-          // Example: Check if the widget is still in the tree before navigating
-          if (mounted)
-            {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => Placeholder(),
-                ), // Replace with your actual HomeScreen
-              ),
-            },
-        },
-      );
-      if (signinResult != 'OK') {
-        setState(() => errorMessage = signinResult);
-      }
-
-      if (mounted) {
-        setState(() => isLoading = false);
-      }
+      setState(() => isLoading = false);
     }
 
     return Container(
@@ -82,7 +56,7 @@ class _FormState extends State<SigninForm> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             TextFormField(
               controller: _controller.password,
@@ -93,17 +67,6 @@ class _FormState extends State<SigninForm> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 20),
-
-            if (errorMessage != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 15.0),
-                child: Text(
-                  errorMessage!,
-                  style: TextStyle(color: Colors.red, fontSize: 14),
-                  textAlign: TextAlign.center,
-                ),
-              ),
             const SizedBox(height: 30),
 
             isLoading

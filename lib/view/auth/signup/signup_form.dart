@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/constants/sizes.dart';
+import 'package:qualita/global_keys.dart';
 import 'package:qualita/view/auth/signup/signup_controller.dart';
+import 'package:qualita/view/auth/success_page.dart';
 
 class SignupForm extends StatefulWidget {
   const SignupForm({super.key});
@@ -12,7 +14,6 @@ class SignupForm extends StatefulWidget {
 class _FormState extends State<SignupForm> {
   final _controller = SignupController();
   bool isLoading = false;
-  String? errorMessage;
 
   @override
   void dispose() {
@@ -27,27 +28,17 @@ class _FormState extends State<SignupForm> {
         return;
       }
       if (_controller.password != _controller.confirm) {
-        setState(() => errorMessage = 'Passwords are not matched');
+        displayMessage(SnackBar(content: Text('Passwords are not matched')));
       }
 
-      setState(() {
-        isLoading = true;
-        errorMessage = null;
+      setState(() => isLoading = true);
+      await _controller.signup().then((value) {
+        if (value != 'OK') {
+          displayMessage(SnackBar(content: Text(value)));
+        } else {
+          navigate(SuccessPage(text: 'Successfully sign up!'));
+        }
       });
-
-      String signupResult = await _controller.signup(
-        () => {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Signup successful! Welcome ${_controller.email}'),
-            ),
-          ),
-        },
-      );
-      if (signupResult != 'OK') {
-        setState(() => errorMessage = signupResult);
-      }
-
       setState(() => isLoading = false);
     }
 
@@ -69,7 +60,7 @@ class _FormState extends State<SignupForm> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             TextFormField(
               controller: _controller.email,
@@ -79,7 +70,7 @@ class _FormState extends State<SignupForm> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             TextFormField(
               controller: _controller.password,
@@ -90,7 +81,7 @@ class _FormState extends State<SignupForm> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             TextFormField(
               controller: _controller.confirm,
@@ -101,17 +92,6 @@ class _FormState extends State<SignupForm> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 30),
-
-            if (errorMessage != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 15.0),
-                child: Text(
-                  errorMessage!,
-                  style: TextStyle(color: Colors.red, fontSize: 14),
-                  textAlign: TextAlign.center,
-                ),
-              ),
             const SizedBox(height: 30),
 
             isLoading
