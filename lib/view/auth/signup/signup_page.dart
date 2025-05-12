@@ -4,14 +4,9 @@ import 'package:qualita/view/auth/auth_layout.dart';
 import 'package:qualita/view/auth/signin/signin_page.dart';
 import 'package:qualita/view/auth/signup/signup_form.dart';
 
-class SignupPage extends StatefulWidget {
+class SignupPage extends StatelessWidget {
   const SignupPage({super.key});
 
-  @override
-  createState() => _PageState();
-}
-
-class _PageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return AuthLayout(

@@ -5,14 +5,9 @@ import 'package:qualita/view/auth/reset-password/reset_password_form.dart';
 import 'package:qualita/view/auth/signin/signin_page.dart';
 import 'package:qualita/view/auth/signup/signup_page.dart';
 
-class ResetPasswordPage extends StatefulWidget {
+class ResetPasswordPage extends StatelessWidget {
   const ResetPasswordPage({super.key});
 
-  @override
-  createState() => _PageState();
-}
-
-class _PageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return AuthLayout(
