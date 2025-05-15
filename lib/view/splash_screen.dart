@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/data/services/auth_services.dart';
 import 'package:qualita/view/auth/signin/signin_page.dart';
+import 'package:qualita/view/home/home_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,7 +22,7 @@ class _ScreenState extends State<SplashScreen> {
           if (snapshot.data == null) {
             return const SigninPage();
           }
-          return const Placeholder();
+          return const HomePage();
         }
 
         // Show a loading indicator while waiting for auth state
