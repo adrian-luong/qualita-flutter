@@ -12,7 +12,9 @@ void displayMessage(SnackBar snackbar) {
 
 /// Using the global key to navigate to page (a widget)
 void navigate(Widget page) {
-  navigator.currentState?.pushReplacement(
-    MaterialPageRoute(builder: (context) => page),
-  );
+  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    navigator.currentState?.pushReplacement(
+      MaterialPageRoute(builder: (context) => page),
+    );
+  });
 }
