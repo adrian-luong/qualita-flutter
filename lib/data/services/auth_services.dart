@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:qualita/data/models/user_model.dart';
-import 'package:qualita/data/secure_storage.dart';
 import 'package:qualita/data/services/user_services.dart';
 
 class AuthServices {
@@ -35,13 +34,14 @@ class AuthServices {
 
     if (firebaseUser == null) {
       throw FirebaseAuthException(code: 'user-not-found');
-    } else {
-      String? token = await firebaseUser.getIdToken(true);
-      storeCredentials(email, token);
     }
   }
 
   Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
+  }
+
+  Stream<User?> onChange() {
+    return _auth.authStateChanges();
   }
 }
