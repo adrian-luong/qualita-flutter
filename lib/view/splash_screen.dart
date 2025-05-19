@@ -19,7 +19,7 @@ class _ScreenState extends State<SplashScreen> {
       stream: _services.onChange(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
-          if (snapshot.data == null) {
+          if (snapshot.data == null || _services.isLoggedIn() == null) {
             return const SigninPage();
           }
           return const HomePage();
