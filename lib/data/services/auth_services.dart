@@ -7,38 +7,47 @@ class AuthServices {
   final _services = UserServices();
 
   Future<void> signup(String email, String username, String password) async {
-    // 1. Create user with Firebase Authentication
-    UserCredential cred = await _auth.createUserWithEmailAndPassword(
-      email: email.trim(),
-      password: password,
-    );
-    User? firebaseUser = cred.user;
-
-    if (firebaseUser != null) {
-      // 2. Store additional user details in Firestore
-      await _services.insert(
-        UserModel(id: firebaseUser.uid, username: username, email: email),
+    try {
+      UserCredential cred = await _auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
       );
-    } else {
-      throw Exception('Unable to create user');
+      User? firebaseUser = cred.user;
+
+      if (firebaseUser != null) {
+        await _services.insert(
+          UserModel(id: firebaseUser.uid, username: username, email: email),
+        );
+      } else {
+        throw Exception('Unable to create user');
+      }
+    } catch (e) {
+      throw Exception('Unable to create user: ${e.toString()}');
     }
   }
 
   Future<void> signin(String email, String password) async {
-    // 1. Sign in user with Firebase Authentication
-    UserCredential cred = await _auth.signInWithEmailAndPassword(
-      email: email.trim(),
-      password: password,
-    );
-    User? firebaseUser = cred.user;
+    try {
+      UserCredential cred = await _auth.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      User? firebaseUser = cred.user;
 
-    if (firebaseUser == null) {
-      throw FirebaseAuthException(code: 'user-not-found');
+      if (firebaseUser == null) {
+        throw FirebaseAuthException(code: 'user-not-found');
+      }
+    } catch (e) {
+      throw Exception('Unable to login: ${e.toString()}');
     }
   }
 
   Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
+  }
+
+  User? isLoggedIn() {
+    return _auth.currentUser;
   }
 
   Stream<User?> onChange() {
