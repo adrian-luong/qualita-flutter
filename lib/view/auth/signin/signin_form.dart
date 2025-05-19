@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qualita/constants/sizes.dart';
 import 'package:qualita/global_keys.dart';
 import 'package:qualita/view/auth/signin/signin_controller.dart';
+import 'package:qualita/view/home/home_page.dart';
 
 class SigninForm extends StatefulWidget {
   const SigninForm({super.key});
@@ -32,7 +33,7 @@ class _FormState extends State<SigninForm> {
         if (value != 'OK') {
           displayMessage(SnackBar(content: Text(value)));
         } else {
-          navigate(Placeholder());
+          navigate(HomePage());
         }
       });
       setState(() => isLoading = false);
