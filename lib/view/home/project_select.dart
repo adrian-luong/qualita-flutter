@@ -29,6 +29,8 @@ class _SelectState extends State<ProjectSelect> {
               );
             }).toList();
 
+        setState(() => selectedProjectId = data[0].id);
+
         return DropdownButtonFormField<String>(
           decoration: InputDecoration(
             labelText: 'Select project',
@@ -39,7 +41,7 @@ class _SelectState extends State<ProjectSelect> {
           value: selectedProjectId,
           isExpanded: true, // To make the dropdown take full width
           items: items,
-          onChanged: (newValue) => selectedProjectId = newValue,
+          onChanged: (newValue) => setState(() => selectedProjectId = newValue),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Please select a project';

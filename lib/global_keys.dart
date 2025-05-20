@@ -18,3 +18,7 @@ void navigate(Widget page) {
     );
   });
 }
+
+void popContext() {
+  navigator.currentState?.pop();
+}
