@@ -15,11 +15,12 @@ class ProjectController {
 
   Future<String> addProject() async {
     try {
-      var model = ProjectModel(
-        title: title.text.trim(),
-        description: description.text.trim(),
+      await _services.insert(
+        ProjectModel(
+          title: title.text.trim(),
+          description: description.text.trim(),
+        ),
       );
-      await _services.insert(model);
 
       formKey.currentState?.reset();
       title.clear();

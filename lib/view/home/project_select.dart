@@ -16,20 +16,17 @@ class _SelectState extends State<ProjectSelect> {
 
   @override
   Widget build(BuildContext context) {
-    return customStreamBuilder(
+    return customStreamBuilder<ProjectModel>(
       stream: _projectServices.streamAll(),
       builder: (data) {
         var items =
             data.map((document) {
               var data = document.data();
-              var model = ProjectModel.fromJSON(data);
               return DropdownMenuItem<String>(
-                value: model.id,
-                child: Text(model.title),
+                value: document.id,
+                child: Text(data.title),
               );
             }).toList();
-
-        setState(() => selectedProjectId = data[0].id);
 
         return DropdownButtonFormField<String>(
           decoration: InputDecoration(
@@ -41,7 +38,7 @@ class _SelectState extends State<ProjectSelect> {
           value: selectedProjectId,
           isExpanded: true, // To make the dropdown take full width
           items: items,
-          onChanged: (newValue) => setState(() => selectedProjectId = newValue),
+          onChanged: (newValue) => selectedProjectId = newValue,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Please select a project';

@@ -2,17 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-typedef StreamDataHandler =
-    Widget Function(
-      List<QueryDocumentSnapshot<Map<String, dynamic>>> snapshotData,
-    );
+typedef StreamDataHandler<T> =
+    Widget Function(List<QueryDocumentSnapshot<T>> snapshotData);
 
 typedef ExceptionHandler = Widget Function(Object? error);
 
 /// An extension to Material's StreamBuilder that supports custom builder and handler functions
-Widget customStreamBuilder({
-  required Stream<QuerySnapshot<Map<String, dynamic>>> stream,
-  required StreamDataHandler builder,
+Widget customStreamBuilder<T>({
+  required Stream<QuerySnapshot<T>> stream,
+  required StreamDataHandler<T> builder,
   ExceptionHandler? onException,
   Widget unauthorizedMsg = const Text("Unauthorized user"),
   Widget waitingIndicator = const CircularProgressIndicator(),

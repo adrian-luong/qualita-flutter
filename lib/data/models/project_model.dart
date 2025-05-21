@@ -18,7 +18,7 @@ class ProjectModel {
   factory ProjectModel.fromJSON(Map<String, dynamic> data) {
     return ProjectModel(
       id: data['id'],
-      title: data['title'] as String? ?? '',
+      title: data['title'],
       description: data['description'],
     );
   }
