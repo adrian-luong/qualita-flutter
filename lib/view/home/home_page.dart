@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:qualita/utils/display_dialog.dart';
 import 'package:qualita/view/common/common_layout.dart';
 import 'package:qualita/view/home/add_project_form.dart';
-import 'package:qualita/view/home/project_select.dart';
-import 'package:qualita/view/home/task_panel.dart';
+import 'package:qualita/view/home/projects/add_project_form.dart';
+import 'package:qualita/view/home/projects/project_select.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

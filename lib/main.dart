@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'package:qualita/global_keys.dart';
+import 'package:qualita/view/home/home_state.dart';
 import 'package:qualita/view/splash_screen.dart';
 
 Future<void> main() async {
@@ -17,7 +19,12 @@ Future<void> main() async {
       storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
     ),
   );
-  runApp(const MainApplication());
+  runApp(
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (context) => HomeState())],
+      child: const MainApplication(),
+    ),
+  );
 }
 
 class MainApplication extends StatelessWidget {

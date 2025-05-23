@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/services/project_services.dart';
 import 'package:qualita/utils/custom_builders.dart';
+import 'package:qualita/view/home/home_state.dart';
 
 class ProjectSelect extends StatefulWidget {
   const ProjectSelect({super.key});
@@ -11,11 +13,12 @@ class ProjectSelect extends StatefulWidget {
 }
 
 class _SelectState extends State<ProjectSelect> {
-  String? selectedProjectId;
   final _projectServices = ProjectServices();
 
   @override
   Widget build(BuildContext context) {
+    final state = Provider.of<HomeState>(context);
+
     return customStreamBuilder<ProjectModel>(
       stream: _projectServices.streamAll(),
       builder: (data) {
@@ -35,10 +38,10 @@ class _SelectState extends State<ProjectSelect> {
           ),
 
           hint: Text('Please choose a project'),
-          value: selectedProjectId,
+          value: state.selectedProject,
           isExpanded: true, // To make the dropdown take full width
           items: items,
-          onChanged: (newValue) => selectedProjectId = newValue,
+          onChanged: (newValue) => state.select(newValue),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Please select a project';

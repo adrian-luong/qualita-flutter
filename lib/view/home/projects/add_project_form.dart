@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/global_keys.dart';
-import 'package:qualita/view/home/project_controller.dart';
+import 'package:qualita/view/home/projects/project_controller.dart';
 
 class AddProjectForm extends StatefulWidget {
   const AddProjectForm({super.key});
