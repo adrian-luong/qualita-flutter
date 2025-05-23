@@ -9,7 +9,7 @@ class TaskPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        color: Colors.grey[300],
+        color: Colors.grey[200],
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
