@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class TaskPanel extends StatelessWidget {
   final String name;
-
   const TaskPanel({super.key, required this.name});
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
+        height: 100,
         color: Colors.grey[200],
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

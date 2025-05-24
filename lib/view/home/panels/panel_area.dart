@@ -22,31 +22,17 @@ class _AreaState extends State<PanelArea> {
       return customStreamBuilder(
         stream: services.streamByProject(state.selectedProject!),
         builder: (data) {
-          var panels =
-              data.map((doc) => TaskPanel(name: doc.data().name)).toList();
+          var panels = data.map((doc) => TaskPanel(name: doc.data().name));
           var widgets = <Widget>[];
-          panels.asMap().forEach((index, panel) {
+          panels.toList().asMap().forEach((index, panel) {
             widgets.add(panel);
-            if (index != panels.length - 1) {
-              widgets.add(SizedBox(width: 16));
-            }
+            widgets.add(SizedBox(width: 16));
           });
-
           return Row(children: widgets);
         },
       );
     } else {
       return Row(children: [Text('Please select a project')]);
     }
-
-    // return Row(
-    //   children: [
-    //     TaskPanel(name: 'To-Do'),
-    //     SizedBox(width: 16),
-    //     TaskPanel(name: 'Doing'),
-    //     SizedBox(width: 16),
-    //     TaskPanel(name: 'Done'),
-    //   ],
-    // );
   }
 }
