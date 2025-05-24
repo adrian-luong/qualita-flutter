@@ -18,9 +18,9 @@ class PanelServices {
     }
   }
 
-  Future<void> insert(PanelModel project) async {
+  Future<void> insert(PanelModel panel) async {
     try {
-      await _firestore.add(project);
+      await _firestore.add(panel);
     } catch (e) {
       throw Exception(e);
     }

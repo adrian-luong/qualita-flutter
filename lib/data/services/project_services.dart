@@ -18,9 +18,9 @@ class ProjectServices {
     }
   }
 
-  Future<void> insert(ProjectModel project) async {
+  Future<DocumentReference<ProjectModel>> insert(ProjectModel project) async {
     try {
-      await _firestore.add(project);
+      return await _firestore.add(project);
     } catch (e) {
       throw Exception(e);
     }

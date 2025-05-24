@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PanelModel {
-  final String? id;
   final Timestamp createdAt = Timestamp.now();
   final String name;
   final String project;
 
-  PanelModel({this.id, required this.name, required this.project});
+  PanelModel({required this.name, required this.project});
   factory PanelModel.fromSnapshot(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
   ) {
@@ -15,14 +14,10 @@ class PanelModel {
   }
 
   factory PanelModel.fromJSON(Map<String, dynamic> data) {
-    return PanelModel(
-      id: data['id'],
-      name: data['name'],
-      project: data['project'],
-    );
+    return PanelModel(name: data['name'], project: data['project']);
   }
 
   Map<String, dynamic> toJSON() {
-    return {'id': id, 'name': name, 'project': project, 'createdAt': createdAt};
+    return {'name': name, 'project': project, 'createdAt': createdAt};
   }
 }
