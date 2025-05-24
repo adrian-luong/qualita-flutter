@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// An extension to Material's showDialog for a unified dialog/modal layout
 void displayDialog<T>(BuildContext context, List<Widget> content) {
   showDialog<T>(
     context: context,

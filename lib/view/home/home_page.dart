@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:qualita/utils/display_dialog.dart';
 import 'package:qualita/view/common/common_layout.dart';
 import 'package:qualita/view/home/home_state.dart';
-import 'package:qualita/view/home/panels/add_panel.dart';
+import 'package:qualita/view/home/panels/add_panel_button.dart';
 import 'package:qualita/view/home/panels/panel_area.dart';
 import 'package:qualita/view/home/projects/add_project_form.dart';
 import 'package:qualita/view/home/projects/project_select.dart';
@@ -35,7 +35,7 @@ class HomePage extends StatelessWidget {
             Row(
               children: [
                 Expanded(child: PanelArea()),
-                if (state.selectedProject != null) AddPanel(),
+                if (state.selectedProject != null) AddPanelButton(),
               ],
             ),
           ],
