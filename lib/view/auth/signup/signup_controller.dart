@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qualita/data/services/auth_services.dart';
 
@@ -27,17 +26,6 @@ class SignupController {
       password.clear();
       confirm.clear();
       return 'OK';
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'weak-_password':
-          return 'The _password provided must be at least 6-character long';
-        case '_email-already-in-use':
-          return 'An account already exists for that email.';
-        case 'invalid-email':
-          return 'The email address is not valid.';
-        default:
-          return 'An error occurred. Please try again.';
-      }
     } catch (e) {
       return e.toString();
     }

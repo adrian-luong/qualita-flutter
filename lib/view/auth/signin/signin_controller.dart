@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qualita/data/services/auth_services.dart';
 
@@ -21,15 +20,6 @@ class SigninController {
       email.clear();
       password.clear();
       return 'OK';
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'user-not-found' || 'wrong-password' || 'invalid-credential':
-          return 'Invalid email or password.';
-        case 'invalid-email':
-          return 'The email address is not valid.';
-        default:
-          return 'An error occurred. Please try again.';
-      }
     } catch (e) {
       return e.toString();
     }
