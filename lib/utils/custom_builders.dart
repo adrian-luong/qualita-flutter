@@ -1,25 +1,25 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:qualita/global_keys.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-typedef StreamDataHandler<T> =
-    Widget Function(List<QueryDocumentSnapshot<T>> snapshotData);
-
+typedef DataHandler = Widget Function(List<Map<String, dynamic>> data);
 typedef ExceptionHandler = Widget Function(Object? error);
 
 /// An extension to Material's StreamBuilder that supports custom builder and handler functions
-Widget customStreamBuilder<T>({
-  required Stream<QuerySnapshot<T>> stream,
-  required StreamDataHandler<T> builder,
+Widget customStreamBuilder({
+  required SupabaseStreamBuilder stream,
+  required DataHandler builder,
   ExceptionHandler? onException,
   Widget unauthorizedMsg = const Text("Unauthorized user"),
-  Widget waitingIndicator = const CircularProgressIndicator(),
+  Widget waitingIndicator = const Column(
+    children: [CircularProgressIndicator()],
+  ),
   Widget missingDataMsg = const Text("No data available"),
 }) {
   return StreamBuilder(
     stream: stream,
     builder: (context, snapshot) {
-      if (FirebaseAuth.instance.currentUser == null) {
+      if (getCurrentUser() == null) {
         return unauthorizedMsg;
       }
 
@@ -37,11 +37,11 @@ Widget customStreamBuilder<T>({
         return waitingIndicator;
       }
 
-      if (snapshot.data!.docs.isEmpty) {
+      if (snapshot.data!.isEmpty) {
         return missingDataMsg;
       }
 
-      return builder(snapshot.data!.docs);
+      return builder(snapshot.data!);
     },
   );
 }

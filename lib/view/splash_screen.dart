@@ -23,7 +23,7 @@ class _ScreenState extends State<SplashScreen> {
         }
 
         if (snapshot.connectionState == ConnectionState.active) {
-          if (snapshot.data == null) {
+          if (snapshot.data!.session == null) {
             return const SigninPage();
           }
           return const HomePage();

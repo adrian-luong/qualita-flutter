@@ -25,3 +25,6 @@ void navigate(Widget page) {
 void popContext() {
   navigator.currentState?.pop();
 }
+
+/// Using the global key to get the current logged user
+User? getCurrentUser() => supabase.auth.currentUser;
