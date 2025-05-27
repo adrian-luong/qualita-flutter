@@ -1,43 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:qualita/data/models/panel_model.dart';
+import 'package:qualita/data/models/step_model.dart';
 import 'package:qualita/data/models/project_model.dart';
-import 'package:qualita/data/services/panel_services.dart';
+import 'package:qualita/data/services/step_services.dart';
 import 'package:qualita/data/services/project_services.dart';
+import 'package:qualita/global_keys.dart';
 
 class ProjectController {
   final _projectServices = ProjectServices();
-  final _panelServices = PanelServices();
+  final _panelServices = StepServices();
 
   final formKey = GlobalKey<FormState>();
-  final title = TextEditingController();
+  final name = TextEditingController();
   final description = TextEditingController();
 
   void dispose() {
-    title.dispose();
+    name.dispose();
     description.dispose();
   }
 
   Future<String> addProject() async {
     try {
-      var newProjectId = await _projectServices.insert(
+      var user = getCurrentUser();
+      if (user == null) {
+        throw Exception('No user has logged in');
+      }
+
+      var newProjectId = await _projectServices.upsert(
         ProjectModel(
-          title: title.text.trim(),
+          name: name.text.trim(),
+          fkUserId: user.id,
           description: description.text.trim(),
         ),
       );
       // Create 3 new default task panels for every new project created
-      await _panelServices.insert(
-        PanelModel(name: 'To-Do', project: newProjectId.id),
+      await _panelServices.upsert(
+        StepModel(name: 'To-Do', fkProjectId: newProjectId),
       );
-      await _panelServices.insert(
-        PanelModel(name: 'Doing', project: newProjectId.id),
+      await _panelServices.upsert(
+        StepModel(name: 'Doing', fkProjectId: newProjectId),
       );
-      await _panelServices.insert(
-        PanelModel(name: 'Done', project: newProjectId.id),
+      await _panelServices.upsert(
+        StepModel(name: 'Done', fkProjectId: newProjectId),
       );
 
       formKey.currentState?.reset();
-      title.clear();
+      name.clear();
       description.clear();
       return 'OK';
     } catch (e) {

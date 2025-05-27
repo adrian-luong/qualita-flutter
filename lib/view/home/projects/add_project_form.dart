@@ -47,9 +47,9 @@ class _FormState extends State<AddProjectForm> {
             const SizedBox(height: 40),
 
             TextFormField(
-              controller: _controller.title,
+              controller: _controller.name,
               decoration: InputDecoration(
-                label: Text('Project title'),
+                label: Text('Project name'),
                 border: OutlineInputBorder(),
               ),
             ),

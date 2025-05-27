@@ -1,43 +1,49 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:qualita/data/models/project_model.dart';
+import 'package:qualita/global_keys.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProjectServices {
-  final _firestore = FirebaseFirestore.instance
-      .collection('projects')
-      .withConverter(
-        fromFirestore: (snapshot, _) => ProjectModel.fromSnapshot(snapshot),
-        toFirestore: (model, _) => model.toJSON(),
-      );
+  final _db = supabase.from('projects');
 
-  Future<ProjectModel?> find(String projectId) async {
+  Future<ProjectModel> find(String projectId) async {
     try {
-      var snapshot = await _firestore.doc(projectId).get();
-      return snapshot.exists ? snapshot.data() : null;
+      final res = await _db.select().eq('id', projectId).limit(1).single();
+      return ProjectModel.fromMap(res);
     } catch (e) {
       throw Exception(e);
     }
   }
 
-  Future<DocumentReference<ProjectModel>> insert(ProjectModel project) async {
+  Future<String> upsert(ProjectModel project) async {
     try {
-      return await _firestore.add(project);
+      final res =
+          await _db
+              .upsert(project.toUpsertMap())
+              .select('id')
+              .limit(1)
+              .single();
+      return res['id'];
     } catch (e) {
       throw Exception(e);
     }
   }
 
-  Future<List<ProjectModel>> list() async {
+  Future<List<ProjectModel>> fetch() async {
     try {
-      var snapshot = await _firestore.get();
-      return snapshot.docs.map((doc) => doc.data()).toList();
+      final res = await _db.select();
+      return res.map((row) => ProjectModel.fromMap(row)).toList();
     } catch (e) {
-      return [];
+      throw Exception(e);
     }
   }
 
-  Stream<QuerySnapshot<ProjectModel>> streamAll() {
+  SupabaseStreamBuilder streamAll() {
     try {
-      return _firestore.snapshots();
+      var user = getCurrentUser();
+      if (user == null) {
+        throw Exception('No user has logged in');
+      }
+      return _db.stream(primaryKey: ['id']).eq('fk_user_id', user.id);
     } catch (e) {
       throw Exception(e);
     }

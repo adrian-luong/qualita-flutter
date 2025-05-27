@@ -19,15 +19,15 @@ class _SelectState extends State<ProjectSelect> {
   Widget build(BuildContext context) {
     final state = Provider.of<HomeState>(context);
 
-    return customStreamBuilder<ProjectModel>(
+    return customStreamBuilder(
       stream: _projectServices.streamAll(),
       builder: (data) {
         var items =
-            data.map((document) {
-              var data = document.data();
+            data.map((row) {
+              var model = ProjectModel.fromMap(row);
               return DropdownMenuItem<String>(
-                value: document.id,
-                child: Text(data.title),
+                value: model.id,
+                child: Text(model.name),
               );
             }).toList();
 

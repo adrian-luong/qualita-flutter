@@ -1,24 +1,37 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class ProjectModel {
-  final String title;
+  final String? id;
+  final String name;
   final String? description;
-  final Timestamp createdAt = Timestamp.now();
+  final String fkUserId;
+  final DateTime? createdAt;
 
-  ProjectModel({required this.title, this.description});
+  ProjectModel({
+    this.id,
+    required this.name,
+    required this.description,
+    required this.fkUserId,
+    this.createdAt,
+  });
 
-  factory ProjectModel.fromSnapshot(
-    DocumentSnapshot<Map<String, dynamic>> snapshot,
-  ) {
-    final data = snapshot.data();
-    return ProjectModel.fromJSON(data ?? {});
-  }
+  factory ProjectModel.fromMap(Map<String, dynamic> map) => ProjectModel(
+    id: map['id'],
+    name: map['name'],
+    description: map['description'],
+    fkUserId: map['fk_user_id'],
+    createdAt: DateTime.tryParse(map['created_at']),
+  );
 
-  factory ProjectModel.fromJSON(Map<String, dynamic> data) {
-    return ProjectModel(title: data['title'], description: data['description']);
-  }
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'name': name,
+    'description': description,
+    'fk_user_id': fkUserId,
+    'created_at': createdAt,
+  };
 
-  Map<String, dynamic> toJSON() {
-    return {'title': title, 'description': description, 'createdAt': createdAt};
-  }
+  Map<String, dynamic> toUpsertMap() => {
+    'name': name,
+    'description': description,
+    'fk_user_id': fkUserId,
+  };
 }
