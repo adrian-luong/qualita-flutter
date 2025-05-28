@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/utils/display_dialog.dart';
-import 'package:qualita/view/home/panels/add_panel_form.dart';
+import 'package:qualita/view/home/steps/add_step_form.dart';
 
 class AddPanelButton extends StatelessWidget {
   const AddPanelButton({super.key});
@@ -15,7 +15,7 @@ class AddPanelButton extends StatelessWidget {
         children: [
           Center(
             child: IconButton(
-              onPressed: () => displayDialog<String>(context, [AddPanelForm()]),
+              onPressed: () => displayDialog<String>(context, [AddStepForm()]),
               icon: Icon(Icons.add_box_outlined),
               selectedIcon: Icon(Icons.add_box),
             ),

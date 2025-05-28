@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qualita/global_keys.dart';
 import 'package:qualita/view/home/home_state.dart';
-import 'package:qualita/view/home/panels/panel_controller.dart';
+import 'package:qualita/view/home/steps/step_controller.dart';
 
-class AddPanelForm extends StatefulWidget {
-  const AddPanelForm({super.key});
+class AddStepForm extends StatefulWidget {
+  const AddStepForm({super.key});
 
   @override
   State<StatefulWidget> createState() => _FormState();
 }
 
-class _FormState extends State<AddPanelForm> {
-  final _controller = PanelController();
+class _FormState extends State<AddStepForm> {
+  final _controller = StepController();
   bool isLoading = false;
 
   @override
