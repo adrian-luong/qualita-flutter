@@ -31,7 +31,7 @@ class _FormState extends State<AddStepForm> {
       }
 
       setState(() => isLoading = true);
-      await _controller.addPanel(state.selectedProject!).then((value) {
+      await _controller.addStep(state.selectedProject!).then((value) {
         if (value != 'OK') {
           displayMessage(SnackBar(content: Text(value)));
         }

@@ -1,43 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:qualita/data/services/step_services.dart';
 import 'package:qualita/utils/custom_builders.dart';
-import 'package:qualita/view/home/home_state.dart';
 import 'package:qualita/view/home/steps/add_step_button.dart';
 import 'package:qualita/view/home/steps/step_column.dart';
+import 'package:qualita/view/home/steps/step_controller.dart';
 
 class StepArea extends StatefulWidget {
-  const StepArea({super.key});
+  final String selectedProjectId;
+  const StepArea({super.key, required this.selectedProjectId});
 
   @override
   State<StatefulWidget> createState() => _AreaState();
 }
 
 class _AreaState extends State<StepArea> {
-  final services = StepServices();
+  final _controller = StepController();
 
   @override
   Widget build(BuildContext context) {
-    final state = Provider.of<HomeState>(context);
+    return customStreamBuilder(
+      stream: _controller.streamStep(widget.selectedProjectId),
+      builder: (data) {
+        var panels =
+            data
+                .map(
+                  (row) => StepColumn(
+                    id: row['id'],
+                    name: row['name'],
+                    key: ValueKey(row['position']),
+                  ),
+                )
+                .toList();
 
-    if (state.selectedProject != null) {
-      return customStreamBuilder(
-        stream: services.streamByProject(state.selectedProject!),
-        builder: (data) {
-          var panels = data.map(
-            (row) =>
-                StepColumn(name: row['name'], key: ValueKey(row['position'])),
-          );
-          return ReorderableListView(
-            footer: AddStepButton(),
-            scrollDirection: Axis.horizontal,
-            children: panels.toList(),
-            onReorder: (oldPos, newPost) {},
-          );
-        },
-      );
-    } else {
-      return Text('Please select a project');
-    }
+        return ListView(
+          scrollDirection: Axis.horizontal,
+          children: [...panels, AddStepButton()],
+        );
+      },
+    );
   }
 }

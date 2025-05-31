@@ -11,9 +11,9 @@ class StepController {
     name.dispose();
   }
 
-  Future<String> addPanel(String projectId) async {
+  Future<String> addStep(String projectId) async {
     try {
-      await _services.upsert(
+      await _services.insert(
         StepModel(name: name.text.trim(), fkProjectId: projectId),
       );
       formKey.currentState?.reset();
@@ -22,5 +22,19 @@ class StepController {
     } catch (e) {
       return e.toString();
     }
+  }
+
+  Future<void> renameStep(
+    String stepId,
+    String newName,
+    String projectId,
+  ) async {
+    await _services.update(
+      StepModel(id: stepId, name: newName, fkProjectId: projectId),
+    );
+  }
+
+  Stream<List<Map<String, dynamic>>> streamStep(String projectId) {
+    return _services.streamByProject(projectId);
   }
 }
