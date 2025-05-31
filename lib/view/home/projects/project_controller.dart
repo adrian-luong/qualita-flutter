@@ -7,7 +7,7 @@ import 'package:qualita/global_keys.dart';
 
 class ProjectController {
   final _projectServices = ProjectServices();
-  final _panelServices = StepServices();
+  final _stepServices = StepServices();
 
   final formKey = GlobalKey<FormState>();
   final name = TextEditingController();
@@ -33,13 +33,13 @@ class ProjectController {
         ),
       );
       // Create 3 new default task panels for every new project created
-      await _panelServices.upsert(
+      await _stepServices.insert(
         StepModel(name: 'To-Do', fkProjectId: newProjectId),
       );
-      await _panelServices.upsert(
+      await _stepServices.insert(
         StepModel(name: 'Doing', fkProjectId: newProjectId),
       );
-      await _panelServices.upsert(
+      await _stepServices.insert(
         StepModel(name: 'Done', fkProjectId: newProjectId),
       );
 

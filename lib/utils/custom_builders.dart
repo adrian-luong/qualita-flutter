@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/global_keys.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 typedef DataHandler = Widget Function(List<Map<String, dynamic>> data);
 typedef ExceptionHandler = Widget Function(Object? error);
 
 /// An extension to Material's StreamBuilder that supports custom builder and handler functions
 Widget customStreamBuilder({
-  required SupabaseStreamBuilder stream,
+  required Stream<List<Map<String, dynamic>>> stream,
   required DataHandler builder,
   ExceptionHandler? onException,
   Widget unauthorizedMsg = const Text("Unauthorized user"),

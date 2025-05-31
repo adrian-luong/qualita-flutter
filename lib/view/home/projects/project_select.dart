@@ -41,7 +41,7 @@ class _SelectState extends State<ProjectSelect> {
           value: state.selectedProject,
           isExpanded: true, // To make the dropdown take full width
           items: items,
-          onChanged: (newValue) => state.select(newValue),
+          onChanged: (newValue) => state.selectProject(newValue),
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Please select a project';

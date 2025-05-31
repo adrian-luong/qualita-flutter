@@ -10,7 +10,7 @@ class ProjectServices {
       final res = await _db.select().eq('id', projectId).limit(1).single();
       return ProjectModel.fromMap(res);
     } catch (e) {
-      throw Exception(e);
+      throw Exception(e.toString());
     }
   }
 
@@ -24,7 +24,7 @@ class ProjectServices {
               .single();
       return res['id'];
     } catch (e) {
-      throw Exception(e);
+      throw Exception(e.toString());
     }
   }
 
@@ -33,7 +33,7 @@ class ProjectServices {
       final res = await _db.select();
       return res.map((row) => ProjectModel.fromMap(row)).toList();
     } catch (e) {
-      throw Exception(e);
+      throw Exception(e.toString());
     }
   }
 
@@ -45,7 +45,7 @@ class ProjectServices {
       }
       return _db.stream(primaryKey: ['id']).eq('fk_user_id', user.id);
     } catch (e) {
-      throw Exception(e);
+      throw Exception(e.toString());
     }
   }
 }

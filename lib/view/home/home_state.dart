@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class HomeState extends ChangeNotifier {
   String? selectedProject;
-  void select(String? id) {
+  void selectProject(String? id) {
     selectedProject = id;
-    // print('Selected project: $selectedProject');
+    notifyListeners();
+  }
+
     notifyListeners();
   }
 }
