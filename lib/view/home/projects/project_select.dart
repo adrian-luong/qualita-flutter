@@ -22,12 +22,17 @@ class _SelectState extends State<ProjectSelect> {
     return customStreamBuilder(
       stream: _projectServices.streamAll(),
       builder: (data) {
+        var projects = data.map((row) => ProjectModel.fromMap(row)).toList();
+        //  Store queried data in Provider
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          state.storeProjects(projects);
+        });
+
         var items =
-            data.map((row) {
-              var model = ProjectModel.fromMap(row);
+            projects.map((project) {
               return DropdownMenuItem<String>(
-                value: model.id,
-                child: Text(model.name),
+                value: project.id,
+                child: Text(project.name),
               );
             }).toList();
 
