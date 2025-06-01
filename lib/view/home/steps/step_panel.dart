@@ -31,6 +31,18 @@ class _PanelState extends State<StepPanel> {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
+            if (widget.step.position != 0 && isEditing)
+              IconButton(
+                onPressed: () async {
+                  await _controller.reorderStep(
+                    currentOrder: state.queriedSteps,
+                    oldPosition: widget.step.position,
+                    newPosition: widget.step.position - 1,
+                  );
+                  state.editStep(!isEditing ? widget.step.id : null);
+                },
+                icon: Icon(Icons.chevron_left),
+              ),
             Expanded(
               child:
                   (!isEditing)
@@ -67,6 +79,18 @@ class _PanelState extends State<StepPanel> {
                   () => state.editStep(!isEditing ? widget.step.id : null),
               icon: Icon(!isEditing ? Icons.edit : Icons.edit_off),
             ),
+            if (widget.step.position != widget.stepAmount - 1 && isEditing)
+              IconButton(
+                onPressed: () async {
+                  await _controller.reorderStep(
+                    currentOrder: state.queriedSteps,
+                    oldPosition: widget.step.position,
+                    newPosition: widget.step.position + 1,
+                  );
+                  state.editStep(!isEditing ? widget.step.id : null);
+                },
+                icon: Icon(Icons.chevron_right),
+              ),
           ],
         ),
       ),

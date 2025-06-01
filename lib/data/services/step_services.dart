@@ -61,4 +61,16 @@ class StepServices {
       throw Exception(e.toString());
     }
   }
+
+  Future<void> reposition(List<StepModel> newList) async {
+    try {
+      final List<Map<String, dynamic>> updates = [];
+      for (int i = 0; i < newList.length; i++) {
+        updates.add({...newList[i].toMap(), 'position': i});
+      }
+      await _db.upsert(updates);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }
