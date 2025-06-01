@@ -11,7 +11,7 @@ class _AreaState extends State<TaskArea> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
+      width: 300,
       height: 50,
       color: Colors.grey[200],
       child: Column(

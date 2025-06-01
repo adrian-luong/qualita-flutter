@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/data/models/project_model.dart';
+import 'package:qualita/data/models/step_model.dart';
 
 class HomeState extends ChangeNotifier {
   String? selectedProject;
@@ -21,5 +22,9 @@ class HomeState extends ChangeNotifier {
 
   void storeProjects(List<ProjectModel> data) {
     queriedProjects = data;
+  }
+
+  void storeSteps(List<StepModel> data) {
+    queriedSteps = data;
   }
 }
