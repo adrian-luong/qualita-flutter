@@ -1,76 +1,28 @@
 import 'package:qualita/data/models/step_model.dart';
-import 'package:qualita/global_keys.dart';
+import 'package:qualita/data/services/base_services.dart';
 
-class StepServices {
-  final _db = supabase.from('steps');
+class StepServices extends BaseServices<StepModel> {
+  StepServices() : super(fromMap: StepModel.fromMap, table: 'steps');
 
-  Future<StepModel> find(String stepId) async {
+  Future<List<StepModel>> getByProject(String projectId) async {
     try {
-      final res = await _db.select().eq('id', stepId).limit(1).single();
-      return StepModel.fromMap(res);
+      final response = await db
+          .from(table)
+          .select()
+          .eq('fk_project_id', projectId);
+      return response.map((map) => StepModel.fromMap(map)).toList();
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception('Failed to fetch steps for project (id=$projectId): $e');
     }
   }
 
-  Future<String> insert(StepModel step) async {
-    int latestPosition = -1;
+  Future<void> reposition(List<StepModel> modelList) async {
     try {
-      final latestStep =
-          await _db
-              .select('position')
-              .order('position', ascending: false)
-              .limit(1)
-              .single();
-      latestPosition = latestStep['position'];
-    } catch (e) {
-      latestPosition = -1;
-    }
-
-    try {
-      step.position = latestPosition + 1;
-      final res =
-          await _db.insert(step.toUpsertMap()).select('id').limit(1).single();
-      return res['id'];
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<void> update(StepModel step) async {
-    try {
-      await _db.update(step.toUpdateMap()).eq('id', step.id!);
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<List<StepModel>> list() async {
-    try {
-      var snapshot = await _db.select();
-      return snapshot.map((row) => StepModel.fromMap(row)).toList();
-    } catch (e) {
-      return [];
-    }
-  }
-
-  Stream<List<Map<String, dynamic>>> streamByProject(String projectId) {
-    try {
-      return _db.stream(primaryKey: ['id']).eq('fk_project_id', projectId);
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<void> reposition(List<StepModel> newList) async {
-    try {
-      final List<Map<String, dynamic>> updates = [];
-      for (int i = 0; i < newList.length; i++) {
-        updates.add({...newList[i].toMap(), 'position': i});
+      for (var model in modelList) {
+        await update(model);
       }
-      await _db.upsert(updates);
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception('Failed to update steps: $e');
     }
   }
 }

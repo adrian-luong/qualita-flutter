@@ -1,42 +1,34 @@
-class StepModel {
-  final String? id;
+import 'package:qualita/data/models/base_model.dart';
+
+class StepModel extends BaseModel {
   final String name;
   int position;
   final String fkProjectId;
-  final DateTime? createdAt;
 
   StepModel({
-    this.id,
+    super.id,
     required this.name,
     this.position = 0,
     required this.fkProjectId,
-    this.createdAt,
   });
 
   factory StepModel.fromMap(Map<String, dynamic> map) => StepModel(
-    id: map['id'],
-    name: map['name'],
-    position: map['position'],
-    fkProjectId: map['fk_project_id'],
-    createdAt: DateTime.tryParse(map['created_at']),
+    id: map['id'] as String,
+    name: map['name'] as String,
+    position: map['position'] as int,
+    fkProjectId: map['fk_project_id'] as String,
   );
 
+  @override
   Map<String, dynamic> toMap() => {
     'id': id,
     'name': name,
     'position': position,
     'fk_project_id': fkProjectId,
-    'created_at': createdAt?.toIso8601String(),
   };
 
-  Map<String, dynamic> toUpsertMap() => {
-    'name': name,
-    'position': position,
-    'fk_project_id': fkProjectId,
-  };
-
-  Map<String, dynamic> toUpdateMap() => {
-    'id': id,
+  @override
+  Map<String, dynamic> toDTOMap() => {
     'name': name,
     'position': position,
     'fk_project_id': fkProjectId,

@@ -1,51 +1,20 @@
 import 'package:qualita/data/models/project_model.dart';
+import 'package:qualita/data/services/base_services.dart';
 import 'package:qualita/global_keys.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ProjectServices {
-  final _db = supabase.from('projects');
+class ProjectServices extends BaseServices<ProjectModel> {
+  ProjectServices() : super(fromMap: ProjectModel.fromMap, table: 'projects');
 
-  Future<ProjectModel> find(String projectId) async {
-    try {
-      final res = await _db.select().eq('id', projectId).limit(1).single();
-      return ProjectModel.fromMap(res);
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<String> upsert(ProjectModel project) async {
-    try {
-      final res =
-          await _db
-              .upsert(project.toUpsertMap())
-              .select('id')
-              .limit(1)
-              .single();
-      return res['id'];
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<List<ProjectModel>> fetch() async {
-    try {
-      final res = await _db.select();
-      return res.map((row) => ProjectModel.fromMap(row)).toList();
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  SupabaseStreamBuilder streamAll() {
+  Future<List<ProjectModel>> fetchForUser() async {
     try {
       var user = getCurrentUser();
       if (user == null) {
-        throw Exception('No user has logged in');
+        throw Exception('Failed to fetch project: No user has logged in');
       }
-      return _db.stream(primaryKey: ['id']).eq('fk_user_id', user.id);
+      var response = await db.from(table).select().eq('fk_user_id', user.id);
+      return response.map((map) => ProjectModel.fromMap(map)).toList();
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception('Failed to fetch project: $e');
     }
   }
 }
