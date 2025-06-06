@@ -25,7 +25,7 @@ class ProjectController {
         throw Exception('No user has logged in');
       }
 
-      var newProjectId = await _projectServices.upsert(
+      var newProjectId = await _projectServices.insert(
         ProjectModel(
           name: name.text.trim(),
           fkUserId: user.id,
@@ -50,5 +50,9 @@ class ProjectController {
     } catch (e) {
       return e.toString();
     }
+  }
+
+  Future<List<ProjectModel>> fetchProjects() async {
+    return await _projectServices.fetchForUser();
   }
 }
