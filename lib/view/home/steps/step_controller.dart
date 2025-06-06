@@ -34,21 +34,11 @@ class StepController {
     );
   }
 
-  Stream<List<Map<String, dynamic>>> streamStep(String projectId) {
-    return _services.streamByProject(projectId);
+  Future<List<StepModel>> listStep(String projectId) async {
+    return await _services.getByProject(projectId);
   }
 
-  Future<void> reorderStep({
-    required List<StepModel> currentOrder,
-    required int oldPosition,
-    required int newPosition,
-  }) async {
-    List<StepModel> newOrder = List.from(currentOrder);
-    // if (oldPosition < newPosition) {
-    //   newPosition -= 1;
-    // }
-    final step = newOrder.removeAt(oldPosition);
-    newOrder.insert(newPosition, step);
+  Future<void> repositionStep(List<StepModel> newOrder) async {
     await _services.reposition(newOrder);
   }
 }
