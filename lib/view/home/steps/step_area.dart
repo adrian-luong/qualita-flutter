@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:qualita/data/models/step_model.dart';
-import 'package:qualita/view/home/steps/add_step_button.dart';
+import 'package:qualita/utils/display_dialog.dart';
+import 'package:qualita/view/home/home_state.dart';
+import 'package:qualita/view/home/steps/add_step_form.dart';
 import 'package:qualita/view/home/steps/step_controller.dart';
 import 'package:qualita/view/home/steps/step_panel.dart';
 import 'package:qualita/view/home/tasks/task_area.dart';
 
 class StepArea extends StatefulWidget {
-  final String selectedProjectId;
-  const StepArea({super.key, required this.selectedProjectId});
+  const StepArea({super.key});
 
   @override
   State<StatefulWidget> createState() => _AreaState();
@@ -17,8 +19,8 @@ class _AreaState extends State<StepArea> {
   final _controller = StepController();
   List<StepModel> steps = [];
 
-  Future<void> fetchSteps() async {
-    final queriedSteps = await _controller.listStep(widget.selectedProjectId);
+  Future<void> fetchSteps(String projectId) async {
+    final queriedSteps = await _controller.listStep(projectId);
     setState(() => steps = queriedSteps);
   }
 
@@ -41,7 +43,10 @@ class _AreaState extends State<StepArea> {
   @override
   void initState() {
     super.initState();
-    fetchSteps();
+    final state = Provider.of<HomeState>(context, listen: false);
+    if (state.selectedProject != null) {
+      fetchSteps(state.selectedProject!);
+    }
   }
 
   @override
@@ -66,9 +71,30 @@ class _AreaState extends State<StepArea> {
 
     return ReorderableListView(
       scrollDirection: Axis.horizontal,
-      footer: AddStepButton(),
-      onReorder:
-          (oldIndex, newIndex) async => await reorderStep(oldIndex, newIndex),
+      footer: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Container(
+          color: Colors.grey[200],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: IconButton(
+                  onPressed:
+                      () => displayDialog<String>(context, [AddStepForm()]),
+                  icon: Icon(Icons.add_box_outlined),
+                  selectedIcon: Icon(Icons.add_box),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      onReorder: (oldIndex, newIndex) async {
+        if (mounted) {
+          await reorderStep(oldIndex, newIndex);
+        }
+      },
       children: panels,
     );
   }

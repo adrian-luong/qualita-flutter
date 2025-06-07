@@ -20,17 +20,12 @@ class ProjectModel extends BaseModel {
   );
 
   @override
-  Map<String, dynamic> toMap() => {
-    'id': id,
+  Map<String, dynamic> toDTOMap() => {
     'name': name,
     'description': description,
     'fk_user_id': fkUserId,
   };
 
   @override
-  Map<String, dynamic> toDTOMap() => {
-    'name': name,
-    'description': description,
-    'fk_user_id': fkUserId,
-  };
+  Map<String, dynamic> toMap() => {'id': id, ...toDTOMap()};
 }

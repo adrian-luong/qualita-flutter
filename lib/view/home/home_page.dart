@@ -38,7 +38,7 @@ class HomePage extends StatelessWidget {
                   height: 200,
                   child:
                       (state.selectedProject != null)
-                          ? StepArea(selectedProjectId: state.selectedProject!)
+                          ? StepArea()
                           : Text('Please select a project'),
                 ),
               ],

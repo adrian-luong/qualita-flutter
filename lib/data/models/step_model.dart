@@ -20,17 +20,12 @@ class StepModel extends BaseModel {
   );
 
   @override
-  Map<String, dynamic> toMap() => {
-    'id': id,
+  Map<String, dynamic> toDTOMap() => {
     'name': name,
     'position': position,
     'fk_project_id': fkProjectId,
   };
 
   @override
-  Map<String, dynamic> toDTOMap() => {
-    'name': name,
-    'position': position,
-    'fk_project_id': fkProjectId,
-  };
+  Map<String, dynamic> toMap() => {'id': id, ...toDTOMap()};
 }
