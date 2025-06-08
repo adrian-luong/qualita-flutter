@@ -17,7 +17,9 @@ class _SelectState extends State<ProjectSelect> {
 
   Future<void> fetchColumns() async {
     final queriedProjects = await _controller.fetchProjects();
-    setState(() => projects = queriedProjects);
+    if (mounted) {
+      setState(() => projects = queriedProjects);
+    }
   }
 
   @override
