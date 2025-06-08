@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:qualita/utils/display_dialog.dart';
+import 'package:qualita/view/home/tasks/add_task_form.dart';
 
 class TaskArea extends StatefulWidget {
-  const TaskArea({super.key});
+  final String stepId;
+  const TaskArea({super.key, required this.stepId});
 
   @override
   State<StatefulWidget> createState() => _AreaState();
@@ -16,7 +19,16 @@ class _AreaState extends State<TaskArea> {
       color: Colors.grey[200],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [IconButton(onPressed: () {}, icon: Icon(Icons.add))],
+        children: [
+          IconButton(
+            onPressed:
+                () => displayDialog(context, [
+                  AddTaskForm(stepId: widget.stepId),
+                ]),
+            icon: Icon(Icons.add_outlined),
+            selectedIcon: Icon(Icons.add),
+          ),
+        ],
       ),
     );
   }

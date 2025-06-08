@@ -62,7 +62,7 @@ class _AreaState extends State<StepArea> {
                   children: [
                     StepPanel(step: step, stepAmount: steps.length),
                     SizedBox(height: 16),
-                    TaskArea(),
+                    TaskArea(stepId: step.id!),
                   ],
                 ),
               ),

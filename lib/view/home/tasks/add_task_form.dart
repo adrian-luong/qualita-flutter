@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:qualita/global_keys.dart';
-import 'package:qualita/view/home/projects/project_controller.dart';
+import 'package:qualita/view/home/home_state.dart';
+import 'package:qualita/view/home/tasks/task_controller.dart';
 
-class AddProjectForm extends StatefulWidget {
-  const AddProjectForm({super.key});
+class AddTaskForm extends StatefulWidget {
+  final String stepId;
+  const AddTaskForm({super.key, required this.stepId});
 
   @override
   State<StatefulWidget> createState() => _FormState();
 }
 
-class _FormState extends State<AddProjectForm> {
-  final _controller = ProjectController();
+class _FormState extends State<AddTaskForm> {
+  final _controller = TaskController();
   bool isLoading = false;
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final state = Provider.of<HomeState>(context);
     Future<void> onSubmit() async {
       if (!_controller.formKey.currentState!.validate()) {
         return;
       }
 
       setState(() => isLoading = true);
-      await _controller.addProject().then((value) {
-        if (value != 'OK') {
-          displayMessage(SnackBar(content: Text(value)));
-        }
-        popContext();
-      });
+      await _controller
+          .addTask(projectId: state.selectedProject!, stepId: widget.stepId)
+          .then((value) {
+            if (value != 'OK') {
+              displayMessage(SnackBar(content: Text(value)));
+            }
+            popContext();
+          });
       setState(() => isLoading = false);
     }
 
@@ -43,15 +43,32 @@ class _FormState extends State<AddProjectForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Add project form', style: TextStyle(fontSize: 20)),
+            Text('Add task form', style: TextStyle(fontSize: 20)),
             const SizedBox(height: 40),
 
             TextFormField(
               controller: _controller.name,
               decoration: InputDecoration(
-                label: Text('Project name'),
+                label: Text('Task name'),
                 border: OutlineInputBorder(),
               ),
+            ),
+            const SizedBox(height: 30),
+
+            TextFormField(
+              controller: _controller.value,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                label: Text('Task value'),
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                var input = int.tryParse(value ?? '');
+                if (input == null) {
+                  return 'Please input a numeric value';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 30),
 
@@ -59,7 +76,7 @@ class _FormState extends State<AddProjectForm> {
               controller: _controller.description,
               maxLines: 5,
               decoration: InputDecoration(
-                labelText: 'Project description',
+                labelText: 'Task description',
                 border: OutlineInputBorder(),
               ),
             ),
