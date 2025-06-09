@@ -44,4 +44,11 @@ class TaskController {
       return e.toString();
     }
   }
+
+  Future<List<TaskModel>> fetchTasks({
+    required String projectId,
+    required String stepId,
+  }) async {
+    return await _services.getByProjectStep(projectId, stepId);
+  }
 }

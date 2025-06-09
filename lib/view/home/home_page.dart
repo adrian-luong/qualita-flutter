@@ -35,7 +35,7 @@ class HomePage extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 1000,
-                  height: 200,
+                  height: 500,
                   child:
                       (state.selectedProject != null)
                           ? StepArea()
