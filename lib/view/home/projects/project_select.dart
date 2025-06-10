@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:qualita/data/models/project_model.dart';
+import 'package:qualita/data/providers/project_provider.dart';
 import 'package:qualita/view/home/home_state.dart';
-import 'package:qualita/view/home/projects/project_controller.dart';
 
 class ProjectSelect extends StatefulWidget {
   const ProjectSelect({super.key});
@@ -12,51 +11,64 @@ class ProjectSelect extends StatefulWidget {
 }
 
 class _SelectState extends State<ProjectSelect> {
-  final _controller = ProjectController();
-  List<ProjectModel> projects = [];
-
-  Future<void> fetchColumns() async {
-    final queriedProjects = await _controller.fetchProjects();
-    setState(() => projects = queriedProjects);
-  }
-
   @override
   void initState() {
     super.initState();
-    fetchColumns();
   }
 
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<HomeState>(context, listen: false);
-    var items =
-        projects.map((project) {
-          return DropdownMenuItem<String>(
-            value: project.id,
-            child: Text(project.name),
+
+    return Consumer<ProjectProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (provider.errorMessage != null) {
+          return Center(
+            child: Text(
+              provider.errorMessage!,
+              style: const TextStyle(color: Colors.red),
+            ),
           );
-        }).toList();
-
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: 'Select project',
-        border: OutlineInputBorder(),
-      ),
-
-      hint: Text('Please choose a project'),
-      value: state.selectedProject,
-      isExpanded: true, // To make the dropdown take full width
-      items: items,
-      onChanged: (newValue) {
-        if (mounted) {
-          state.selectProject(newValue);
         }
-      },
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please select a project';
+
+        if (provider.projects.isEmpty) {
+          return const Center(child: Text('No project available to select'));
         }
-        return null;
+
+        var items =
+            provider.projects.map((project) {
+              return DropdownMenuItem<String>(
+                value: project.id,
+                child: Text(project.name),
+              );
+            }).toList();
+
+        return DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            labelText: 'Select project',
+            border: OutlineInputBorder(),
+          ),
+
+          hint: Text('Please choose a project'),
+          value: state.selectedProject,
+          isExpanded: true, // To make the dropdown take full width
+          items: items,
+          onChanged: (newValue) {
+            if (mounted) {
+              state.selectProject(newValue);
+            }
+          },
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please select a project';
+            }
+            return null;
+          },
+        );
       },
     );
   }
