@@ -49,7 +49,7 @@ class ProjectProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addProject(String name, String? description) async {
+  Future<void> addProject({required String name, String? description}) async {
     try {
       _isLoading = true;
       _errorMessage = null;
