@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:qualita/data/providers/project_provider.dart';
 import 'package:qualita/global_keys.dart';
-import 'package:qualita/view/home/projects/project_controller.dart';
 
 class AddProjectForm extends StatefulWidget {
   const AddProjectForm({super.key});
@@ -10,36 +11,53 @@ class AddProjectForm extends StatefulWidget {
 }
 
 class _FormState extends State<AddProjectForm> {
-  final _controller = ProjectController();
-  bool isLoading = false;
+  final _formKey = GlobalKey<FormState>();
+  final _name = TextEditingController();
+  final _desc = TextEditingController();
 
   @override
   void dispose() {
-    _controller.dispose();
+    _name.dispose();
+    _desc.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ProjectProvider>(context);
+
     Future<void> onSubmit() async {
-      if (!_controller.formKey.currentState!.validate()) {
+      if (!_formKey.currentState!.validate()) {
         return;
       }
 
-      setState(() => isLoading = true);
-      await _controller.addProject().then((value) {
-        if (value != 'OK') {
-          displayMessage(SnackBar(content: Text(value)));
-        }
+      try {
+        var newProjectName = _name.text.trim();
+        await provider.addProject(
+          name: newProjectName,
+          description: _desc.text.trim(),
+        );
+
+        _formKey.currentState?.reset();
+        _name.clear();
+        _desc.clear();
+
+        displayMessage(
+          SnackBar(
+            content: Text('New project $newProjectName successfully added'),
+          ),
+        );
+      } catch (e) {
+        displayMessage(SnackBar(content: Text(e.toString())));
+      } finally {
         popContext();
-      });
-      setState(() => isLoading = false);
+      }
     }
 
     return Container(
       padding: const EdgeInsets.all(8.0),
       child: Form(
-        key: _controller.formKey,
+        key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -47,7 +65,7 @@ class _FormState extends State<AddProjectForm> {
             const SizedBox(height: 40),
 
             TextFormField(
-              controller: _controller.name,
+              controller: _name,
               decoration: InputDecoration(
                 label: Text('Step name'),
                 border: OutlineInputBorder(),
@@ -56,7 +74,7 @@ class _FormState extends State<AddProjectForm> {
             const SizedBox(height: 30),
 
             TextFormField(
-              controller: _controller.description,
+              controller: _desc,
               maxLines: 5,
               decoration: InputDecoration(
                 labelText: 'Project description',
@@ -65,7 +83,7 @@ class _FormState extends State<AddProjectForm> {
             ),
             const SizedBox(height: 30),
 
-            isLoading
+            provider.isLoading
                 ? Center(child: CircularProgressIndicator())
                 : SizedBox(
                   width: double.infinity,
