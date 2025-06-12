@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:qualita/data/providers/project_provider.dart';
+import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/global_keys.dart';
 
 class AddProjectForm extends StatefulWidget {
@@ -24,7 +24,7 @@ class _FormState extends State<AddProjectForm> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ProjectProvider>(context);
+    final provider = Provider.of<HomeProvider>(context);
 
     Future<void> onSubmit() async {
       if (!_formKey.currentState!.validate()) {

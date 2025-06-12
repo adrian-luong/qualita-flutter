@@ -14,6 +14,10 @@ class HomeProvider extends BaseProvider {
   List<ProjectModel> get projects => _projects;
   String? selectedProject;
 
+  List<StepModel> _steps = [];
+  List<StepModel> get steps => _steps;
+  String? editingStep;
+
   // Constructor to fetch initial data
   HomeProvider() {
     fetchProjects();
@@ -21,6 +25,14 @@ class HomeProvider extends BaseProvider {
 
   void selectProject(String? id) {
     selectedProject = id;
+    if (id != null) {
+      fetchSteps(id);
+    }
+    notifyListeners();
+  }
+
+  void editStep(String? id) {
+    editingStep = id;
     notifyListeners();
   }
 
@@ -81,6 +93,23 @@ class HomeProvider extends BaseProvider {
     } catch (e) {
       var message = 'An unexpected error occurred while inserting : $e';
       super.handleError(message);
+    } finally {
+      super.endOperation();
+    }
+  }
+
+  Future<void> fetchSteps(String projectId) async {
+    super.startOperation();
+    try {
+      final fetchResult = await _stepServices.getByProject(projectId);
+      _steps = fetchResult;
+      notifyListeners(); // Notify listeners that data has been fetched
+    } on PostgrestException catch (e) {
+      super.handleError(e.message);
+    } catch (e) {
+      var msg =
+          'An unexpected error occurred while fetching steps from project (id=$projectId): $e';
+      super.handleError(msg);
     } finally {
       super.endOperation();
     }
