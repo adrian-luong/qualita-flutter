@@ -1,33 +1,31 @@
-import 'package:flutter/material.dart';
 import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/models/step_model.dart';
+import 'package:qualita/data/providers/base_provider.dart';
 import 'package:qualita/data/services/project_services.dart';
 import 'package:qualita/data/services/step_services.dart';
 import 'package:qualita/global_keys.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ProjectProvider extends ChangeNotifier {
+class ProjectProvider extends BaseProvider {
   final _projectServices = ProjectServices();
   final _stepServices = StepServices();
 
   List<ProjectModel> _projects = [];
-  bool _isLoading = false;
-  String? _errorMessage;
-
   List<ProjectModel> get projects => _projects;
-  bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
+  String? selectedProject;
 
   // Constructor to fetch initial data
   ProjectProvider() {
     fetchProjects();
   }
 
-  Future<void> fetchProjects() async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners(); // Notify listeners that loading has started
+  void selectProject(String? id) {
+    selectedProject = id;
+    notifyListeners();
+  }
 
+  Future<void> fetchProjects() async {
+    super.startOperation();
     try {
       var user = getCurrentUser();
       if (user == null) {
@@ -38,22 +36,18 @@ class ProjectProvider extends ChangeNotifier {
       _projects = fetchResult;
       notifyListeners(); // Notify listeners that data has been fetched
     } on PostgrestException catch (e) {
-      _errorMessage = e.message;
-      notifyListeners(); // Notify listeners about the error
+      super.handleError(e.message);
     } catch (e) {
-      _errorMessage =
-          'An unexpected error occurred while fetching projects: $e';
+      var msg = 'An unexpected error occurred while fetching projects: $e';
+      super.handleError(msg);
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      super.endOperation();
     }
   }
 
   Future<void> addProject({required String name, String? description}) async {
     try {
-      _isLoading = true;
-      _errorMessage = null;
-      notifyListeners(); // Notify listeners that loading has started
+      super.startOperation();
 
       var user = getCurrentUser();
       if (user == null) {
@@ -83,12 +77,12 @@ class ProjectProvider extends ChangeNotifier {
 
       _projects.add(newProject); // Add the new todo to the local list
     } on PostgrestException catch (e) {
-      _errorMessage = e.message;
+      super.handleError(e.message);
     } catch (e) {
-      _errorMessage = 'An unexpected error occurred while inserting : $e';
+      var message = 'An unexpected error occurred while inserting : $e';
+      super.handleError(message);
     } finally {
-      _isLoading = false;
-      notifyListeners(); // Notify listeners about the new todo
+      super.endOperation();
     }
   }
 }
