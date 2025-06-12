@@ -6,7 +6,7 @@ import 'package:qualita/data/services/step_services.dart';
 import 'package:qualita/global_keys.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ProjectProvider extends BaseProvider {
+class HomeProvider extends BaseProvider {
   final _projectServices = ProjectServices();
   final _stepServices = StepServices();
 
@@ -15,7 +15,7 @@ class ProjectProvider extends BaseProvider {
   String? selectedProject;
 
   // Constructor to fetch initial data
-  ProjectProvider() {
+  HomeProvider() {
     fetchProjects();
   }
 
