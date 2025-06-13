@@ -1,13 +1,16 @@
 import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/models/step_model.dart';
+import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/base_provider.dart';
 import 'package:qualita/data/services/project_services.dart';
 import 'package:qualita/data/services/step_services.dart';
+import 'package:qualita/data/services/task_services.dart';
 import 'package:qualita/global_keys.dart';
 
 class HomeProvider extends BaseProvider {
   final _projectServices = ProjectServices();
   final _stepServices = StepServices();
+  final _taskServices = TaskServices();
 
   List<ProjectModel> _projects = [];
   List<ProjectModel> get projects => _projects;
@@ -15,7 +18,10 @@ class HomeProvider extends BaseProvider {
 
   List<StepModel> _steps = [];
   List<StepModel> get steps => _steps;
-  String? editingStep;
+  String? selectedStep;
+
+  final Map<String, List<TaskModel>> _tasks = {};
+  Map<String, List<TaskModel>> get tasks => _tasks;
 
   // Constructor to fetch initial data
   HomeProvider() {
@@ -31,7 +37,7 @@ class HomeProvider extends BaseProvider {
   }
 
   void editStep(String? id) {
-    editingStep = id;
+    selectedStep = id;
     notifyListeners();
   }
 
@@ -79,8 +85,20 @@ class HomeProvider extends BaseProvider {
 
   Future<void> fetchSteps() async {
     await super.operate(() async {
-      final fetchResult = await _stepServices.getByProject(selectedProject!);
-      _steps = fetchResult;
+      if (selectedProject != null) {
+        // Get all steps
+        final fetchResult = await _stepServices.getByProject(selectedProject!);
+        _steps = fetchResult;
+
+        // Get tasks for each steps
+        for (var step in fetchResult) {
+          final queriedTasks = await _taskServices.getByProjectStep(
+            selectedProject!,
+            step.id!,
+          );
+          _tasks[step.id!] = queriedTasks;
+        }
+      }
     });
   }
 
