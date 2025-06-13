@@ -26,16 +26,16 @@ class BaseServices<T extends BaseModel> {
     }
   }
 
-  Future<String> insert(T model) async {
+  Future<T> insert(T model) async {
     try {
       var response =
           await db
               .from(table)
               .insert(model.toDTOMap())
-              .select('id')
+              .select()
               .limit(1)
               .single();
-      return response['id'];
+      return fromMap(response);
     } catch (e) {
       throw Exception('Failed to insert data: $e');
     }

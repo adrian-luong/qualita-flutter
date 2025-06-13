@@ -25,7 +25,7 @@ class ProjectController {
         throw Exception('No user has logged in');
       }
 
-      var newProjectId = await _projectServices.insert(
+      var newProject = await _projectServices.insert(
         ProjectModel(
           name: name.text.trim(),
           fkUserId: user.id,
@@ -34,13 +34,13 @@ class ProjectController {
       );
       // Create 3 new default task panels for every new project created
       await _stepServices.insert(
-        StepModel(name: 'To-Do', fkProjectId: newProjectId),
+        StepModel(name: 'To-Do', fkProjectId: newProject.id!),
       );
       await _stepServices.insert(
-        StepModel(name: 'Doing', fkProjectId: newProjectId),
+        StepModel(name: 'Doing', fkProjectId: newProject.id!),
       );
       await _stepServices.insert(
-        StepModel(name: 'Done', fkProjectId: newProjectId),
+        StepModel(name: 'Done', fkProjectId: newProject.id!),
       );
 
       formKey.currentState?.reset();
@@ -53,6 +53,11 @@ class ProjectController {
   }
 
   Future<List<ProjectModel>> fetchProjects() async {
-    return await _projectServices.fetchForUser();
+    var user = getCurrentUser();
+    if (user == null) {
+      throw Exception('No user has logged in');
+    }
+
+    return await _projectServices.fetchForUser(user.id);
   }
 }
