@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BaseProvider extends ChangeNotifier {
   bool _isLoading = false;
@@ -7,19 +8,19 @@ class BaseProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  void startOperation() {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners(); // Notify listeners that loading has started
-  }
-
-  void handleError(String errorMessage) {
-    _errorMessage = errorMessage;
-    notifyListeners(); // Notify listeners about the error
-  }
-
-  void endOperation() {
-    _isLoading = false;
-    notifyListeners(); // Notify listeners about the new todo
+  Future<void> operate(Future<void> Function() operation) async {
+    try {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners(); // Notify listeners that loading has started
+      await operation();
+    } on PostgrestException catch (e) {
+      _errorMessage = e.message;
+    } catch (e) {
+      _errorMessage = 'An unexpected error occurred: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners(); // Notify listeners that loading has ended
+    }
   }
 }
