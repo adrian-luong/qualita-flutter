@@ -4,7 +4,6 @@ import 'package:qualita/data/providers/base_provider.dart';
 import 'package:qualita/data/services/project_services.dart';
 import 'package:qualita/data/services/step_services.dart';
 import 'package:qualita/global_keys.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeProvider extends BaseProvider {
   final _projectServices = ProjectServices();
@@ -14,6 +13,10 @@ class HomeProvider extends BaseProvider {
   List<ProjectModel> get projects => _projects;
   String? selectedProject;
 
+  List<StepModel> _steps = [];
+  List<StepModel> get steps => _steps;
+  String? editingStep;
+
   // Constructor to fetch initial data
   HomeProvider() {
     fetchProjects();
@@ -21,39 +24,34 @@ class HomeProvider extends BaseProvider {
 
   void selectProject(String? id) {
     selectedProject = id;
+    if (selectedProject != null) {
+      fetchSteps();
+    }
+    notifyListeners();
+  }
+
+  void editStep(String? id) {
+    editingStep = id;
     notifyListeners();
   }
 
   Future<void> fetchProjects() async {
-    super.startOperation();
-    try {
+    await super.operate(() async {
       var user = getCurrentUser();
       if (user == null) {
         throw Exception('No user has logged in');
       }
-
       final fetchResult = await _projectServices.fetchForUser(user.id);
       _projects = fetchResult;
-      notifyListeners(); // Notify listeners that data has been fetched
-    } on PostgrestException catch (e) {
-      super.handleError(e.message);
-    } catch (e) {
-      var msg = 'An unexpected error occurred while fetching projects: $e';
-      super.handleError(msg);
-    } finally {
-      super.endOperation();
-    }
+    });
   }
 
   Future<void> addProject({required String name, String? description}) async {
-    try {
-      super.startOperation();
-
+    await super.operate(() async {
       var user = getCurrentUser();
       if (user == null) {
         throw Exception('No user has logged in');
       }
-
       var model = ProjectModel(
         name: name,
         fkUserId: user.id,
@@ -76,13 +74,54 @@ class HomeProvider extends BaseProvider {
       );
 
       _projects.add(newProject); // Add the new todo to the local list
-    } on PostgrestException catch (e) {
-      super.handleError(e.message);
-    } catch (e) {
-      var message = 'An unexpected error occurred while inserting : $e';
-      super.handleError(message);
-    } finally {
-      super.endOperation();
-    }
+    });
+  }
+
+  Future<void> fetchSteps() async {
+    await super.operate(() async {
+      final fetchResult = await _stepServices.getByProject(selectedProject!);
+      _steps = fetchResult;
+    });
+  }
+
+  Future<void> addStep({required String name}) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var newStep = await _stepServices.insert(
+          StepModel(name: name, fkProjectId: selectedProject!),
+        );
+        _steps.add(newStep);
+      }
+    });
+  }
+
+  Future<void> renameStep(String stepId, String newName) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        await _stepServices.update(
+          StepModel(id: stepId, name: newName, fkProjectId: selectedProject!),
+        );
+        var correspondingStep = steps.firstWhere((step) => step.id == stepId);
+        correspondingStep.name = newName;
+      }
+    });
+  }
+
+  Future<void> reorderStep(int oldPosition, int newPosition) async {
+    await super.operate(() async {
+      List<StepModel> newOrder = List.from(steps);
+      newOrder.sort((a, b) => a.position.compareTo(b.position));
+
+      if (oldPosition < newPosition) {
+        newPosition -= 1;
+      }
+      final reorderTarget = newOrder.removeAt(oldPosition);
+      newOrder.insert(newPosition, reorderTarget);
+
+      newOrder.asMap().forEach((index, item) => item.position = index);
+      newOrder.sort((a, b) => a.position.compareTo(b.position));
+      await _stepServices.reposition(newOrder);
+      _steps = newOrder;
+    });
   }
 }

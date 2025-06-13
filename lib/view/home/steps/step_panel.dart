@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qualita/data/models/step_model.dart';
-import 'package:qualita/view/home/home_state.dart';
-import 'package:qualita/view/home/steps/step_controller.dart';
+import 'package:qualita/data/providers/home_provider.dart';
 
 class StepPanel extends StatefulWidget {
   final StepModel step;
@@ -14,14 +13,20 @@ class StepPanel extends StatefulWidget {
 }
 
 class _PanelState extends State<StepPanel> {
-  final _controller = StepController();
+  final _name = TextEditingController();
+
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final state = Provider.of<HomeState>(context);
+    final provider = Provider.of<HomeProvider>(context);
     var isEditing =
-        state.editingStep == widget.step.id && state.editingStep != null;
-    _controller.name.text = widget.step.name;
+        provider.editingStep == widget.step.id && provider.editingStep != null;
+    _name.text = widget.step.name;
 
     return Container(
       width: 300,
@@ -42,7 +47,7 @@ class _PanelState extends State<StepPanel> {
                         ),
                       )
                       : TextField(
-                        controller: _controller.name,
+                        controller: _name,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -52,19 +57,15 @@ class _PanelState extends State<StepPanel> {
                           border: UnderlineInputBorder(),
                         ),
                         onSubmitted: (value) async {
-                          await _controller.renameStep(
-                            widget.step.id!,
-                            value,
-                            state.selectedProject!,
-                          );
-                          state.editStep(null);
+                          await provider.renameStep(widget.step.id!, value);
+                          provider.editStep(null);
                         },
                       ),
             ),
             SizedBox(width: 32),
             IconButton(
               onPressed:
-                  () => state.editStep(!isEditing ? widget.step.id : null),
+                  () => provider.editStep(!isEditing ? widget.step.id : null),
               icon: Icon(!isEditing ? Icons.edit : Icons.edit_off),
             ),
           ],
