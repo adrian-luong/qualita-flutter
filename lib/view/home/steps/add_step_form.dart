@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/global_keys.dart';
-import 'package:qualita/view/home/home_state.dart';
-import 'package:qualita/view/home/steps/step_controller.dart';
 
 class AddStepForm extends StatefulWidget {
   const AddStepForm({super.key});
@@ -12,38 +11,48 @@ class AddStepForm extends StatefulWidget {
 }
 
 class _FormState extends State<AddStepForm> {
-  final _controller = StepController();
-  bool isLoading = false;
+  final _formKey = GlobalKey<FormState>();
+  final _name = TextEditingController();
 
   @override
   void dispose() {
-    _controller.dispose();
+    _name.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = Provider.of<HomeState>(context);
+    final provider = Provider.of<HomeProvider>(context);
 
     Future<void> onSubmit() async {
-      if (!_controller.formKey.currentState!.validate()) {
+      if (!_formKey.currentState!.validate()) {
         return;
       }
 
-      setState(() => isLoading = true);
-      await _controller.addStep(state.selectedProject!).then((value) {
-        if (value != 'OK') {
-          displayMessage(SnackBar(content: Text(value)));
+      try {
+        var newStepName = _name.text.trim();
+        if (provider.selectedProject != null) {
+          await provider.addStep(name: newStepName);
+          _formKey.currentState?.reset();
+          _name.clear();
+
+          displayMessage(
+            SnackBar(content: Text('New step $newStepName successfully added')),
+          );
+        } else {
+          throw Exception('Please select a project before adding step');
         }
+      } catch (e) {
+        displayMessage(SnackBar(content: Text(e.toString())));
+      } finally {
         popContext();
-      });
-      setState(() => isLoading = false);
+      }
     }
 
     return Container(
       padding: const EdgeInsets.all(8.0),
       child: Form(
-        key: _controller.formKey,
+        key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -51,7 +60,7 @@ class _FormState extends State<AddStepForm> {
             const SizedBox(height: 40),
 
             TextFormField(
-              controller: _controller.name,
+              controller: _name,
               decoration: InputDecoration(
                 label: Text('Project title'),
                 border: OutlineInputBorder(),
@@ -59,7 +68,7 @@ class _FormState extends State<AddStepForm> {
             ),
             const SizedBox(height: 30),
 
-            isLoading
+            provider.isLoading
                 ? Center(child: CircularProgressIndicator())
                 : SizedBox(
                   width: double.infinity,

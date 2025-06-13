@@ -25,8 +25,8 @@ class HomeProvider extends BaseProvider {
 
   void selectProject(String? id) {
     selectedProject = id;
-    if (id != null) {
-      fetchSteps(id);
+    if (selectedProject != null) {
+      fetchSteps();
     }
     notifyListeners();
   }
@@ -65,7 +65,6 @@ class HomeProvider extends BaseProvider {
       if (user == null) {
         throw Exception('No user has logged in');
       }
-
       var model = ProjectModel(
         name: name,
         fkUserId: user.id,
@@ -98,18 +97,61 @@ class HomeProvider extends BaseProvider {
     }
   }
 
-  Future<void> fetchSteps(String projectId) async {
+  Future<void> fetchSteps() async {
     super.startOperation();
     try {
-      final fetchResult = await _stepServices.getByProject(projectId);
+      final fetchResult = await _stepServices.getByProject(selectedProject!);
       _steps = fetchResult;
       notifyListeners(); // Notify listeners that data has been fetched
     } on PostgrestException catch (e) {
       super.handleError(e.message);
     } catch (e) {
       var msg =
-          'An unexpected error occurred while fetching steps from project (id=$projectId): $e';
+          'An unexpected error occurred while fetching steps from project (id=$selectedProject): $e';
       super.handleError(msg);
+    } finally {
+      super.endOperation();
+    }
+  }
+
+  Future<void> addStep({required String name}) async {
+    try {
+      super.startOperation();
+      if (selectedProject != null) {
+        var newStep = await _stepServices.insert(
+          StepModel(name: name, fkProjectId: selectedProject!),
+        );
+        _steps.add(newStep);
+        notifyListeners();
+      }
+    } on PostgrestException catch (e) {
+      super.handleError(e.message);
+    } catch (e) {
+      var message =
+          'An unexpected error occurred while inserting new step for project (id=$selectedProject): $e';
+      super.handleError(message);
+    } finally {
+      super.endOperation();
+    }
+  }
+
+  Future<void> renameStep(String stepId, String newName) async {
+    try {
+      super.startOperation();
+      if (selectedProject != null) {
+        await _stepServices.update(
+          StepModel(id: stepId, name: newName, fkProjectId: selectedProject!),
+        );
+        var correspondingStep = steps.firstWhere((step) => step.id == stepId);
+        correspondingStep.name = newName;
+        notifyListeners();
+      }
+    } on PostgrestException catch (e) {
+      super.handleError(e.message);
+    } catch (e) {
+      var message =
+          'An unexpected error occurred while renaming step (id=$stepId): $e';
+      super.handleError(message);
     } finally {
       super.endOperation();
     }
