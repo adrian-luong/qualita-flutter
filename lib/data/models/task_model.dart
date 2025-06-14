@@ -4,6 +4,7 @@ class TaskModel extends BaseModel {
   final String name;
   final String? description;
   int value;
+  int position;
   final String fkStepId;
   final String fkProjectId;
 
@@ -11,6 +12,7 @@ class TaskModel extends BaseModel {
     super.id,
     required this.name,
     this.value = 1,
+    this.position = 0,
     this.description,
     required this.fkProjectId,
     required this.fkStepId,
@@ -21,6 +23,7 @@ class TaskModel extends BaseModel {
     name: map['name'] as String,
     description: map['description'] as String,
     value: map['value'] as int,
+    position: map['position'] as int,
     fkProjectId: map['fk_project_id'] as String,
     fkStepId: map['fk_step_id'] as String,
   );
@@ -30,6 +33,7 @@ class TaskModel extends BaseModel {
     'name': name,
     'description': description,
     'value': value,
+    'position': position,
     'fk_project_id': fkProjectId,
     'fk_step_id': fkStepId,
   };

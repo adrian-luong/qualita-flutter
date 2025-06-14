@@ -6,6 +6,7 @@ import 'package:qualita/data/services/project_services.dart';
 import 'package:qualita/data/services/step_services.dart';
 import 'package:qualita/data/services/task_services.dart';
 import 'package:qualita/global_keys.dart';
+import 'package:qualita/utils/common_functions.dart';
 
 class HomeProvider extends BaseProvider {
   final _projectServices = ProjectServices();
@@ -127,17 +128,22 @@ class HomeProvider extends BaseProvider {
 
   Future<void> reorderStep(int oldPosition, int newPosition) async {
     await super.operate(() async {
-      List<StepModel> newOrder = List.from(steps);
-      newOrder.sort((a, b) => a.position.compareTo(b.position));
+      // List<StepModel> newOrder = List.from(steps);
+      // newOrder.sort((a, b) => a.position.compareTo(b.position));
 
-      if (oldPosition < newPosition) {
-        newPosition -= 1;
-      }
-      final reorderTarget = newOrder.removeAt(oldPosition);
-      newOrder.insert(newPosition, reorderTarget);
+      // if (oldPosition < newPosition) {
+      //   newPosition -= 1;
+      // }
+      // final reorderTarget = newOrder.removeAt(oldPosition);
+      // newOrder.insert(newPosition, reorderTarget);
 
-      newOrder.asMap().forEach((index, item) => item.position = index);
-      newOrder.sort((a, b) => a.position.compareTo(b.position));
+      // newOrder.asMap().forEach((index, item) => item.position = index);
+      // newOrder.sort((a, b) => a.position.compareTo(b.position));
+      List<StepModel> newOrder = reorder(
+        oldPosition: oldPosition,
+        newPosition: newPosition,
+        oldOrder: steps,
+      );
       await _stepServices.reposition(newOrder);
       _steps = newOrder;
     });
@@ -163,6 +169,33 @@ class HomeProvider extends BaseProvider {
         if (_tasks[stepId] != null) {
           _tasks[stepId]!.add(model);
         }
+      }
+    });
+  }
+
+  Future<void> reorderTask({
+    required int oldPosition,
+    required int newPosition,
+    required String stepId,
+  }) async {
+    await super.operate(() async {
+      if (_tasks[stepId] != null) {
+        // List<TaskModel> newOrder = List.from(_tasks[stepId]!);
+        // newOrder.sort((a, b) => a.position.compareTo(b.position));
+        // if (oldPosition < newPosition) {
+        //   newPosition -= 1;
+        // }
+        // final reorderTarget = newOrder.removeAt(oldPosition);
+        // newOrder.insert(newPosition, reorderTarget);
+        // newOrder.asMap().forEach((index, item) => item.position = index);
+        // newOrder.sort((a, b) => a.position.compareTo(b.position));
+        List<TaskModel> newOrder = reorder(
+          oldPosition: oldPosition,
+          newPosition: newPosition,
+          oldOrder: _tasks[stepId]!,
+        );
+        await _taskServices.reposition(newOrder);
+        _tasks[stepId] = newOrder;
       }
     });
   }

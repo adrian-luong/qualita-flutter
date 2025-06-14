@@ -21,4 +21,14 @@ class TaskServices extends BaseServices<TaskModel> {
       );
     }
   }
+
+  Future<void> reposition(List<TaskModel> modelList) async {
+    try {
+      for (var model in modelList) {
+        await update(model);
+      }
+    } catch (e) {
+      throw Exception('Failed to update tasks: $e');
+    }
+  }
 }

@@ -49,23 +49,28 @@ class _AreaState extends State<TaskArea> {
 
         return Container(
           width: 300,
+          height: 400,
           color: Colors.grey[200],
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ...taskBoxes,
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: IconButton(
-                  onPressed:
-                      () => displayDialog(context, [
-                        AddTaskForm(stepId: widget.stepId),
-                      ]),
-                  icon: Icon(Icons.add_outlined),
-                  selectedIcon: Icon(Icons.add),
-                ),
+          child: ReorderableListView(
+            scrollDirection: Axis.vertical,
+            footer: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: IconButton(
+                onPressed:
+                    () => displayDialog(context, [
+                      AddTaskForm(stepId: widget.stepId),
+                    ]),
+                icon: Icon(Icons.add_outlined),
+                selectedIcon: Icon(Icons.add),
               ),
-            ],
+            ),
+            onReorder:
+                (oldIndex, newIndex) async => await provider.reorderTask(
+                  oldPosition: oldIndex,
+                  newPosition: newIndex,
+                  stepId: widget.stepId,
+                ),
+            children: taskBoxes,
           ),
         );
       },
