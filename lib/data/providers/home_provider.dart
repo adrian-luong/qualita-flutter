@@ -142,4 +142,28 @@ class HomeProvider extends BaseProvider {
       _steps = newOrder;
     });
   }
+
+  Future<void> addTask({
+    required String name,
+    required int value,
+    String? description,
+    required String stepId,
+  }) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var model = TaskModel(
+          name: name,
+          value: value,
+          description: description,
+          fkProjectId: selectedProject!,
+          fkStepId: stepId,
+        );
+        await _taskServices.insert(model);
+
+        if (_tasks[stepId] != null) {
+          _tasks[stepId]!.add(model);
+        }
+      }
+    });
+  }
 }

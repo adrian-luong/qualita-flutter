@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/global_keys.dart';
-import 'package:qualita/view/home/home_state.dart';
-import 'package:qualita/view/home/tasks/task_controller.dart';
 
 class AddTaskForm extends StatefulWidget {
   final String stepId;
@@ -13,33 +12,43 @@ class AddTaskForm extends StatefulWidget {
 }
 
 class _FormState extends State<AddTaskForm> {
-  final _controller = TaskController();
+  final _formKey = GlobalKey<FormState>();
+  final _name = TextEditingController();
+  final _value = TextEditingController();
+  final _desc = TextEditingController();
+
   bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    final state = Provider.of<HomeState>(context);
+    final provider = Provider.of<HomeProvider>(context);
     Future<void> onSubmit() async {
-      if (!_controller.formKey.currentState!.validate()) {
+      if (!_formKey.currentState!.validate()) {
         return;
       }
 
-      setState(() => isLoading = true);
-      await _controller
-          .addTask(projectId: state.selectedProject!, stepId: widget.stepId)
-          .then((value) {
-            if (value != 'OK') {
-              displayMessage(SnackBar(content: Text(value)));
-            }
-            popContext();
-          });
-      setState(() => isLoading = false);
+      try {
+        var newTaskName = _name.text.trim();
+        await provider.addTask(
+          name: newTaskName,
+          value: int.parse(_value.text.trim()),
+          description: _desc.text.trim(),
+          stepId: widget.stepId,
+        );
+        displayMessage(
+          SnackBar(content: Text('New task $newTaskName successfully added')),
+        );
+      } catch (e) {
+        displayMessage(SnackBar(content: Text(e.toString())));
+      } finally {
+        popContext();
+      }
     }
 
     return Container(
       padding: const EdgeInsets.all(8.0),
       child: Form(
-        key: _controller.formKey,
+        key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -47,7 +56,7 @@ class _FormState extends State<AddTaskForm> {
             const SizedBox(height: 40),
 
             TextFormField(
-              controller: _controller.name,
+              controller: _name,
               decoration: InputDecoration(
                 label: Text('Task name'),
                 border: OutlineInputBorder(),
@@ -56,7 +65,7 @@ class _FormState extends State<AddTaskForm> {
             const SizedBox(height: 30),
 
             TextFormField(
-              controller: _controller.value,
+              controller: _value,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 label: Text('Task value'),
@@ -73,7 +82,7 @@ class _FormState extends State<AddTaskForm> {
             const SizedBox(height: 30),
 
             TextFormField(
-              controller: _controller.description,
+              controller: _desc,
               maxLines: 5,
               decoration: InputDecoration(
                 labelText: 'Task description',
@@ -82,7 +91,7 @@ class _FormState extends State<AddTaskForm> {
             ),
             const SizedBox(height: 30),
 
-            isLoading
+            provider.isLoading
                 ? Center(child: CircularProgressIndicator())
                 : SizedBox(
                   width: double.infinity,
