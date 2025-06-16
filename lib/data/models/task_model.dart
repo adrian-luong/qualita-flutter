@@ -1,10 +1,9 @@
 import 'package:qualita/data/models/base_model.dart';
 
-class TaskModel extends BaseModel {
+class TaskModel extends PositionalModel {
   final String name;
   final String? description;
   int value;
-  int position;
   final String fkStepId;
   final String fkProjectId;
 
@@ -12,7 +11,7 @@ class TaskModel extends BaseModel {
     super.id,
     required this.name,
     this.value = 1,
-    this.position = 0,
+    super.position,
     this.description,
     required this.fkProjectId,
     required this.fkStepId,
