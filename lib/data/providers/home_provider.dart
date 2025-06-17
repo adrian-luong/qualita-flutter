@@ -128,17 +128,6 @@ class HomeProvider extends BaseProvider {
 
   Future<void> reorderStep(int oldPosition, int newPosition) async {
     await super.operate(() async {
-      // List<StepModel> newOrder = List.from(steps);
-      // newOrder.sort((a, b) => a.position.compareTo(b.position));
-
-      // if (oldPosition < newPosition) {
-      //   newPosition -= 1;
-      // }
-      // final reorderTarget = newOrder.removeAt(oldPosition);
-      // newOrder.insert(newPosition, reorderTarget);
-
-      // newOrder.asMap().forEach((index, item) => item.position = index);
-      // newOrder.sort((a, b) => a.position.compareTo(b.position));
       List<StepModel> newOrder = reorder(
         oldPosition: oldPosition,
         newPosition: newPosition,
@@ -180,15 +169,6 @@ class HomeProvider extends BaseProvider {
   }) async {
     await super.operate(() async {
       if (_tasks[stepId] != null) {
-        // List<TaskModel> newOrder = List.from(_tasks[stepId]!);
-        // newOrder.sort((a, b) => a.position.compareTo(b.position));
-        // if (oldPosition < newPosition) {
-        //   newPosition -= 1;
-        // }
-        // final reorderTarget = newOrder.removeAt(oldPosition);
-        // newOrder.insert(newPosition, reorderTarget);
-        // newOrder.asMap().forEach((index, item) => item.position = index);
-        // newOrder.sort((a, b) => a.position.compareTo(b.position));
         List<TaskModel> newOrder = reorder(
           oldPosition: oldPosition,
           newPosition: newPosition,
@@ -196,6 +176,37 @@ class HomeProvider extends BaseProvider {
         );
         await _taskServices.reposition(newOrder);
         _tasks[stepId] = newOrder;
+      }
+    });
+  }
+
+  Future<void> restepTask({
+    required TaskModel task,
+    required String newStepId,
+  }) async {
+    await super.operate(() async {
+      if (_tasks[task.fkStepId] != null &&
+          _tasks[newStepId] != null &&
+          selectedProject != null) {
+        var oldStepId = task.fkStepId;
+        var newTaskModel = TaskModel(
+          id: task.id,
+          name: task.name,
+          position: _tasks[newStepId]!.length - 1,
+          description: task.description,
+          fkProjectId: selectedProject!,
+          fkStepId: newStepId,
+        );
+        await _taskServices.update(newTaskModel);
+
+        _tasks[task.fkStepId] = await _taskServices.getByProjectStep(
+          selectedProject!,
+          oldStepId,
+        );
+        _tasks[newStepId] = await _taskServices.getByProjectStep(
+          selectedProject!,
+          newStepId,
+        );
       }
     });
   }

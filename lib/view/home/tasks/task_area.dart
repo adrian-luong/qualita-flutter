@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/utils/display_dialog.dart';
 import 'package:qualita/view/home/tasks/add_task_form.dart';
-import 'package:qualita/view/home/tasks/task_panel.dart';
+import 'package:qualita/view/home/tasks/task_item.dart';
 
 class TaskArea extends StatefulWidget {
   final String stepId;
@@ -35,43 +36,59 @@ class _AreaState extends State<TaskArea> {
           return const Text('Please select a project');
         }
 
-        var getTasks = provider.tasks[widget.stepId] ?? [];
+        var tasks = provider.tasks[widget.stepId] ?? [];
         var taskBoxes =
-            getTasks
-                .map(
-                  (task) => Padding(
-                    key: ValueKey(task.id),
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: TaskPanel(task: task),
-                  ),
-                )
+            tasks
+                .map((task) => TaskItem(key: ValueKey(task.id), task: task))
                 .toList();
 
-        return Container(
-          width: 300,
-          height: 400,
-          color: Colors.grey[200],
-          child: ReorderableListView(
-            scrollDirection: Axis.vertical,
-            footer: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: IconButton(
-                onPressed:
-                    () => displayDialog(context, [
-                      AddTaskForm(stepId: widget.stepId),
-                    ]),
-                icon: Icon(Icons.add_outlined),
-                selectedIcon: Icon(Icons.add),
+        return DragTarget<TaskModel>(
+          onAcceptWithDetails:
+              (details) async => await provider.restepTask(
+                task: details.data,
+                newStepId: widget.stepId,
               ),
-            ),
-            onReorder:
-                (oldIndex, newIndex) async => await provider.reorderTask(
-                  oldPosition: oldIndex,
-                  newPosition: newIndex,
-                  stepId: widget.stepId,
+          builder: (context, candidateData, rejectedData) {
+            bool isHovering = candidateData.isNotEmpty;
+            Color borderColor =
+                isHovering ? Colors.blueAccent : Colors.transparent;
+            double borderWidth = isHovering ? 3.0 : 1.0;
+            Color? bgColor =
+                isHovering
+                    ? Colors.blue.withValues(alpha: 0.1)
+                    : Colors.grey[200];
+
+            return Container(
+              width: 300,
+              height: 400,
+              decoration: BoxDecoration(
+                color: bgColor,
+                border: Border.all(color: borderColor, width: borderWidth),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: ReorderableListView(
+                scrollDirection: Axis.vertical,
+                footer: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: IconButton(
+                    onPressed:
+                        () => displayDialog(context, [
+                          AddTaskForm(stepId: widget.stepId),
+                        ]),
+                    icon: Icon(Icons.add_outlined),
+                    selectedIcon: Icon(Icons.add),
+                  ),
                 ),
-            children: taskBoxes,
-          ),
+                onReorder:
+                    (oldIndex, newIndex) async => await provider.reorderTask(
+                      oldPosition: oldIndex,
+                      newPosition: newIndex,
+                      stepId: widget.stepId,
+                    ),
+                children: taskBoxes,
+              ),
+            );
+          },
         );
       },
     );
