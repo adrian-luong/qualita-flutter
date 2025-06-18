@@ -52,7 +52,7 @@ class _AreaState extends State<StepArea> {
                           stepAmount: provider.steps.length,
                         ),
                         SizedBox(height: 16),
-                        TaskArea(),
+                        TaskArea(stepId: step.id!),
                       ],
                     ),
                   ),
@@ -70,8 +70,7 @@ class _AreaState extends State<StepArea> {
                 children: [
                   Center(
                     child: IconButton(
-                      onPressed:
-                          () => displayDialog<String>(context, [AddStepForm()]),
+                      onPressed: () => displayDialog(context, [AddStepForm()]),
                       icon: Icon(Icons.add_box_outlined),
                       selectedIcon: Icon(Icons.add_box),
                     ),

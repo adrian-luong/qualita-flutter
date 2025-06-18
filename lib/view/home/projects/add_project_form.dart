@@ -67,7 +67,7 @@ class _FormState extends State<AddProjectForm> {
             TextFormField(
               controller: _name,
               decoration: InputDecoration(
-                label: Text('Step name'),
+                label: Text('Project name'),
                 border: OutlineInputBorder(),
               ),
             ),

@@ -25,7 +25,8 @@ class _PanelState extends State<StepPanel> {
   Widget build(BuildContext context) {
     final provider = Provider.of<HomeProvider>(context);
     var isEditing =
-        provider.editingStep == widget.step.id && provider.editingStep != null;
+        provider.selectedStep == widget.step.id &&
+        provider.selectedStep != null;
     _name.text = widget.step.name;
 
     return Container(

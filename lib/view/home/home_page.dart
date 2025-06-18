@@ -28,7 +28,7 @@ class HomePage extends StatelessWidget {
             ),
             SizedBox(height: 32),
             Row(
-              children: [SizedBox(width: 1000, height: 200, child: StepArea())],
+              children: [SizedBox(width: 1000, height: 500, child: StepArea())],
             ),
           ],
         ),
