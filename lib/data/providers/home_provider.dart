@@ -237,4 +237,14 @@ class HomeProvider extends BaseProvider {
       }
     });
   }
+
+  Future<void> deleteTask(String id, String stepId) async {
+    await super.operate(() async {
+      await _taskServices.hardDelete(id);
+      if (_tasks[stepId] != null) {
+        var targetIndex = _tasks[stepId]!.indexWhere((task) => task.id == id);
+        _tasks[stepId]!.removeAt(targetIndex);
+      }
+    });
+  }
 }

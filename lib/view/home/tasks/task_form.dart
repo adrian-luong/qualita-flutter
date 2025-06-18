@@ -4,6 +4,7 @@ import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/global_keys.dart';
 import 'package:qualita/utils/common_types.dart';
+import 'package:qualita/utils/display_dialog.dart';
 
 class TaskForm extends StatefulWidget {
   final FormTypes formMode;
@@ -66,6 +67,26 @@ class _FormState extends State<TaskForm> {
         displayMessage(SnackBar(content: Text(e.toString())));
       } finally {
         popContext();
+      }
+    }
+
+    Future<void> onDelete() async {
+      if (widget.task.id != null) {
+        try {
+          await provider.deleteTask(widget.task.id!, widget.task.fkStepId);
+          displayMessage(
+            SnackBar(
+              content: Text(
+                'Task ${widget.task.name} has been successfully deleted',
+              ),
+            ),
+          );
+        } catch (e) {
+          displayMessage(SnackBar(content: Text(e.toString())));
+        } finally {
+          popContext(); // Close the confirmation dialog
+          popContext(); // Close the Edit task dialog
+        }
       }
     }
 
@@ -132,6 +153,16 @@ class _FormState extends State<TaskForm> {
                         onPressed: onSubmit,
                         child: Text(buttonText),
                       ),
+                      if (widget.formMode == FormTypes.edit)
+                        ElevatedButton(
+                          onPressed:
+                              () => confirmDelete(
+                                context,
+                                'Are you sure you want to delete this task?',
+                                onDelete,
+                              ),
+                          child: Text('DELETE'),
+                        ),
                     ],
                   ),
                 ),
