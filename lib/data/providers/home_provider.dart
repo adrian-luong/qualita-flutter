@@ -210,4 +210,31 @@ class HomeProvider extends BaseProvider {
       }
     });
   }
+
+  Future<void> updateTask({
+    required String id,
+    required String name,
+    required int value,
+    String? description,
+    required String stepId,
+  }) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var model = TaskModel(
+          id: id,
+          name: name,
+          value: value,
+          description: description,
+          fkProjectId: selectedProject!,
+          fkStepId: stepId,
+        );
+        await _taskServices.update(model);
+
+        if (_tasks[stepId] != null) {
+          var targetIndex = _tasks[stepId]!.indexWhere((task) => task.id == id);
+          _tasks[stepId]![targetIndex] = model;
+        }
+      }
+    });
+  }
 }

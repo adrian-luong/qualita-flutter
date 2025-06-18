@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/home_provider.dart';
+import 'package:qualita/utils/common_types.dart';
 import 'package:qualita/utils/display_dialog.dart';
-import 'package:qualita/view/home/tasks/add_task_form.dart';
+import 'package:qualita/utils/empty_objects.dart';
+import 'package:qualita/view/home/tasks/task_form.dart';
 import 'package:qualita/view/home/tasks/task_item.dart';
 
 class TaskArea extends StatefulWidget {
@@ -73,7 +75,13 @@ class _AreaState extends State<TaskArea> {
                   child: IconButton(
                     onPressed:
                         () => displayDialog(context, [
-                          AddTaskForm(stepId: widget.stepId),
+                          TaskForm(
+                            formMode: FormTypes.create,
+                            task: getEmptyTask(
+                              customStepId: widget.stepId,
+                              customProjectId: provider.selectedProject!,
+                            ),
+                          ),
                         ]),
                     icon: Icon(Icons.add_outlined),
                     selectedIcon: Icon(Icons.add),

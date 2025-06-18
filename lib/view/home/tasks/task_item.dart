@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/data/models/task_model.dart';
+import 'package:qualita/utils/common_types.dart';
+import 'package:qualita/utils/display_dialog.dart';
+import 'package:qualita/view/home/tasks/task_form.dart';
 
 class TaskItem extends StatefulWidget {
   final TaskModel task;
@@ -18,7 +21,21 @@ class _ItemState extends State<TaskItem> {
       child: Container(
         height: 50,
         alignment: Alignment.center,
-        child: Text(widget.task.name, style: TextStyle(color: Colors.white)),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Text(widget.task.name, style: TextStyle(color: Colors.white)),
+              IconButton(
+                onPressed:
+                    () => displayDialog(context, [
+                      TaskForm(task: widget.task, formMode: FormTypes.edit),
+                    ]),
+                icon: Icon(Icons.edit),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
