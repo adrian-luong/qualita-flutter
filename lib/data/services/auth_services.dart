@@ -38,10 +38,6 @@ class AuthServices {
     await _auth.resetPasswordForEmail(email);
   }
 
-  User? isLoggedIn() {
-    return _auth.currentUser;
-  }
-
   Stream<AuthState> onChange() {
     return _auth.onAuthStateChange;
   }

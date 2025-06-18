@@ -18,8 +18,12 @@ class _ScreenState extends State<SplashScreen> {
     return StreamBuilder(
       stream: _services.onChange(),
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+
         if (snapshot.connectionState == ConnectionState.active) {
-          if (snapshot.data == null || _services.isLoggedIn() == null) {
+          if (snapshot.data!.session == null) {
             return const SigninPage();
           }
           return const HomePage();
