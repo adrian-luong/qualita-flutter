@@ -38,6 +38,10 @@ class AuthServices {
     await _auth.resetPasswordForEmail(email);
   }
 
+  Future<void> signout() async {
+    await _auth.signOut();
+  }
+
   Stream<AuthState> onChange() {
     return _auth.onAuthStateChange;
   }

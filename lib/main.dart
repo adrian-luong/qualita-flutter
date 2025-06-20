@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:qualita/data/providers/home_provider.dart';
+import 'package:qualita/data/providers/settings_provider.dart';
 import 'package:qualita/global_keys.dart';
 import 'package:qualita/view/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -15,7 +16,10 @@ Future<void> main() async {
   );
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (context) => HomeProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (context) => HomeProvider()),
+        ChangeNotifierProvider(create: (context) => SettingsProvider()),
+      ],
       child: const MainApplication(),
     ),
   );
