@@ -2,16 +2,16 @@ import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/models/step_model.dart';
 import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/base_provider.dart';
-import 'package:qualita/data/services/project_services.dart';
+import 'package:qualita/data/repositories/project_repository.dart';
 import 'package:qualita/data/services/step_services.dart';
 import 'package:qualita/data/services/task_services.dart';
-import 'package:qualita/global_keys.dart';
 import 'package:qualita/utils/common_functions.dart';
 
 class HomeProvider extends BaseProvider {
-  final _projectServices = ProjectServices();
   final _stepServices = StepServices();
   final _taskServices = TaskServices();
+
+  final _projectRepo = ProjectRepository();
 
   List<ProjectModel> _projects = [];
   List<ProjectModel> get projects => _projects;
@@ -43,44 +43,27 @@ class HomeProvider extends BaseProvider {
   }
 
   Future<void> fetchProjects() async {
-    await super.operate(() async {
-      var user = getCurrentUser();
-      if (user == null) {
-        throw Exception('No user has logged in');
+    await operate(() async {
+      var response = await _projectRepo.fetch();
+      if (response.hasError) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        _projects = response.data;
       }
-      final fetchResult = await _projectServices.fetchForUser(user.id);
-      _projects = fetchResult;
     });
   }
 
   Future<void> addProject({required String name, String? description}) async {
-    await super.operate(() async {
-      var user = getCurrentUser();
-      if (user == null) {
-        throw Exception('No user has logged in');
-      }
-      var model = ProjectModel(
+    await operate(() async {
+      var response = await _projectRepo.add(
         name: name,
-        fkUserId: user.id,
         description: description,
       );
-      var newProject = await _projectServices.insert(model);
-      if (newProject.id == null) {
-        throw Exception('Project ID cannot be set');
+      if (response.hasError || response.data == null) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        _projects.add(response.data!); // Add the new todo to the local list
       }
-
-      // Create 3 new default task panels for every new project created
-      await _stepServices.insert(
-        StepModel(name: 'To-Do', fkProjectId: newProject.id!),
-      );
-      await _stepServices.insert(
-        StepModel(name: 'Doing', fkProjectId: newProject.id!),
-      );
-      await _stepServices.insert(
-        StepModel(name: 'Done', fkProjectId: newProject.id!),
-      );
-
-      _projects.add(newProject); // Add the new todo to the local list
     });
   }
 
