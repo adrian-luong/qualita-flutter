@@ -31,13 +31,18 @@ class MainApplication extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<SettingsProvider>(context);
     return MaterialApp(
       title: 'Qualita',
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: messenger,
       navigatorKey: navigator,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: provider.colorMode,
+        ),
+        textTheme: TextTheme(),
       ),
       home: SplashScreen(),
     );

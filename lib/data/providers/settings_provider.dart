@@ -9,4 +9,16 @@ class SettingsProvider extends ChangeNotifier {
     _mode = newMode;
     notifyListeners();
   }
+
+  void switchMode() {
+    switch (_mode) {
+      case Brightness.light:
+        _mode = Brightness.dark;
+        break;
+      case Brightness.dark:
+        _mode = Brightness.light;
+        break;
+    }
+    notifyListeners();
+  }
 }
