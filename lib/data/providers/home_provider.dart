@@ -2,16 +2,16 @@ import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/models/step_model.dart';
 import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/base_provider.dart';
-import 'package:qualita/data/services/project_services.dart';
-import 'package:qualita/data/services/step_services.dart';
+import 'package:qualita/data/repositories/project_repository.dart';
+import 'package:qualita/data/repositories/step_repository.dart';
 import 'package:qualita/data/services/task_services.dart';
-import 'package:qualita/global_keys.dart';
 import 'package:qualita/utils/common_functions.dart';
 
 class HomeProvider extends BaseProvider {
-  final _projectServices = ProjectServices();
-  final _stepServices = StepServices();
   final _taskServices = TaskServices();
+
+  final _projectRepo = ProjectRepository();
+  final _stepRepo = StepRepository();
 
   List<ProjectModel> _projects = [];
   List<ProjectModel> get projects => _projects;
@@ -43,44 +43,27 @@ class HomeProvider extends BaseProvider {
   }
 
   Future<void> fetchProjects() async {
-    await super.operate(() async {
-      var user = getCurrentUser();
-      if (user == null) {
-        throw Exception('No user has logged in');
+    await operate(() async {
+      var response = await _projectRepo.fetchProjects();
+      if (response.hasError) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        _projects = response.data;
       }
-      final fetchResult = await _projectServices.fetchForUser(user.id);
-      _projects = fetchResult;
     });
   }
 
   Future<void> addProject({required String name, String? description}) async {
-    await super.operate(() async {
-      var user = getCurrentUser();
-      if (user == null) {
-        throw Exception('No user has logged in');
-      }
-      var model = ProjectModel(
+    await operate(() async {
+      var response = await _projectRepo.addProject(
         name: name,
-        fkUserId: user.id,
         description: description,
       );
-      var newProject = await _projectServices.insert(model);
-      if (newProject.id == null) {
-        throw Exception('Project ID cannot be set');
+      if (response.hasError || response.data == null) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        _projects.add(response.data!); // Add the new todo to the local list
       }
-
-      // Create 3 new default task panels for every new project created
-      await _stepServices.insert(
-        StepModel(name: 'To-Do', fkProjectId: newProject.id!),
-      );
-      await _stepServices.insert(
-        StepModel(name: 'Doing', fkProjectId: newProject.id!),
-      );
-      await _stepServices.insert(
-        StepModel(name: 'Done', fkProjectId: newProject.id!),
-      );
-
-      _projects.add(newProject); // Add the new todo to the local list
     });
   }
 
@@ -88,11 +71,15 @@ class HomeProvider extends BaseProvider {
     await super.operate(() async {
       if (selectedProject != null) {
         // Get all steps
-        final fetchResult = await _stepServices.getByProject(selectedProject!);
-        _steps = fetchResult;
+        final fetchResult = await _stepRepo.fetchSteps(selectedProject!);
+        if (fetchResult.hasError) {
+          throw Exception(fetchResult.message ?? 'Unexpected error');
+        } else {
+          _steps = fetchResult.data;
+        }
 
         // Get tasks for each steps
-        for (var step in fetchResult) {
+        for (var step in fetchResult.data) {
           final queriedTasks = await _taskServices.getByProjectStep(
             selectedProject!,
             step.id!,
@@ -106,10 +93,12 @@ class HomeProvider extends BaseProvider {
   Future<void> addStep({required String name}) async {
     await super.operate(() async {
       if (selectedProject != null) {
-        var newStep = await _stepServices.insert(
-          StepModel(name: name, fkProjectId: selectedProject!),
-        );
-        _steps.add(newStep);
+        var response = await _stepRepo.addStep(name, selectedProject!);
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          _steps.add(response.data!);
+        }
       }
     });
   }
@@ -117,24 +106,33 @@ class HomeProvider extends BaseProvider {
   Future<void> renameStep(String stepId, String newName) async {
     await super.operate(() async {
       if (selectedProject != null) {
-        await _stepServices.update(
-          StepModel(id: stepId, name: newName, fkProjectId: selectedProject!),
+        var response = await _stepRepo.renameStep(
+          stepId: stepId,
+          newName: newName,
+          projectId: selectedProject!,
         );
-        var correspondingStep = steps.firstWhere((step) => step.id == stepId);
-        correspondingStep.name = newName;
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          var correspondingStep = steps.firstWhere((step) => step.id == stepId);
+          correspondingStep.name = newName;
+        }
       }
     });
   }
 
   Future<void> reorderStep(int oldPosition, int newPosition) async {
     await super.operate(() async {
-      List<StepModel> newOrder = reorder(
-        oldPosition: oldPosition,
-        newPosition: newPosition,
-        oldOrder: steps,
+      var response = await _stepRepo.reorderStep(
+        oldPosition,
+        newPosition,
+        steps,
       );
-      await _stepServices.reposition(newOrder);
-      _steps = newOrder;
+      if (response.hasError || response.data.isEmpty) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        _steps = response.data;
+      }
     });
   }
 
