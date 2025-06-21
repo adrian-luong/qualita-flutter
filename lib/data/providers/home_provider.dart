@@ -1,13 +1,17 @@
 import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/models/step_model.dart';
+import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/base_provider.dart';
-import 'package:qualita/data/services/project_services.dart';
+import 'package:qualita/data/repositories/project_repository.dart';
 import 'package:qualita/data/services/step_services.dart';
-import 'package:qualita/global_keys.dart';
+import 'package:qualita/data/services/task_services.dart';
+import 'package:qualita/utils/common_functions.dart';
 
 class HomeProvider extends BaseProvider {
-  final _projectServices = ProjectServices();
   final _stepServices = StepServices();
+  final _taskServices = TaskServices();
+
+  final _projectRepo = ProjectRepository();
 
   List<ProjectModel> _projects = [];
   List<ProjectModel> get projects => _projects;
@@ -15,7 +19,10 @@ class HomeProvider extends BaseProvider {
 
   List<StepModel> _steps = [];
   List<StepModel> get steps => _steps;
-  String? editingStep;
+  String? selectedStep;
+
+  final Map<String, List<TaskModel>> _tasks = {};
+  Map<String, List<TaskModel>> get tasks => _tasks;
 
   // Constructor to fetch initial data
   HomeProvider() {
@@ -31,56 +38,51 @@ class HomeProvider extends BaseProvider {
   }
 
   void editStep(String? id) {
-    editingStep = id;
+    selectedStep = id;
     notifyListeners();
   }
 
   Future<void> fetchProjects() async {
-    await super.operate(() async {
-      var user = getCurrentUser();
-      if (user == null) {
-        throw Exception('No user has logged in');
+    await operate(() async {
+      var response = await _projectRepo.fetch();
+      if (response.hasError) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        _projects = response.data;
       }
-      final fetchResult = await _projectServices.fetchForUser(user.id);
-      _projects = fetchResult;
     });
   }
 
   Future<void> addProject({required String name, String? description}) async {
-    await super.operate(() async {
-      var user = getCurrentUser();
-      if (user == null) {
-        throw Exception('No user has logged in');
-      }
-      var model = ProjectModel(
+    await operate(() async {
+      var response = await _projectRepo.add(
         name: name,
-        fkUserId: user.id,
         description: description,
       );
-      var newProject = await _projectServices.insert(model);
-      if (newProject.id == null) {
-        throw Exception('Project ID cannot be set');
+      if (response.hasError || response.data == null) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        _projects.add(response.data!); // Add the new todo to the local list
       }
-
-      // Create 3 new default task panels for every new project created
-      await _stepServices.insert(
-        StepModel(name: 'To-Do', fkProjectId: newProject.id!),
-      );
-      await _stepServices.insert(
-        StepModel(name: 'Doing', fkProjectId: newProject.id!),
-      );
-      await _stepServices.insert(
-        StepModel(name: 'Done', fkProjectId: newProject.id!),
-      );
-
-      _projects.add(newProject); // Add the new todo to the local list
     });
   }
 
   Future<void> fetchSteps() async {
     await super.operate(() async {
-      final fetchResult = await _stepServices.getByProject(selectedProject!);
-      _steps = fetchResult;
+      if (selectedProject != null) {
+        // Get all steps
+        final fetchResult = await _stepServices.getByProject(selectedProject!);
+        _steps = fetchResult;
+
+        // Get tasks for each steps
+        for (var step in fetchResult) {
+          final queriedTasks = await _taskServices.getByProjectStep(
+            selectedProject!,
+            step.id!,
+          );
+          _tasks[step.id!] = queriedTasks;
+        }
+      }
     });
   }
 
@@ -109,19 +111,123 @@ class HomeProvider extends BaseProvider {
 
   Future<void> reorderStep(int oldPosition, int newPosition) async {
     await super.operate(() async {
-      List<StepModel> newOrder = List.from(steps);
-      newOrder.sort((a, b) => a.position.compareTo(b.position));
-
-      if (oldPosition < newPosition) {
-        newPosition -= 1;
-      }
-      final reorderTarget = newOrder.removeAt(oldPosition);
-      newOrder.insert(newPosition, reorderTarget);
-
-      newOrder.asMap().forEach((index, item) => item.position = index);
-      newOrder.sort((a, b) => a.position.compareTo(b.position));
+      List<StepModel> newOrder = reorder(
+        oldPosition: oldPosition,
+        newPosition: newPosition,
+        oldOrder: steps,
+      );
       await _stepServices.reposition(newOrder);
       _steps = newOrder;
+    });
+  }
+
+  Future<void> addTask({
+    required String name,
+    required int value,
+    String? description,
+    required String stepId,
+  }) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var model = TaskModel(
+          name: name,
+          value: value,
+          description: description,
+          fkProjectId: selectedProject!,
+          fkStepId: stepId,
+        );
+        await _taskServices.insert(model);
+
+        if (_tasks[stepId] != null) {
+          _tasks[stepId]!.add(model);
+        }
+      }
+    });
+  }
+
+  Future<void> reorderTask({
+    required int oldPosition,
+    required int newPosition,
+    required String stepId,
+  }) async {
+    await super.operate(() async {
+      if (_tasks[stepId] != null) {
+        List<TaskModel> newOrder = reorder(
+          oldPosition: oldPosition,
+          newPosition: newPosition,
+          oldOrder: _tasks[stepId]!,
+        );
+        await _taskServices.reposition(newOrder);
+        _tasks[stepId] = newOrder;
+      }
+    });
+  }
+
+  Future<void> restepTask({
+    required TaskModel task,
+    required String newStepId,
+  }) async {
+    await super.operate(() async {
+      if (_tasks[task.fkStepId] != null &&
+          _tasks[newStepId] != null &&
+          selectedProject != null) {
+        var oldStepId = task.fkStepId;
+        var newTaskModel = TaskModel(
+          id: task.id,
+          name: task.name,
+          position: _tasks[newStepId]!.length - 1,
+          description: task.description,
+          fkProjectId: selectedProject!,
+          fkStepId: newStepId,
+        );
+        await _taskServices.update(newTaskModel);
+
+        _tasks[task.fkStepId] = await _taskServices.getByProjectStep(
+          selectedProject!,
+          oldStepId,
+        );
+        _tasks[newStepId] = await _taskServices.getByProjectStep(
+          selectedProject!,
+          newStepId,
+        );
+      }
+    });
+  }
+
+  Future<void> updateTask({
+    required String id,
+    required String name,
+    required int value,
+    String? description,
+    required String stepId,
+  }) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var model = TaskModel(
+          id: id,
+          name: name,
+          value: value,
+          description: description,
+          fkProjectId: selectedProject!,
+          fkStepId: stepId,
+        );
+        await _taskServices.update(model);
+
+        if (_tasks[stepId] != null) {
+          var targetIndex = _tasks[stepId]!.indexWhere((task) => task.id == id);
+          _tasks[stepId]![targetIndex] = model;
+        }
+      }
+    });
+  }
+
+  Future<void> deleteTask(String id, String stepId) async {
+    await super.operate(() async {
+      await _taskServices.hardDelete(id);
+      if (_tasks[stepId] != null) {
+        var targetIndex = _tasks[stepId]!.indexWhere((task) => task.id == id);
+        _tasks[stepId]!.removeAt(targetIndex);
+      }
     });
   }
 }

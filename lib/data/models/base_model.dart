@@ -9,3 +9,8 @@ abstract class BaseModel {
   // Abstract method to convert the model to a DTO JSON map
   Map<String, dynamic> toDTOMap();
 }
+
+abstract class PositionalModel extends BaseModel {
+  int position;
+  PositionalModel({super.id, this.position = 0});
+}
