@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:qualita/utils/display_dialog.dart';
 import 'package:qualita/view/common/common_layout.dart';
-import 'package:qualita/view/home/home_state.dart';
 import 'package:qualita/view/home/projects/add_project_form.dart';
 import 'package:qualita/view/home/projects/project_select.dart';
 import 'package:qualita/view/home/steps/step_area.dart';
@@ -12,8 +10,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = Provider.of<HomeState>(context);
-
     return CommonLayout(
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -32,16 +28,7 @@ class HomePage extends StatelessWidget {
             ),
             SizedBox(height: 32),
             Row(
-              children: [
-                SizedBox(
-                  width: 1000,
-                  height: 200,
-                  child:
-                      (state.selectedProject != null)
-                          ? StepArea()
-                          : Text('Please select a project'),
-                ),
-              ],
+              children: [SizedBox(width: 1000, height: 500, child: StepArea())],
             ),
           ],
         ),
