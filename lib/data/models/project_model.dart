@@ -15,7 +15,7 @@ class ProjectModel extends BaseModel {
   factory ProjectModel.fromMap(Map<String, dynamic> map) => ProjectModel(
     id: map['id'] as String,
     name: map['name'] as String,
-    description: map['description'] as String,
+    description: map['description'],
     fkUserId: map['fk_user_id'] as String,
   );
 

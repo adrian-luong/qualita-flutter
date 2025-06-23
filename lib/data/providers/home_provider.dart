@@ -4,14 +4,12 @@ import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/base_provider.dart';
 import 'package:qualita/data/repositories/project_repository.dart';
 import 'package:qualita/data/repositories/step_repository.dart';
-import 'package:qualita/data/services/task_services.dart';
-import 'package:qualita/utils/common_functions.dart';
+import 'package:qualita/data/repositories/task_repository.dart';
 
 class HomeProvider extends BaseProvider {
-  final _taskServices = TaskServices();
-
   final _projectRepo = ProjectRepository();
   final _stepRepo = StepRepository();
+  final _taskRepo = TaskRepository();
 
   List<ProjectModel> _projects = [];
   List<ProjectModel> get projects => _projects;
@@ -71,20 +69,24 @@ class HomeProvider extends BaseProvider {
     await super.operate(() async {
       if (selectedProject != null) {
         // Get all steps
-        final fetchResult = await _stepRepo.fetchSteps(selectedProject!);
-        if (fetchResult.hasError) {
-          throw Exception(fetchResult.message ?? 'Unexpected error');
+        final fetchStepResult = await _stepRepo.fetchSteps(selectedProject!);
+        if (fetchStepResult.hasError) {
+          throw Exception(fetchStepResult.message ?? 'Unexpected error');
         } else {
-          _steps = fetchResult.data;
+          _steps = fetchStepResult.data;
         }
 
         // Get tasks for each steps
-        for (var step in fetchResult.data) {
-          final queriedTasks = await _taskServices.getByProjectStep(
+        for (var step in fetchStepResult.data) {
+          final fetchTaskResult = await _taskRepo.fetchTasks(
             selectedProject!,
             step.id!,
           );
-          _tasks[step.id!] = queriedTasks;
+          if (fetchTaskResult.hasError) {
+            throw Exception(fetchTaskResult.message ?? 'Unexpected error');
+          } else {
+            _tasks[step.id!] = fetchTaskResult.data;
+          }
         }
       }
     });
@@ -144,17 +146,17 @@ class HomeProvider extends BaseProvider {
   }) async {
     await super.operate(() async {
       if (selectedProject != null) {
-        var model = TaskModel(
+        var response = await _taskRepo.addTask(
           name: name,
-          value: value,
           description: description,
-          fkProjectId: selectedProject!,
-          fkStepId: stepId,
+          value: value,
+          stepId: stepId,
+          projectId: selectedProject!,
         );
-        await _taskServices.insert(model);
-
-        if (_tasks[stepId] != null) {
-          _tasks[stepId]!.add(model);
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else if (_tasks[stepId] != null) {
+          _tasks[stepId]!.add(response.data!);
         }
       }
     });
@@ -167,13 +169,16 @@ class HomeProvider extends BaseProvider {
   }) async {
     await super.operate(() async {
       if (_tasks[stepId] != null) {
-        List<TaskModel> newOrder = reorder(
+        var response = await _taskRepo.reorderTask(
           oldPosition: oldPosition,
           newPosition: newPosition,
-          oldOrder: _tasks[stepId]!,
+          taskList: _tasks[stepId]!,
         );
-        await _taskServices.reposition(newOrder);
-        _tasks[stepId] = newOrder;
+        if (response.hasError || response.data.isEmpty) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          _tasks[stepId] = response.data;
+        }
       }
     });
   }
@@ -183,28 +188,44 @@ class HomeProvider extends BaseProvider {
     required String newStepId,
   }) async {
     await super.operate(() async {
-      if (_tasks[task.fkStepId] != null &&
+      var oldStepId = task.fkStepId;
+
+      if (_tasks[oldStepId] != null &&
           _tasks[newStepId] != null &&
           selectedProject != null) {
-        var oldStepId = task.fkStepId;
-        var newTaskModel = TaskModel(
-          id: task.id,
-          name: task.name,
-          position: _tasks[newStepId]!.length - 1,
-          description: task.description,
-          fkProjectId: selectedProject!,
-          fkStepId: newStepId,
+        var newPosition = _tasks[newStepId]!.length;
+        var response = await _taskRepo.restepTask(
+          task: task,
+          newPosition: newPosition,
+          projectId: selectedProject!,
+          newStepId: newStepId,
         );
-        await _taskServices.update(newTaskModel);
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          var oldIndex = _tasks[oldStepId]!.indexWhere(
+            (model) => task.id == response.data!.id,
+          );
+          if (oldIndex > -1) {
+            _tasks[oldStepId]!.removeAt(oldIndex);
+          }
 
-        _tasks[task.fkStepId] = await _taskServices.getByProjectStep(
-          selectedProject!,
-          oldStepId,
-        );
-        _tasks[newStepId] = await _taskServices.getByProjectStep(
-          selectedProject!,
-          newStepId,
-        );
+          var newIndex = _tasks[newStepId]!.indexWhere(
+            (model) => task.id == model.id,
+          );
+          if (newIndex == -1) {
+            _tasks[newStepId]!.add(response.data!);
+          }
+        }
+
+        // _tasks[task.fkStepId] = await _taskServices.getByProjectStep(
+        //   selectedProject!,
+        //   oldStepId,
+        // );
+        // _tasks[newStepId] = await _taskServices.getByProjectStep(
+        //   selectedProject!,
+        //   newStepId,
+        // );
       }
     });
   }
@@ -218,19 +239,18 @@ class HomeProvider extends BaseProvider {
   }) async {
     await super.operate(() async {
       if (selectedProject != null) {
-        var model = TaskModel(
+        var response = await _taskRepo.updateTask(
           id: id,
           name: name,
           value: value,
-          description: description,
-          fkProjectId: selectedProject!,
-          fkStepId: stepId,
+          projectId: selectedProject!,
+          stepId: stepId,
         );
-        await _taskServices.update(model);
-
-        if (_tasks[stepId] != null) {
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else if (_tasks[stepId] != null) {
           var targetIndex = _tasks[stepId]!.indexWhere((task) => task.id == id);
-          _tasks[stepId]![targetIndex] = model;
+          _tasks[stepId]![targetIndex] = response.data!;
         }
       }
     });
@@ -238,10 +258,14 @@ class HomeProvider extends BaseProvider {
 
   Future<void> deleteTask(String id, String stepId) async {
     await super.operate(() async {
-      await _taskServices.hardDelete(id);
-      if (_tasks[stepId] != null) {
-        var targetIndex = _tasks[stepId]!.indexWhere((task) => task.id == id);
-        _tasks[stepId]!.removeAt(targetIndex);
+      var response = await _taskRepo.deleteTask(id);
+      if (response.hasError) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        if (_tasks[stepId] != null) {
+          var targetIndex = _tasks[stepId]!.indexWhere((task) => task.id == id);
+          _tasks[stepId]!.removeAt(targetIndex);
+        }
       }
     });
   }
