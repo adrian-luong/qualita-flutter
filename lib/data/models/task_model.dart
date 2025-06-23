@@ -4,7 +4,7 @@ class TaskModel extends PositionalModel {
   final String name;
   final String? description;
   int value;
-  final String fkStepId;
+  String fkStepId;
   final String fkProjectId;
 
   TaskModel({
@@ -20,11 +20,21 @@ class TaskModel extends PositionalModel {
   factory TaskModel.fromMap(Map<String, dynamic> map) => TaskModel(
     id: map['id'] as String,
     name: map['name'] as String,
-    description: map['description'] as String,
+    description: map['description'],
     value: map['value'] as int,
     position: map['position'] as int,
     fkProjectId: map['fk_project_id'] as String,
     fkStepId: map['fk_step_id'] as String,
+  );
+
+  factory TaskModel.clone(TaskModel model) => TaskModel(
+    id: model.id,
+    name: model.name,
+    description: model.description,
+    value: model.value,
+    position: model.position,
+    fkProjectId: model.fkProjectId,
+    fkStepId: model.fkStepId,
   );
 
   @override
