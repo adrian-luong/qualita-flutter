@@ -49,9 +49,6 @@ class _FormState extends State<SignupForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Sign-up form'),
-            const SizedBox(height: 40),
-
             TextFormField(
               controller: _controller.username,
               decoration: InputDecoration(

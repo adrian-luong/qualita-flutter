@@ -46,7 +46,6 @@ class _FormState extends State<SigninForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Sign-in form'),
             const SizedBox(height: 40),
 
             TextFormField(
