@@ -74,10 +74,10 @@ class _PanelState extends State<StepPanel> {
                       ),
             ),
             SizedBox(width: 32),
-            IconButton(
+            TextButton(
               onPressed:
                   () => provider.editStep(!isEditing ? widget.step.id : null),
-              icon: Icon(!isEditing ? Icons.edit : Icons.edit_off),
+              child: Icon(!isEditing ? Icons.edit : Icons.edit_off),
             ),
           ],
         ),
