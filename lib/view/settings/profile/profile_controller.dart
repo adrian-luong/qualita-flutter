@@ -11,4 +11,13 @@ class ProfileController {
       return e.toString();
     }
   }
+
+  Future<String> changePassword(String newPassword) async {
+    try {
+      await _services.changePassword(newPassword);
+      return 'OK';
+    } catch (e) {
+      return e.toString();
+    }
+  }
 }

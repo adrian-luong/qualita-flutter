@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/view/common/common_layout.dart';
 import 'package:qualita/view/settings/appearance_settings.dart';
-import 'package:qualita/view/settings/profile_settings.dart';
+import 'package:qualita/view/settings/profile/profile_settings.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});

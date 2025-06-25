@@ -38,6 +38,18 @@ class AuthServices {
     await _auth.resetPasswordForEmail(email);
   }
 
+  Future<void> changePassword(String newPassword) async {
+    final response = await _auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+    final User? updatedUser = response.user;
+    if (updatedUser == null) {
+      throw Exception(
+        'Failed to update password. User not found or not authenticated.',
+      );
+    }
+  }
+
   Future<void> signout() async {
     await _auth.signOut();
   }
