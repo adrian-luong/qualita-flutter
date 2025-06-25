@@ -31,7 +31,7 @@ If you have already installed the Flutter and its plugin, a command to install n
 flutter pub get
 ```
 
-Then, you can use the plugin to run Qualita in your local machine.
+Then, you can use the installed plugin to run Qualita in your IDE.
 
 ## FAQ
 
@@ -49,7 +49,7 @@ Then, you can use the plugin to run Qualita in your local machine.
 
 ### What are the differences between Personal and Proffesional Qualita?
 
-- Proffesional edition would contains all Personal one's features, as well as:
+- Professional edition would contains all Personal one's features, as well as:
   - User roles, group and member management.
   - Internal messaging system, including group messages.
   - Overall supports for media and email, meaning you would be able to send files
@@ -59,5 +59,5 @@ For other questions, please contact the author [Adrian Luong](https://www.github
 ## Contributing
 
 Contributions are always welcome!
-See `contributing.md` for ways to get started.
+Once it is finished, see `contributing.md` for ways to get started.
 Please adhere to this project's `code of conduct`.
