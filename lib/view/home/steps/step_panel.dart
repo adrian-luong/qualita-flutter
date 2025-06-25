@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qualita/data/models/step_model.dart';
 import 'package:qualita/data/providers/home_provider.dart';
+import 'package:qualita/data/providers/settings_provider.dart';
 
 class StepPanel extends StatefulWidget {
   final StepModel step;
@@ -24,6 +25,7 @@ class _PanelState extends State<StepPanel> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<HomeProvider>(context);
+    final settings = Provider.of<SettingsProvider>(context);
     var isEditing =
         provider.selectedStep == widget.step.id &&
         provider.selectedStep != null;
@@ -32,7 +34,7 @@ class _PanelState extends State<StepPanel> {
     return Container(
       width: 300,
       height: 50,
-      color: Colors.grey[200],
+      color: settings.isDarkMode() ? Colors.grey[800] : Colors.grey[300],
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -45,6 +47,10 @@ class _PanelState extends State<StepPanel> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color:
+                              settings.isDarkMode()
+                                  ? Colors.white
+                                  : Colors.black,
                         ),
                       )
                       : TextField(
@@ -52,6 +58,10 @@ class _PanelState extends State<StepPanel> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color:
+                              settings.isDarkMode()
+                                  ? Colors.white
+                                  : Colors.black,
                         ),
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.only(bottom: 8),

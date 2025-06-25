@@ -21,4 +21,6 @@ class SettingsProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  bool isDarkMode() => _mode == Brightness.dark;
 }
