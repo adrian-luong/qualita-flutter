@@ -36,4 +36,16 @@ class BaseRepository {
     }
     return response;
   }
+
+  Future<QueryResponse> returnNone(Future Function() query) async {
+    var response = QueryResponse();
+    try {
+      await query();
+      response.message = 'OK';
+    } catch (e) {
+      response.hasError = true;
+      response.message = e.toString();
+    }
+    return response;
+  }
 }
