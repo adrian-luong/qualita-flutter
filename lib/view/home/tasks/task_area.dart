@@ -52,13 +52,10 @@ class _AreaState extends State<TaskArea> {
               ),
           builder: (context, candidateData, rejectedData) {
             bool isHovering = candidateData.isNotEmpty;
-            Color borderColor =
-                isHovering ? Colors.blueAccent : Colors.transparent;
+            Color borderColor = isHovering ? Colors.blueAccent : Colors.grey;
             double borderWidth = isHovering ? 3.0 : 1.0;
             Color? bgColor =
-                isHovering
-                    ? Colors.blue.withValues(alpha: 0.1)
-                    : Colors.grey[200];
+                isHovering ? Colors.blue.withValues(alpha: 0.1) : null;
 
             return Container(
               width: 300,
