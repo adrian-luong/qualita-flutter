@@ -25,13 +25,16 @@ class _ItemState extends State<TaskItem> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              Text(widget.task.name, style: TextStyle(color: Colors.white)),
-              IconButton(
+              Text(
+                '${widget.task.name} (+${widget.task.value}) ',
+                style: TextStyle(color: Colors.white),
+              ),
+              TextButton(
                 onPressed:
                     () => displayDialog(context, [
                       TaskForm(task: widget.task, formMode: FormTypes.edit),
                     ]),
-                icon: Icon(Icons.edit),
+                child: Icon(Icons.edit),
               ),
             ],
           ),
