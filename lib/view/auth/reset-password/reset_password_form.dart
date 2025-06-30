@@ -51,9 +51,6 @@ class _FormState extends State<ResetPasswordForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Reset password form'),
-            const SizedBox(height: 40),
-
             TextFormField(
               controller: _controller.email,
               decoration: InputDecoration(

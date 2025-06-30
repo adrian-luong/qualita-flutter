@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/global_keys.dart';
 import 'package:qualita/view/home/home_page.dart';
+import 'package:qualita/view/settings/settings_page.dart';
 
 class CommonLayout extends StatelessWidget {
   final Widget body;
@@ -39,12 +40,7 @@ class CommonLayout extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
-              onTap: () => navigate(HomePage()),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Profile'),
-              onTap: () => navigate(HomePage()),
+              onTap: () => navigate(SettingsPage()),
             ),
           ],
         ),

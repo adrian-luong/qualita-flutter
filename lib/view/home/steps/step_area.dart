@@ -63,20 +63,17 @@ class _AreaState extends State<StepArea> {
           scrollDirection: Axis.horizontal,
           footer: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Container(
-              color: Colors.grey[200],
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: IconButton(
-                      onPressed: () => displayDialog(context, [AddStepForm()]),
-                      icon: Icon(Icons.add_box_outlined),
-                      selectedIcon: Icon(Icons.add_box),
-                    ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: IconButton(
+                    onPressed: () => displayDialog(context, [AddStepForm()]),
+                    icon: Icon(Icons.add_box_outlined),
+                    selectedIcon: Icon(Icons.add_box),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           onReorder: (oldIndex, newIndex) async {

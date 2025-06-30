@@ -5,7 +5,7 @@ import 'package:qualita/global_keys.dart';
 import 'package:qualita/utils/query_responses.dart';
 
 class ProjectRepository extends BaseRepository {
-  Future<MultipleDataResponse<ProjectModel>> fetch() async {
+  Future<MultipleDataResponse<ProjectModel>> fetchProjects() async {
     return await returnMany(() async {
       var user = getCurrentUser();
       if (user == null) {
@@ -15,7 +15,7 @@ class ProjectRepository extends BaseRepository {
     });
   }
 
-  Future<SingleDataResponse<ProjectModel>> add({
+  Future<SingleDataResponse<ProjectModel>> addProject({
     required String name,
     String? description,
   }) async {

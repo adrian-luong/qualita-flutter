@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:qualita/data/providers/settings_provider.dart';
 
 class AuthLayout extends StatelessWidget {
   final Widget body;
@@ -7,11 +9,18 @@ class AuthLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<SettingsProvider>(context);
+    var displayIcon =
+        provider.colorMode == Brightness.light
+            ? Icons.light_mode
+            : Icons.dark_mode;
+
     return Scaffold(
       appBar: AppBar(
+        actionsPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.sunny)),
-          TextButton(onPressed: () {}, child: Text('English')),
+          IconButton(onPressed: provider.switchMode, icon: Icon(displayIcon)),
+          // TextButton(onPressed: () {}, child: Text('English')),
         ],
       ),
       body: SafeArea(
@@ -20,6 +29,7 @@ class AuthLayout extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Center(child: Text('Qualita', style: TextStyle(fontSize: 20))),
+              const SizedBox(height: 40),
               body,
               if (textNavigations != null) textNavigations!,
             ],
