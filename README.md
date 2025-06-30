@@ -1,6 +1,6 @@
 # Qualita
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/) [![Qualita](https://img.shields.io/badge/Versison-1.0.0-blue)](https://github.com/adrian-luong/qualita-flutter)
 
 Qualita is a task management application, available for web and eventually Windows and Android, designed for personal usage and growth. Specifically:
     ***Managing** different personal projects and tasks, tracking their progression via steps.
