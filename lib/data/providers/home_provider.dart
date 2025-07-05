@@ -1,18 +1,12 @@
-import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/models/step_model.dart';
 import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/base_provider.dart';
-import 'package:qualita/data/repositories/project_repository.dart';
 import 'package:qualita/data/repositories/step_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
 
 class HomeProvider extends BaseProvider {
-  final _projectRepo = ProjectRepository();
   final _stepRepo = StepRepository();
   final _taskRepo = TaskRepository();
-
-  List<ProjectModel> _projects = [];
-  List<ProjectModel> get projects => _projects;
   String? selectedProject;
 
   List<StepModel> _steps = [];
@@ -21,11 +15,6 @@ class HomeProvider extends BaseProvider {
 
   final Map<String, List<TaskModel>> _tasks = {};
   Map<String, List<TaskModel>> get tasks => _tasks;
-
-  // Constructor to fetch initial data
-  HomeProvider() {
-    fetchProjects();
-  }
 
   void selectProject(String? id) {
     selectedProject = id;
@@ -38,31 +27,6 @@ class HomeProvider extends BaseProvider {
   void editStep(String? id) {
     selectedStep = id;
     notifyListeners();
-  }
-
-  Future<void> fetchProjects() async {
-    await operate(() async {
-      var response = await _projectRepo.fetchProjects();
-      if (response.hasError) {
-        throw Exception(response.message ?? 'Unexpected error');
-      } else {
-        _projects = response.data;
-      }
-    });
-  }
-
-  Future<void> addProject({required String name, String? description}) async {
-    await operate(() async {
-      var response = await _projectRepo.addProject(
-        name: name,
-        description: description,
-      );
-      if (response.hasError || response.data == null) {
-        throw Exception(response.message ?? 'Unexpected error');
-      } else {
-        _projects.add(response.data!); // Add the new todo to the local list
-      }
-    });
   }
 
   Future<void> fetchSteps() async {

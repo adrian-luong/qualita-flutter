@@ -5,24 +5,19 @@ import 'package:qualita/view/settings/settings_page.dart';
 
 class CommonLayout extends StatelessWidget {
   final Widget body;
-  final _controller = TextEditingController();
-  CommonLayout({super.key, required this.body});
+  final Widget? floatCTA;
+  final PreferredSizeWidget? tabBar;
+  const CommonLayout({
+    super.key,
+    required this.body,
+    this.tabBar,
+    this.floatCTA,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _controller,
-          decoration: InputDecoration(
-            hintText: "Search...",
-            suffixIcon: Icon(Icons.search),
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.grey),
-          ),
-          onChanged: (value) => {},
-        ),
-      ),
+      appBar: AppBar(title: Text('Qualita'), bottom: tabBar),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -46,6 +41,7 @@ class CommonLayout extends StatelessWidget {
         ),
       ),
       body: body,
+      floatingActionButton: floatCTA,
     );
   }
 }
