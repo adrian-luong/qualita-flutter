@@ -1,0 +1,12 @@
+# Changelog
+
+## 0.0.1 (June 25th, 2025) - Albuquerque
+
+* Initial public release with **web** pages:
+* Home: managing projects, steps and tasks
+  * Projects: selecting, adding new project.
+  * Steps: reordering, adding new step, renaming step.
+  * Tasks: reordering, moving a task between steps, adding and editing a task.
+* Settings: customizable options for better usage
+  * UI: changing application dark/light mode.
+  * Profile: changing password and logging out.
