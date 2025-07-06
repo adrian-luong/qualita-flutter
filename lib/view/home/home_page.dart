@@ -3,9 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/data/providers/project_provider.dart';
 import 'package:qualita/view/common/custom_consumer.dart';
-import 'package:qualita/utils/display_dialog.dart';
 import 'package:qualita/view/common/common_layout.dart';
-import 'package:qualita/view/home/projects/add_project_form.dart';
 import 'package:qualita/view/home/steps/step_area.dart';
 
 class HomePage extends StatefulWidget {
@@ -49,15 +47,6 @@ class _TabState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   @override
-  void initState() {
-    super.initState();
-    // Initially fetch projects, which would be made into tabs
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProjectProvider>(context, listen: false).fetchProjects();
-    });
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // This is a good place to re-initialize or update the TabController if the data it depends on changes.
@@ -74,10 +63,13 @@ class _TabState extends State<HomePage> with TickerProviderStateMixin {
 
     if (newLength > 0 && _controller == null) {
       remakeController(newLength);
-      // Optional: If you want to select the first tab when data changes
+      // Select the first tab when data changes
       _controller!.index = 0;
-      final firstTab = projectProvider.projects.first;
-      homeProvider.selectProject(firstTab.id);
+      // The update of selectedProject absolutely must happen after the first frame has been rendered
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final firstTab = projectProvider.projects.first;
+        homeProvider.selectProject(firstTab.id);
+      });
     }
   }
 
@@ -126,10 +118,6 @@ class _TabState extends State<HomePage> with TickerProviderStateMixin {
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
             child: TabBarView(controller: _controller, children: views),
-          ),
-          floatCTA: FloatingActionButton(
-            onPressed: () => displayDialog(context, [AddProjectForm()]),
-            child: const Icon(Icons.add),
           ),
         );
       },

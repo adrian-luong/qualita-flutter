@@ -56,13 +56,13 @@ class _FormState extends State<AddStepForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Add project form', style: TextStyle(fontSize: 20)),
+            Text('Add step form', style: TextStyle(fontSize: 20)),
             const SizedBox(height: 40),
 
             TextFormField(
               controller: _name,
               decoration: InputDecoration(
-                label: Text('Project title'),
+                label: Text('Step name'),
                 border: OutlineInputBorder(),
               ),
             ),
