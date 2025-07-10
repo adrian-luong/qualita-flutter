@@ -147,6 +147,46 @@ class HomeProvider extends BaseProvider {
     });
   }
 
+  Future<void> pinTask(TaskModel task) async {
+    await super.operate(() async {
+      if (_tasks[task.fkStepId] != null) {
+        var response = await _taskRepo.reorderTask(
+          oldPosition: task.position,
+          newPosition: 0,
+          taskList: _tasks[task.fkStepId]!,
+          isPinning: true,
+        );
+        if (response.hasError || response.data.isEmpty) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          _tasks[task.fkStepId] = response.data;
+        }
+      }
+    });
+  }
+
+  Future<void> unpinTask(String taskId, String stepId) async {
+    await super.operate(() async {
+      if (_tasks[stepId] != null) {
+        var theTask = _tasks[stepId]!.firstWhere((task) => task.id == taskId);
+        theTask.isPinned = false;
+
+        var response = await _taskRepo.updateTask(
+          id: theTask.id!,
+          name: theTask.name,
+          value: theTask.value,
+          projectId: theTask.fkProjectId,
+          stepId: theTask.fkStepId,
+          isPinned: theTask.isPinned,
+        );
+
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        }
+      }
+    });
+  }
+
   Future<void> restepTask({
     required TaskModel task,
     required String newStepId,
