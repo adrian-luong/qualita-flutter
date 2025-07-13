@@ -4,6 +4,7 @@ import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/data/providers/project_provider.dart';
 import 'package:qualita/view/common/custom_consumer.dart';
 import 'package:qualita/view/common/common_layout.dart';
+import 'package:qualita/view/home/search_area.dart';
 import 'package:qualita/view/home/steps/step_area.dart';
 
 class HomePage extends StatefulWidget {
@@ -111,7 +112,19 @@ class _TabState extends State<HomePage> with TickerProviderStateMixin {
             provider.projects
                 .map((project) => Tab(text: project.name))
                 .toList();
-        var views = provider.projects.map((project) => StepArea()).toList();
+        var views =
+            provider.projects
+                .map(
+                  (project) => Column(
+                    children: [
+                      SizedBox(height: 16),
+                      SearchArea(),
+                      SizedBox(height: 16),
+                      StepArea(),
+                    ],
+                  ),
+                )
+                .toList();
 
         return CommonLayout(
           tabBar: TabBar(controller: _controller, tabs: tabs),

@@ -52,36 +52,38 @@ class _AreaState extends State<StepArea> {
                           stepAmount: provider.steps.length,
                         ),
                         SizedBox(height: 16),
-                        TaskArea(stepId: step.id!),
+                        Expanded(child: TaskArea(stepId: step.id!)),
                       ],
                     ),
                   ),
                 )
                 .toList();
 
-        return ReorderableListView(
-          scrollDirection: Axis.horizontal,
-          footer: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: IconButton(
-                    onPressed: () => displayDialog(context, [AddStepForm()]),
-                    icon: Icon(Icons.add_box_outlined),
-                    selectedIcon: Icon(Icons.add_box),
+        return Expanded(
+          child: ReorderableListView(
+            scrollDirection: Axis.horizontal,
+            footer: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: IconButton(
+                      onPressed: () => displayDialog(context, [AddStepForm()]),
+                      icon: Icon(Icons.add_box_outlined),
+                      selectedIcon: Icon(Icons.add_box),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            onReorder: (oldIndex, newIndex) async {
+              if (mounted) {
+                await provider.reorderStep(oldIndex, newIndex);
+              }
+            },
+            children: panels,
           ),
-          onReorder: (oldIndex, newIndex) async {
-            if (mounted) {
-              await provider.reorderStep(oldIndex, newIndex);
-            }
-          },
-          children: panels,
         );
       },
     );
