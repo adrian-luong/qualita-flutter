@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/global_keys.dart';
+import 'package:qualita/view/home/projects/project_select.dart';
 import 'package:qualita/view/home/home_page.dart';
 import 'package:qualita/view/settings/settings_page.dart';
 
@@ -16,8 +17,17 @@ class CommonLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = ColorScheme.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: Text('Qualita'), bottom: tabBar),
+      appBar: AppBar(
+        title: ProjectSelect(),
+        centerTitle: true,
+        bottom: tabBar,
+        toolbarHeight: 100,
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
+      ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
