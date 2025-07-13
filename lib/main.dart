@@ -41,10 +41,12 @@ class MainApplication extends StatelessWidget {
       navigatorKey: navigator,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
+          seedColor: Colors.blueAccent,
           brightness: provider.colorMode,
+          primary: Colors.blueAccent,
         ),
         textTheme: TextTheme(),
+        useMaterial3: true,
       ),
       home: SplashScreen(),
     );

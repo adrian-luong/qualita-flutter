@@ -7,10 +7,12 @@ class TaskRepository extends BaseRepository {
   Future<MultipleDataResponse<TaskModel>> fetchTasks(
     String projectId,
     String stepId,
+    String? term,
   ) async {
-    return await returnMany(
-      () async => await taskServices.getByProjectStep(projectId, stepId),
-    );
+    return await returnMany(() async {
+      var many = await taskServices.getByProjectStep(projectId, stepId, term);
+      return many;
+    });
   }
 
   Future<SingleDataResponse<TaskModel>> addTask({
@@ -37,6 +39,7 @@ class TaskRepository extends BaseRepository {
     required int oldPosition,
     required int newPosition,
     required List<TaskModel> taskList,
+    bool isPinning = false,
   }) async {
     return await returnMany(() async {
       List<TaskModel> newOrder = reorder(
@@ -44,6 +47,17 @@ class TaskRepository extends BaseRepository {
         newPosition: newPosition,
         oldOrder: taskList,
       );
+
+      // In case of pinning a task, the pinned task should be the only one which isPinned = True
+      // This is temporary until allowable-pinned-tasks setting is available
+      // Also, newPosition is always 0 (the first task to be rendered in the list)
+      if (isPinning) {
+        newOrder[newPosition].isPinned = true;
+        for (var item in newOrder.sublist(1)) {
+          item.isPinned = false;
+        }
+      }
+
       await taskServices.reposition(newOrder);
       return newOrder;
     });
@@ -69,6 +83,7 @@ class TaskRepository extends BaseRepository {
     required String name,
     required int value,
     String? description,
+    bool isPinned = false,
     required String projectId,
     required String stepId,
   }) async {
@@ -77,6 +92,7 @@ class TaskRepository extends BaseRepository {
         id: id,
         name: name,
         value: value,
+        isPinned: isPinned,
         description: description,
         fkProjectId: projectId,
         fkStepId: stepId,

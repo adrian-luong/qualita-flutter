@@ -7,6 +7,10 @@ class ProjectProvider extends BaseProvider {
   List<ProjectModel> _projects = [];
   List<ProjectModel> get projects => _projects;
 
+  ProjectProvider() {
+    fetchProjects();
+  }
+
   Future<void> fetchProjects() async {
     await operate(() async {
       var response = await _repo.fetchProjects();

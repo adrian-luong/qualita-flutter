@@ -7,13 +7,24 @@ class TaskServices extends BaseServices<TaskModel> {
   Future<List<TaskModel>> getByProjectStep(
     String projectId,
     String stepId,
+    String? term,
   ) async {
     try {
-      final response = await db
-          .from(table)
-          .select()
-          .eq('fk_project_id', projectId)
-          .eq('fk_step_id', stepId);
+      List<Map<String, dynamic>> response;
+      if (term != null && term.trim() != '') {
+        response = await db
+            .from(table)
+            .select()
+            .eq('fk_project_id', projectId)
+            .eq('fk_step_id', stepId)
+            .textSearch('name', term);
+      } else {
+        response = await db
+            .from(table)
+            .select()
+            .eq('fk_project_id', projectId)
+            .eq('fk_step_id', stepId);
+      }
       return response.map((map) => TaskModel.fromMap(map)).toList();
     } catch (e) {
       throw Exception(
