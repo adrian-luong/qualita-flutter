@@ -5,6 +5,7 @@ class TaskModel extends PositionalModel {
   final String? description;
   int value;
   String fkStepId;
+  bool isPinned;
   final String fkProjectId;
 
   TaskModel({
@@ -13,6 +14,7 @@ class TaskModel extends PositionalModel {
     this.value = 1,
     super.position,
     this.description,
+    this.isPinned = false,
     required this.fkProjectId,
     required this.fkStepId,
   });
@@ -23,6 +25,7 @@ class TaskModel extends PositionalModel {
     description: map['description'],
     value: map['value'] as int,
     position: map['position'] as int,
+    isPinned: map['is_pinned'] != null ? map['is_pinned'] as bool : false,
     fkProjectId: map['fk_project_id'] as String,
     fkStepId: map['fk_step_id'] as String,
   );
@@ -33,6 +36,7 @@ class TaskModel extends PositionalModel {
     description: model.description,
     value: model.value,
     position: model.position,
+    isPinned: model.isPinned,
     fkProjectId: model.fkProjectId,
     fkStepId: model.fkStepId,
   );
@@ -43,6 +47,7 @@ class TaskModel extends PositionalModel {
     'description': description,
     'value': value,
     'position': position,
+    'is_pinned': isPinned,
     'fk_project_id': fkProjectId,
     'fk_step_id': fkStepId,
   };

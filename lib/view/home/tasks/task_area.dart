@@ -59,7 +59,7 @@ class _AreaState extends State<TaskArea> {
 
             return Container(
               width: 300,
-              height: 400,
+              height: 500,
               decoration: BoxDecoration(
                 color: bgColor,
                 border: Border.all(color: borderColor, width: borderWidth),

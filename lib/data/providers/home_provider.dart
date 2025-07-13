@@ -7,11 +7,13 @@ import 'package:qualita/data/repositories/task_repository.dart';
 class HomeProvider extends BaseProvider {
   final _stepRepo = StepRepository();
   final _taskRepo = TaskRepository();
+
   String? selectedProject;
+  String? selectedStep;
 
   List<StepModel> _steps = [];
   List<StepModel> get steps => _steps;
-  String? selectedStep;
+  List<String> _projectSteps = [];
 
   final Map<String, List<TaskModel>> _tasks = {};
   Map<String, List<TaskModel>> get tasks => _tasks;
@@ -38,19 +40,10 @@ class HomeProvider extends BaseProvider {
           throw Exception(fetchStepResult.message ?? 'Unexpected error');
         } else {
           _steps = fetchStepResult.data;
-        }
+          _projectSteps = fetchStepResult.data.map((step) => step.id!).toList();
 
-        // Get tasks for each steps
-        for (var step in fetchStepResult.data) {
-          final fetchTaskResult = await _taskRepo.fetchTasks(
-            selectedProject!,
-            step.id!,
-          );
-          if (fetchTaskResult.hasError) {
-            throw Exception(fetchTaskResult.message ?? 'Unexpected error');
-          } else {
-            _tasks[step.id!] = fetchTaskResult.data;
-          }
+          // Get tasks for each steps
+          await fetchTasks(null);
         }
       }
     });
@@ -102,6 +95,24 @@ class HomeProvider extends BaseProvider {
     });
   }
 
+  Future<void> fetchTasks(String? searchTerm) async {
+    if (_projectSteps.isNotEmpty) {
+      for (var step in _projectSteps) {
+        final fetchTaskResult = await _taskRepo.fetchTasks(
+          selectedProject!,
+          step,
+          searchTerm,
+        );
+        if (fetchTaskResult.hasError) {
+          throw Exception(fetchTaskResult.message ?? 'Unexpected error');
+        } else {
+          _tasks[step] = fetchTaskResult.data;
+        }
+      }
+      notifyListeners();
+    }
+  }
+
   Future<void> addTask({
     required String name,
     required int value,
@@ -142,6 +153,46 @@ class HomeProvider extends BaseProvider {
           throw Exception(response.message ?? 'Unexpected error');
         } else {
           _tasks[stepId] = response.data;
+        }
+      }
+    });
+  }
+
+  Future<void> pinTask(TaskModel task) async {
+    await super.operate(() async {
+      if (_tasks[task.fkStepId] != null) {
+        var response = await _taskRepo.reorderTask(
+          oldPosition: task.position,
+          newPosition: 0,
+          taskList: _tasks[task.fkStepId]!,
+          isPinning: true,
+        );
+        if (response.hasError || response.data.isEmpty) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          _tasks[task.fkStepId] = response.data;
+        }
+      }
+    });
+  }
+
+  Future<void> unpinTask(String taskId, String stepId) async {
+    await super.operate(() async {
+      if (_tasks[stepId] != null) {
+        var theTask = _tasks[stepId]!.firstWhere((task) => task.id == taskId);
+        theTask.isPinned = false;
+
+        var response = await _taskRepo.updateTask(
+          id: theTask.id!,
+          name: theTask.name,
+          value: theTask.value,
+          projectId: theTask.fkProjectId,
+          stepId: theTask.fkStepId,
+          isPinned: theTask.isPinned,
+        );
+
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
         }
       }
     });
