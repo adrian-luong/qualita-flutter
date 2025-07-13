@@ -7,11 +7,13 @@ import 'package:qualita/data/repositories/task_repository.dart';
 class HomeProvider extends BaseProvider {
   final _stepRepo = StepRepository();
   final _taskRepo = TaskRepository();
+
   String? selectedProject;
+  String? selectedStep;
 
   List<StepModel> _steps = [];
   List<StepModel> get steps => _steps;
-  String? selectedStep;
+  List<String> _projectSteps = [];
 
   final Map<String, List<TaskModel>> _tasks = {};
   Map<String, List<TaskModel>> get tasks => _tasks;
@@ -38,19 +40,10 @@ class HomeProvider extends BaseProvider {
           throw Exception(fetchStepResult.message ?? 'Unexpected error');
         } else {
           _steps = fetchStepResult.data;
-        }
+          _projectSteps = fetchStepResult.data.map((step) => step.id!).toList();
 
-        // Get tasks for each steps
-        for (var step in fetchStepResult.data) {
-          final fetchTaskResult = await _taskRepo.fetchTasks(
-            selectedProject!,
-            step.id!,
-          );
-          if (fetchTaskResult.hasError) {
-            throw Exception(fetchTaskResult.message ?? 'Unexpected error');
-          } else {
-            _tasks[step.id!] = fetchTaskResult.data;
-          }
+          // Get tasks for each steps
+          await fetchTasks(null);
         }
       }
     });
@@ -100,6 +93,24 @@ class HomeProvider extends BaseProvider {
         _steps = response.data;
       }
     });
+  }
+
+  Future<void> fetchTasks(String? searchTerm) async {
+    if (_projectSteps.isNotEmpty) {
+      for (var step in _projectSteps) {
+        final fetchTaskResult = await _taskRepo.fetchTasks(
+          selectedProject!,
+          step,
+          searchTerm,
+        );
+        if (fetchTaskResult.hasError) {
+          throw Exception(fetchTaskResult.message ?? 'Unexpected error');
+        } else {
+          _tasks[step] = fetchTaskResult.data;
+        }
+      }
+      notifyListeners();
+    }
   }
 
   Future<void> addTask({

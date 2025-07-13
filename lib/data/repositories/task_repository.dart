@@ -7,10 +7,12 @@ class TaskRepository extends BaseRepository {
   Future<MultipleDataResponse<TaskModel>> fetchTasks(
     String projectId,
     String stepId,
+    String? term,
   ) async {
-    return await returnMany(
-      () async => await taskServices.getByProjectStep(projectId, stepId),
-    );
+    return await returnMany(() async {
+      var many = await taskServices.getByProjectStep(projectId, stepId, term);
+      return many;
+    });
   }
 
   Future<SingleDataResponse<TaskModel>> addTask({
