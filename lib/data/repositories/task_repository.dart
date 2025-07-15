@@ -1,7 +1,7 @@
 import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/repositories/base_repository.dart';
 import 'package:qualita/utils/common_functions.dart';
-import 'package:qualita/utils/query_responses.dart';
+import 'package:qualita/data/query_responses.dart';
 
 class TaskRepository extends BaseRepository {
   Future<MultipleDataResponse<TaskModel>> fetchTasks(

@@ -1,13 +1,12 @@
 import 'package:qualita/data/models/base_model.dart';
 
 class ProjectModel extends BaseModel {
-  final String name;
   final String? description;
   final String fkUserId;
 
   ProjectModel({
     super.id,
-    required this.name,
+    required super.name,
     required this.description,
     required this.fkUserId,
   });

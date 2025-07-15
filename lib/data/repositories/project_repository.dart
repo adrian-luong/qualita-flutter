@@ -2,7 +2,7 @@ import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/models/step_model.dart';
 import 'package:qualita/data/repositories/base_repository.dart';
 import 'package:qualita/global_keys.dart';
-import 'package:qualita/utils/query_responses.dart';
+import 'package:qualita/data/query_responses.dart';
 
 class ProjectRepository extends BaseRepository {
   Future<MultipleDataResponse<ProjectModel>> fetchProjects() async {
