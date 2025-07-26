@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/view/common/common_layout.dart';
+import 'package:qualita/view/home/projects/project_settings.dart';
 import 'package:qualita/view/home/search_area.dart';
 import 'package:qualita/view/home/steps/step_area.dart';
 
@@ -14,10 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _PageState extends State<HomePage> {
   int _selectedTab = 0;
-  final actualBodies = const [
-    StepArea(),
-    Center(child: Text('Project settings')),
-  ];
+  final actualBodies = const [StepArea(), ProjectSettings()];
 
   @override
   Widget build(BuildContext context) {

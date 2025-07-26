@@ -1,12 +1,15 @@
 import 'package:qualita/data/models/step_model.dart';
+import 'package:qualita/data/models/tag_model.dart';
 import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/base_provider.dart';
 import 'package:qualita/data/repositories/step_repository.dart';
+import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
 
 class HomeProvider extends BaseProvider {
   final _stepRepo = StepRepository();
   final _taskRepo = TaskRepository();
+  final _tagRepo = TagRepository();
 
   String? selectedProject;
   String? selectedStep;
@@ -18,10 +21,14 @@ class HomeProvider extends BaseProvider {
   final Map<String, List<TaskModel>> _tasks = {};
   Map<String, List<TaskModel>> get tasks => _tasks;
 
+  List<TagModel> _tags = [];
+  List<TagModel> get tags => _tags;
+
   void selectProject(String? id) {
     selectedProject = id;
     if (selectedProject != null) {
       fetchSteps();
+      fetchTags();
     }
     notifyListeners();
   }
@@ -280,6 +287,19 @@ class HomeProvider extends BaseProvider {
         if (_tasks[stepId] != null) {
           var targetIndex = _tasks[stepId]!.indexWhere((task) => task.id == id);
           _tasks[stepId]!.removeAt(targetIndex);
+        }
+      }
+    });
+  }
+
+  Future<void> fetchTags() async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var response = await _tagRepo.fetchTags(selectedProject!);
+        if (response.hasError) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          _tags = response.data;
         }
       }
     });
