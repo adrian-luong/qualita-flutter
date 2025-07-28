@@ -304,4 +304,56 @@ class HomeProvider extends BaseProvider {
       }
     });
   }
+
+  Future<void> addTag({required String name, String? description}) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var response = await _tagRepo.addTag(
+          name: name,
+          description: description,
+          projectId: selectedProject!,
+        );
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          _tags.add(response.data!);
+        }
+      }
+    });
+  }
+
+  Future<void> updateTag({
+    required String id,
+    required String name,
+    String? description,
+  }) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var response = await _tagRepo.updateTag(
+          id: id,
+          name: name,
+          description: description,
+          projectId: selectedProject!,
+        );
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          var targetIndex = _tags.indexWhere((tag) => tag.id == id);
+          _tags[targetIndex] = response.data!;
+        }
+      }
+    });
+  }
+
+  Future<void> deleteTag(String id) async {
+    await super.operate(() async {
+      var response = await _tagRepo.deleteTag(id);
+      if (response.hasError) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        var targetIndex = _tags.indexWhere((tag) => tag.id == id);
+        _tags.removeAt(targetIndex);
+      }
+    });
+  }
 }

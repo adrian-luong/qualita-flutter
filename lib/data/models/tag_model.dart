@@ -5,7 +5,7 @@ class TagModel extends BaseModel {
   String? description;
 
   TagModel({
-    required super.id,
+    super.id,
     required super.name,
     required this.fkProjectId,
     this.description,

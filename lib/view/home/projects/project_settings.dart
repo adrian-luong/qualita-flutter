@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qualita/data/providers/home_provider.dart';
+import 'package:qualita/global_keys.dart';
+import 'package:qualita/utils/common_types.dart';
+import 'package:qualita/utils/display_dialog.dart';
+import 'package:qualita/utils/empty_objects.dart';
+import 'package:qualita/view/home/tag_form.dart';
 
 class ProjectSettings extends StatefulWidget {
   const ProjectSettings({super.key});
@@ -42,7 +47,15 @@ class _SettingsState extends State<ProjectSettings> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed:
+                    () => displayDialog(context, [
+                      TagForm(
+                        formMode: FormTypes.create,
+                        tag: getEmptyTag(
+                          customProjectId: provider.selectedProject!,
+                        ),
+                      ),
+                    ]),
                 child: Text('Add new tag +'),
               ),
             ),
@@ -63,7 +76,39 @@ class _SettingsState extends State<ProjectSettings> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(''),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              onPressed:
+                                  () => displayDialog(context, [
+                                    TagForm(formMode: FormTypes.edit, tag: tag),
+                                  ]),
+                              icon: Icon(Icons.edit),
+                            ),
+                            IconButton(
+                              onPressed:
+                                  () => confirmDelete(context, 'Delete tag', () {
+                                    try {
+                                      provider.deleteTag(tag.id!);
+                                      displayMessage(
+                                        SnackBar(
+                                          content: Text(
+                                            'Tag ${tag.name} has been successfully deleted',
+                                          ),
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      displayMessage(
+                                        SnackBar(content: Text(e.toString())),
+                                      );
+                                    } finally {
+                                      popContext(); // Close the confirmation dialog
+                                    }
+                                  }),
+                              icon: Icon(Icons.delete),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
