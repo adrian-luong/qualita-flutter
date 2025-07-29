@@ -5,6 +5,7 @@ import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/global_keys.dart';
 import 'package:qualita/utils/common_types.dart';
 import 'package:qualita/utils/display_dialog.dart';
+import 'package:qualita/view/home/tag_select.dart';
 
 class TaskForm extends StatefulWidget {
   final FormTypes formMode;
@@ -124,6 +125,9 @@ class _FormState extends State<TaskForm> {
                 return null;
               },
             ),
+            const SizedBox(height: 30),
+
+            TagSelect(onPickingTags: (tags) {}),
             const SizedBox(height: 30),
 
             TextFormField(

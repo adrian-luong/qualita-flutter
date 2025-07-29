@@ -39,15 +39,12 @@ class MainApplication extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: messenger,
       navigatorKey: navigator,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blueAccent,
-          brightness: provider.colorMode,
-          primary: Colors.blueAccent,
-        ),
-        textTheme: TextTheme(),
-        useMaterial3: true,
-      ),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode:
+          provider.colorMode == Brightness.dark
+              ? ThemeMode.dark
+              : ThemeMode.system,
       home: SplashScreen(),
     );
   }
