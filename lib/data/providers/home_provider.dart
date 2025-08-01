@@ -103,6 +103,7 @@ class HomeProvider extends BaseProvider {
   }
 
   Future<void> fetchTasks(String? searchTerm) async {
+    await super.operate(() async {
     if (_projectSteps.isNotEmpty) {
       for (var step in _projectSteps) {
         final fetchTaskResult = await _taskRepo.fetchTasks(
@@ -116,8 +117,8 @@ class HomeProvider extends BaseProvider {
           _tasks[step] = fetchTaskResult.data;
         }
       }
-      notifyListeners();
     }
+    });
   }
 
   Future<void> addTask({

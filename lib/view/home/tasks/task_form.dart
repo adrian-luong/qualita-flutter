@@ -127,7 +127,7 @@ class _FormState extends State<TaskForm> {
             ),
             const SizedBox(height: 30),
 
-            TagSelect(onPickingTags: (tags) {}),
+            TagSelect(onPickingTags: (tags) {}, tags: widget.task.tags),
             const SizedBox(height: 30),
 
             TextFormField(

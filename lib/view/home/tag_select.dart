@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:multi_dropdown/multi_dropdown.dart';
+import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:provider/provider.dart';
-import 'package:qualita/data/models/tag_model.dart';
 import 'package:qualita/data/providers/home_provider.dart';
 
 class TagSelect extends StatefulWidget {
-  final void Function(List<TagModel> selected) onPickingTags;
-  const TagSelect({super.key, required this.onPickingTags});
+  final List<String> tags;
+  final void Function(List<String> selected) onPickingTags;
+  const TagSelect({super.key, required this.onPickingTags, required this.tags});
 
   @override
   State<StatefulWidget> createState() => _SelectState();
 }
 
 class _SelectState extends State<TagSelect> {
-  final controller = MultiSelectController<TagModel>();
-
   @override
   Widget build(BuildContext context) {
     final scheme = ColorScheme.of(context);
@@ -36,50 +37,34 @@ class _SelectState extends State<TagSelect> {
 
         var items =
             provider.tags
-                .map((tag) => DropdownItem(label: tag.name, value: tag))
+                .map((tag) => MultiSelectItem<String>(tag.id!, tag.name))
                 .toList();
-        return MultiDropdown<TagModel>(
-          items: items,
-          controller: controller,
-          enabled: true,
-          searchEnabled: true,
-          chipDecoration: ChipDecoration(
-            backgroundColor: scheme.primary,
-            wrap: true,
-            runSpacing: 2,
-            spacing: 10,
+        var preSelectedItems =
+            items.where((item) => widget.tags.contains(item.value)).toList();
+        return Container(
+          decoration: BoxDecoration(
+            color: scheme.surface,
+            border: BoxBorder.all(color: scheme.onSurface),
+            borderRadius: BorderRadiusGeometry.circular(4),
           ),
-          fieldDecoration: FieldDecoration(
-            hintText: 'Tag',
-            showClearIcon: true,
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: scheme.primary),
-            ),
-          ),
-          dropdownDecoration: DropdownDecoration(
-            backgroundColor: scheme.surface,
-            header: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Select tags for this task',
-                textAlign: TextAlign.start,
-                style: TextStyle(fontSize: 16),
-              ),
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: MultiSelectDialogField<String>(
+              items: items,
+              initialValue: preSelectedItems.map((item) => item.value).toList(),
+              listType: MultiSelectListType.CHIP,
+              chipDisplay: MultiSelectChipDisplay(items: items),
+              title: Text('Select tags for this task'),
+              buttonText: Text('Tag'),
+              onConfirm: (values) => widget.onPickingTags(values),
+              selectedColor: scheme.primary,
+              selectedItemsTextStyle: TextStyle(color: scheme.onSurface),
+              decoration: BoxDecoration(),
+              // searchable: true,
+              // searchHint: 'Select tags for this task',
+              // searchTextStyle: TextStyle(fontSize: 16),
             ),
           ),
-          dropdownItemDecoration: DropdownItemDecoration(
-            textColor: scheme.secondary,
-            selectedIcon: Icon(Icons.check_box, color: scheme.primary),
-            disabledIcon: Icon(Icons.lock),
-            selectedBackgroundColor: scheme.primary,
-            selectedTextColor: scheme.onPrimary,
-          ),
-          searchDecoration: SearchFieldDecoration(),
-          onSelectionChange:
-              (selectedItem) => widget.onPickingTags(selectedItem),
         );
       },
     );
