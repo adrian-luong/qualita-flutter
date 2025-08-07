@@ -56,7 +56,6 @@ class TaskModel extends PositionalModel {
     'is_pinned': isPinned,
     'fk_project_id': fkProjectId,
     'fk_step_id': fkStepId,
-    'tags': tags,
   };
 
   @override

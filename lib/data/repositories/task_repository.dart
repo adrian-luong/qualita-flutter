@@ -21,6 +21,7 @@ class TaskRepository extends BaseRepository {
     String? description,
     required String stepId,
     required String projectId,
+    required List<String> selectedTags,
   }) async {
     return await returnOne(() async {
       var model = TaskModel(
@@ -29,9 +30,17 @@ class TaskRepository extends BaseRepository {
         description: description,
         fkProjectId: projectId,
         fkStepId: stepId,
+        tags: selectedTags,
       );
-      await taskServices.insert(model);
-      return model;
+      var task = await taskServices.insert(model);
+
+      // Adding new tags
+      if (task.id != null) {
+        for (var tag in selectedTags) {
+          await tagServices.addTagToTask(task.id!, tag);
+        }
+      }
+      return task;
     });
   }
 
@@ -86,8 +95,27 @@ class TaskRepository extends BaseRepository {
     bool isPinned = false,
     required String projectId,
     required String stepId,
+    required List<String> newTags,
+    required List<String> currentTags,
   }) async {
     return await returnOne(() async {
+      if (newTags != currentTags) {
+        // Check for removal of tags
+        for (var currentTag in currentTags) {
+          if (!newTags.contains(currentTag)) {
+            await tagServices.removeTagFromTask(id, currentTag);
+          }
+        }
+
+        // Check for adding new tags
+        for (var newTag in newTags) {
+          if (!currentTags.contains(newTag)) {
+            await tagServices.addTagToTask(id, newTag);
+          }
+        }
+      }
+
+      // Update for other fields
       var model = TaskModel(
         id: id,
         name: name,
@@ -96,6 +124,7 @@ class TaskRepository extends BaseRepository {
         description: description,
         fkProjectId: projectId,
         fkStepId: stepId,
+        tags: newTags,
       );
       await taskServices.update(model);
       return model;
