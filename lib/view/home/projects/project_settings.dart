@@ -5,7 +5,7 @@ import 'package:qualita/global_keys.dart';
 import 'package:qualita/utils/common_types.dart';
 import 'package:qualita/utils/display_dialog.dart';
 import 'package:qualita/utils/empty_objects.dart';
-import 'package:qualita/view/home/tag_form.dart';
+import 'package:qualita/view/home/tags/tag_form.dart';
 
 class ProjectSettings extends StatefulWidget {
   const ProjectSettings({super.key});
