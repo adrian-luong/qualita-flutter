@@ -1,13 +1,15 @@
 import 'package:qualita/data/models/base_model.dart';
 import 'package:qualita/data/services/project_services.dart';
 import 'package:qualita/data/services/step_services.dart';
+import 'package:qualita/data/services/tag_services.dart';
 import 'package:qualita/data/services/task_services.dart';
-import 'package:qualita/utils/query_responses.dart';
+import 'package:qualita/data/query_responses.dart';
 
 class BaseRepository {
   final projectServices = ProjectServices();
   final stepServices = StepServices();
   final taskServices = TaskServices();
+  final tagServices = TagServices();
 
   Future<MultipleDataResponse<T>> returnMany<T extends BaseModel>(
     Future Function() query,

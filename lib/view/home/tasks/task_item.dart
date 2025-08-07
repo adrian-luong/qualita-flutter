@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:qualita/data/models/task_model.dart';
-import 'package:qualita/data/providers/home_provider.dart';
-import 'package:qualita/utils/common_types.dart';
-import 'package:qualita/utils/display_dialog.dart';
-import 'package:qualita/view/home/tasks/task_form.dart';
+import 'package:qualita/view/home/tasks/task_buttons.dart';
 
 class TaskItem extends StatefulWidget {
   final TaskModel task;
@@ -16,8 +12,6 @@ class TaskItem extends StatefulWidget {
 
 class _ItemState extends State<TaskItem> {
   Widget buildCard(BuildContext context, {Color? color}) {
-    final provider = Provider.of<HomeProvider>(context);
-
     return Card(
       margin: const EdgeInsets.all(8.0),
       color: color ?? Colors.blue,
@@ -40,37 +34,8 @@ class _ItemState extends State<TaskItem> {
                   ],
                 ),
               ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    IconButton(
-                      onPressed:
-                          () => displayDialog(context, [
-                            TaskForm(
-                              task: widget.task,
-                              formMode: FormTypes.edit,
-                            ),
-                          ]),
-                      icon: Icon(Icons.edit),
-                    ),
-                    widget.task.isPinned
-                        ? IconButton.filled(
-                          onPressed:
-                              () => provider.unpinTask(
-                                widget.task.id!,
-                                widget.task.fkStepId,
-                              ),
-                          icon: Icon(Icons.pin_drop),
-                        )
-                        : IconButton.outlined(
-                          onPressed: () => provider.pinTask(widget.task),
-                          icon: Icon(Icons.pin_drop_outlined),
-                        ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 30),
+              Expanded(flex: 1, child: TaskButtons(task: widget.task)),
+              SizedBox(width: 20),
             ],
           ),
         ),

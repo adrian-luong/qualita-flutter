@@ -5,6 +5,7 @@ import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/global_keys.dart';
 import 'package:qualita/utils/common_types.dart';
 import 'package:qualita/utils/display_dialog.dart';
+import 'package:qualita/view/home/tags/tag_select.dart';
 
 class TaskForm extends StatefulWidget {
   final FormTypes formMode;
@@ -21,6 +22,13 @@ class _FormState extends State<TaskForm> {
   final _name = TextEditingController();
   final _value = TextEditingController();
   final _desc = TextEditingController();
+  List<String> selectedTags = [];
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() => selectedTags = widget.task.tags);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +59,7 @@ class _FormState extends State<TaskForm> {
             value: int.parse(_value.text.trim()),
             description: _desc.text.trim(),
             stepId: widget.task.fkStepId,
+            tags: widget.task.tags,
           );
         } else if (widget.task.id != null) {
           await provider.updateTask(
@@ -59,6 +68,8 @@ class _FormState extends State<TaskForm> {
             value: int.parse(_value.text.trim()),
             description: _desc.text.trim(),
             stepId: widget.task.fkStepId,
+            currentTags: widget.task.tags,
+            newTags: selectedTags,
           );
         }
 
@@ -123,6 +134,13 @@ class _FormState extends State<TaskForm> {
                 }
                 return null;
               },
+            ),
+            const SizedBox(height: 30),
+
+            TagSelect(
+              onPickingTags:
+                  (newTags) => setState(() => selectedTags = newTags),
+              tags: selectedTags,
             ),
             const SizedBox(height: 30),
 

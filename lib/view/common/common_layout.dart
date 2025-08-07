@@ -7,11 +7,13 @@ import 'package:qualita/view/settings/settings_page.dart';
 class CommonLayout extends StatelessWidget {
   final Widget body;
   final Widget? floatCTA;
-  final PreferredSizeWidget? tabBar;
+  final PreferredSizeWidget? topNavBar;
+  final BottomNavigationBar? bottomNavBar;
   const CommonLayout({
     super.key,
     required this.body,
-    this.tabBar,
+    this.topNavBar,
+    this.bottomNavBar,
     this.floatCTA,
   });
 
@@ -23,8 +25,8 @@ class CommonLayout extends StatelessWidget {
       appBar: AppBar(
         title: ProjectSelect(),
         centerTitle: true,
-        bottom: tabBar,
-        toolbarHeight: 100,
+        bottom: topNavBar,
+        toolbarHeight: 80,
         backgroundColor: scheme.primary,
         foregroundColor: scheme.onPrimary,
       ),
@@ -37,11 +39,11 @@ class CommonLayout extends StatelessWidget {
               title: const Text('Home'),
               onTap: () => navigate(HomePage()),
             ),
-            ListTile(
-              leading: const Icon(Icons.calendar_month),
-              title: const Text('Calendar'),
-              onTap: () => navigate(HomePage()),
-            ),
+            // ListTile(
+            //   leading: const Icon(Icons.calendar_month),
+            //   title: const Text('Calendar'),
+            //   onTap: () => navigate(HomePage()),
+            // ),
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
@@ -52,6 +54,7 @@ class CommonLayout extends StatelessWidget {
       ),
       body: body,
       floatingActionButton: floatCTA,
+      bottomNavigationBar: bottomNavBar,
     );
   }
 }
