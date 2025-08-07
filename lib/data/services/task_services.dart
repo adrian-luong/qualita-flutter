@@ -13,14 +13,14 @@ class TaskServices extends BaseServices<TaskModel> {
       List<Map<String, dynamic>> response;
       if (term != null && term.trim() != '') {
         response = await db
-            .from(table)
+            .from('joined_tasks_view')
             .select()
             .eq('fk_project_id', projectId)
             .eq('fk_step_id', stepId)
             .textSearch('name', term);
       } else {
         response = await db
-            .from(table)
+            .from('joined_tasks_view')
             .select()
             .eq('fk_project_id', projectId)
             .eq('fk_step_id', stepId);
