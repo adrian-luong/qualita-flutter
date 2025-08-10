@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:qualita/data/providers/home_provider.dart';
-import 'package:qualita/global_keys.dart';
+import 'package:qualita/data/providers/project_provider.dart';
 import 'package:qualita/utils/common_types.dart';
-import 'package:qualita/utils/display_dialog.dart';
-import 'package:qualita/utils/empty_objects.dart';
-import 'package:qualita/view/home/tags/tag_form.dart';
+import 'package:qualita/view/home/projects/project_form.dart';
+import 'package:qualita/view/home/tags/tag_table.dart';
 
 class ProjectSettings extends StatefulWidget {
   const ProjectSettings({super.key});
@@ -15,119 +13,76 @@ class ProjectSettings extends StatefulWidget {
 }
 
 class _SettingsState extends State<ProjectSettings> {
+  int selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     final scheme = ColorScheme.of(context);
+    final projectProvider = Provider.of<ProjectProvider>(context);
 
-    return Consumer<HomeProvider>(
-      builder: (context, provider, child) {
-        if (provider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    final tabLabels = ['General', 'Tags'];
+    final tabContents = [
+      (projectProvider.selectedProject != null)
+          ? ProjectForm(
+            formMode: FormTypes.edit,
+            project: projectProvider.selectedProject!,
+          )
+          : Text('No project selected'),
+      TagTable(),
+    ];
 
-        if (provider.errorMessage != null) {
-          return Center(
-            child: Text(
-              provider.errorMessage!,
-              style: const TextStyle(color: Colors.red),
-            ),
-          );
-        }
-
-        var headerRow = TableRow(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text('Tag name'),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text('Description'),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed:
-                    () => displayDialog(context, [
-                      TagForm(
-                        formMode: FormTypes.create,
-                        tag: getEmptyTag(
-                          customProjectId: provider.selectedProject!,
-                        ),
-                      ),
-                    ]),
-                child: Text('Add new tag +'),
-              ),
-            ),
-          ],
-        );
-        var dataRows =
-            provider.tags
-                .map(
-                  (tag) => TableRow(
+    var pills =
+        tabLabels
+            .asMap()
+            .map(
+              (index, label) => MapEntry(
+                index,
+                Container(
+                  alignment: Alignment.centerLeft,
+                  width: 100,
+                  child: Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(tag.name),
+                      Container(
+                        height: 50,
+                        width: 5,
+                        color:
+                            selectedIndex == index
+                                ? scheme.primary
+                                : Colors.transparent,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(tag.description ?? ''),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed:
-                                  () => displayDialog(context, [
-                                    TagForm(formMode: FormTypes.edit, tag: tag),
-                                  ]),
-                              icon: Icon(Icons.edit),
+                      TextButton(
+                        onPressed: () => setState(() => selectedIndex = index),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            tabLabels[index],
+                            style: TextStyle(
+                              color:
+                                  selectedIndex == index
+                                      ? scheme.primary
+                                      : scheme.onSurface,
                             ),
-                            IconButton(
-                              onPressed:
-                                  () => confirmDelete(context, 'Delete tag', () {
-                                    try {
-                                      provider.deleteTag(tag.id!);
-                                      displayMessage(
-                                        SnackBar(
-                                          content: Text(
-                                            'Tag ${tag.name} has been successfully deleted',
-                                          ),
-                                        ),
-                                      );
-                                    } catch (e) {
-                                      displayMessage(
-                                        SnackBar(content: Text(e.toString())),
-                                      );
-                                    } finally {
-                                      popContext(); // Close the confirmation dialog
-                                    }
-                                  }),
-                              icon: Icon(Icons.delete),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
                   ),
-                )
-                .toList();
+                ),
+              ),
+            )
+            .values
+            .toList();
 
-        return Expanded(
-          child: Table(
-            border: TableBorder.all(color: scheme.primary, width: 2.0),
-            defaultVerticalAlignment: TableCellVerticalAlignment.top,
-            children: [headerRow, ...dataRows],
-            columnWidths: const <int, TableColumnWidth>{
-              0: IntrinsicColumnWidth(),
-              1: IntrinsicColumnWidth(),
-              2: IntrinsicColumnWidth(),
-            },
-          ),
-        );
-      },
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(width: 10),
+        Column(children: pills),
+        SizedBox(width: 10),
+        Container(height: 375, width: 2, color: scheme.onSurface),
+        SizedBox(width: 20),
+        tabContents[selectedIndex],
+      ],
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/models/step_model.dart';
 import 'package:qualita/data/models/tag_model.dart';
 import 'package:qualita/data/models/task_model.dart';
@@ -13,6 +14,9 @@ class HomeProvider extends BaseProvider {
 
   String? selectedProject;
   String? selectedStep;
+
+  ProjectModel? _project;
+  ProjectModel? get project => _project;
 
   List<StepModel> _steps = [];
   List<StepModel> get steps => _steps;
