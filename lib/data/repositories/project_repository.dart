@@ -15,6 +15,10 @@ class ProjectRepository extends BaseRepository {
     });
   }
 
+  Future<SingleDataResponse<ProjectModel>> findProject(String id) async {
+    return await returnOne(() async => projectServices.getById(id));
+  }
+
   Future<SingleDataResponse<ProjectModel>> addProject({
     required String name,
     String? description,
@@ -46,6 +50,27 @@ class ProjectRepository extends BaseRepository {
       );
 
       return newProject;
+    });
+  }
+
+  Future<SingleDataResponse<ProjectModel>> editProject({
+    required String id,
+    required String name,
+    String? description,
+  }) async {
+    return await returnOne(() async {
+      var user = getCurrentUser();
+      if (user == null) {
+        throw Exception('No user has logged in');
+      }
+      var model = ProjectModel(
+        id: id,
+        name: name,
+        fkUserId: user.id,
+        description: description,
+      );
+      await projectServices.update(model);
+      return model;
     });
   }
 }
