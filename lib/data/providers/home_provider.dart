@@ -1,15 +1,22 @@
+import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/models/step_model.dart';
+import 'package:qualita/data/models/tag_model.dart';
 import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/base_provider.dart';
 import 'package:qualita/data/repositories/step_repository.dart';
+import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
 
 class HomeProvider extends BaseProvider {
   final _stepRepo = StepRepository();
   final _taskRepo = TaskRepository();
+  final _tagRepo = TagRepository();
 
   String? selectedProject;
   String? selectedStep;
+
+  ProjectModel? _project;
+  ProjectModel? get project => _project;
 
   List<StepModel> _steps = [];
   List<StepModel> get steps => _steps;
@@ -18,10 +25,16 @@ class HomeProvider extends BaseProvider {
   final Map<String, List<TaskModel>> _tasks = {};
   Map<String, List<TaskModel>> get tasks => _tasks;
 
+  List<TagModel> _tags = [];
+  List<TagModel> get tags => _tags;
+  final Map<String, List<TagModel>> _taskTags = {};
+  Map<String, List<TagModel>> get taskTags => _taskTags;
+
   void selectProject(String? id) {
     selectedProject = id;
     if (selectedProject != null) {
       fetchSteps();
+      fetchTags();
     }
     notifyListeners();
   }
@@ -96,21 +109,22 @@ class HomeProvider extends BaseProvider {
   }
 
   Future<void> fetchTasks(String? searchTerm) async {
-    if (_projectSteps.isNotEmpty) {
-      for (var step in _projectSteps) {
-        final fetchTaskResult = await _taskRepo.fetchTasks(
-          selectedProject!,
-          step,
-          searchTerm,
-        );
-        if (fetchTaskResult.hasError) {
-          throw Exception(fetchTaskResult.message ?? 'Unexpected error');
-        } else {
-          _tasks[step] = fetchTaskResult.data;
+    await super.operate(() async {
+      if (_projectSteps.isNotEmpty) {
+        for (var step in _projectSteps) {
+          final fetchTaskResult = await _taskRepo.fetchTasks(
+            selectedProject!,
+            step,
+            searchTerm,
+          );
+          if (fetchTaskResult.hasError) {
+            throw Exception(fetchTaskResult.message ?? 'Unexpected error');
+          } else {
+            _tasks[step] = fetchTaskResult.data;
+          }
         }
       }
-      notifyListeners();
-    }
+    });
   }
 
   Future<void> addTask({
@@ -118,6 +132,7 @@ class HomeProvider extends BaseProvider {
     required int value,
     String? description,
     required String stepId,
+    required List<String> tags,
   }) async {
     await super.operate(() async {
       if (selectedProject != null) {
@@ -127,7 +142,9 @@ class HomeProvider extends BaseProvider {
           value: value,
           stepId: stepId,
           projectId: selectedProject!,
+          selectedTags: tags,
         );
+
         if (response.hasError || response.data == null) {
           throw Exception(response.message ?? 'Unexpected error');
         } else if (_tasks[stepId] != null) {
@@ -189,6 +206,8 @@ class HomeProvider extends BaseProvider {
           projectId: theTask.fkProjectId,
           stepId: theTask.fkStepId,
           isPinned: theTask.isPinned,
+          newTags: theTask.tags,
+          currentTags: theTask.tags,
         );
 
         if (response.hasError || response.data == null) {
@@ -250,6 +269,8 @@ class HomeProvider extends BaseProvider {
     required String name,
     required int value,
     String? description,
+    required List<String> currentTags,
+    required List<String> newTags,
     required String stepId,
   }) async {
     await super.operate(() async {
@@ -260,6 +281,8 @@ class HomeProvider extends BaseProvider {
           value: value,
           projectId: selectedProject!,
           stepId: stepId,
+          currentTags: currentTags,
+          newTags: newTags,
         );
         if (response.hasError || response.data == null) {
           throw Exception(response.message ?? 'Unexpected error');
@@ -281,6 +304,71 @@ class HomeProvider extends BaseProvider {
           var targetIndex = _tasks[stepId]!.indexWhere((task) => task.id == id);
           _tasks[stepId]!.removeAt(targetIndex);
         }
+      }
+    });
+  }
+
+  Future<void> fetchTags() async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var response = await _tagRepo.fetchTags(selectedProject!);
+        if (response.hasError) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          _tags = response.data;
+        }
+      }
+    });
+  }
+
+  Future<void> addTag({required String name, String? description}) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var response = await _tagRepo.addTag(
+          name: name,
+          description: description,
+          projectId: selectedProject!,
+        );
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          _tags.add(response.data!);
+        }
+      }
+    });
+  }
+
+  Future<void> updateTag({
+    required String id,
+    required String name,
+    String? description,
+  }) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var response = await _tagRepo.updateTag(
+          id: id,
+          name: name,
+          description: description,
+          projectId: selectedProject!,
+        );
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          var targetIndex = _tags.indexWhere((tag) => tag.id == id);
+          _tags[targetIndex] = response.data!;
+        }
+      }
+    });
+  }
+
+  Future<void> deleteTag(String id) async {
+    await super.operate(() async {
+      var response = await _tagRepo.deleteTag(id);
+      if (response.hasError) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        var targetIndex = _tags.indexWhere((tag) => tag.id == id);
+        _tags.removeAt(targetIndex);
       }
     });
   }

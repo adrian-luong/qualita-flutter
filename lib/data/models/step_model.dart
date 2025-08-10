@@ -1,13 +1,12 @@
 import 'package:qualita/data/models/base_model.dart';
 
 class StepModel extends PositionalModel {
-  String name;
   final String fkProjectId;
 
   StepModel({
     super.id,
+    required super.name,
     super.position,
-    required this.name,
     required this.fkProjectId,
   });
 

@@ -28,3 +28,24 @@ void popContext() {
 
 /// Using the global key to get the current logged user
 User? getCurrentUser() => supabase.auth.currentUser;
+
+// Color themes
+final ThemeData lightTheme = ThemeData(
+  colorScheme: ColorScheme.light(primary: Colors.blueAccent),
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Colors.white,
+    foregroundColor: Colors.black,
+  ),
+  useMaterial3: true,
+  textTheme: TextTheme(),
+);
+
+final ThemeData darkTheme = ThemeData(
+  colorScheme: ColorScheme.dark(primary: Colors.blueAccent),
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Colors.black,
+    foregroundColor: Colors.white,
+  ),
+  useMaterial3: true,
+  textTheme: TextTheme(),
+);

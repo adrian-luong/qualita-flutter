@@ -1,20 +1,21 @@
 import 'package:qualita/data/models/base_model.dart';
 
 class TaskModel extends PositionalModel {
-  final String name;
-  final String? description;
+  String? description;
   int value;
   String fkStepId;
   bool isPinned;
   final String fkProjectId;
+  List<String> tags;
 
   TaskModel({
     super.id,
-    required this.name,
+    required super.name,
     this.value = 1,
     super.position,
     this.description,
     this.isPinned = false,
+    this.tags = const [],
     required this.fkProjectId,
     required this.fkStepId,
   });
@@ -28,6 +29,10 @@ class TaskModel extends PositionalModel {
     isPinned: map['is_pinned'] != null ? map['is_pinned'] as bool : false,
     fkProjectId: map['fk_project_id'] as String,
     fkStepId: map['fk_step_id'] as String,
+    tags:
+        (map['tag_ids'] as List).contains(null)
+            ? []
+            : List<String>.from(map['tag_ids'] as List),
   );
 
   factory TaskModel.clone(TaskModel model) => TaskModel(
@@ -39,6 +44,7 @@ class TaskModel extends PositionalModel {
     isPinned: model.isPinned,
     fkProjectId: model.fkProjectId,
     fkStepId: model.fkStepId,
+    tags: model.tags,
   );
 
   @override

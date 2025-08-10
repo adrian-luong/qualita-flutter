@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/data/providers/project_provider.dart';
+import 'package:qualita/global_keys.dart';
+import 'package:qualita/utils/common_types.dart';
 import 'package:qualita/utils/display_dialog.dart';
-import 'package:qualita/view/home/projects/add_project_form.dart';
+import 'package:qualita/utils/empty_objects.dart';
+import 'package:qualita/view/home/projects/project_form.dart';
 
 class ProjectSelect extends StatefulWidget {
   const ProjectSelect({super.key});
@@ -60,8 +63,14 @@ class _SelectState extends State<ProjectSelect> {
           onChanged: (newValue) {
             if (newValue != 'add') {
               homeProvider.selectProject(newValue);
+              projectProvider.findProject(newValue!);
             } else {
-              displayDialog(context, [AddProjectForm()]);
+              displayDialog(context, [
+                ProjectForm(
+                  formMode: FormTypes.create,
+                  project: getEmptyProject(customUserId: getCurrentUser()!.id),
+                ),
+              ]);
             }
           },
           validator: (value) {
