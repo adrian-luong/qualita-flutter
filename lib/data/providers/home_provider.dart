@@ -1,4 +1,3 @@
-import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/models/step_model.dart';
 import 'package:qualita/data/models/tag_model.dart';
 import 'package:qualita/data/models/task_model.dart';
@@ -13,10 +12,6 @@ class HomeProvider extends BaseProvider {
   final _tagRepo = TagRepository();
 
   String? selectedProject;
-  String? selectedStep;
-
-  ProjectModel? _project;
-  ProjectModel? get project => _project;
 
   List<StepModel> _steps = [];
   List<StepModel> get steps => _steps;
@@ -36,11 +31,6 @@ class HomeProvider extends BaseProvider {
       fetchSteps();
       fetchTags();
     }
-    notifyListeners();
-  }
-
-  void editStep(String? id) {
-    selectedStep = id;
     notifyListeners();
   }
 
@@ -75,19 +65,25 @@ class HomeProvider extends BaseProvider {
     });
   }
 
-  Future<void> renameStep(String stepId, String newName) async {
+  Future<void> editStep({
+    required String stepId,
+    required int position,
+    required String name,
+  }) async {
     await super.operate(() async {
       if (selectedProject != null) {
-        var response = await _stepRepo.renameStep(
+        var response = await _stepRepo.editStep(
           stepId: stepId,
-          newName: newName,
+          newName: name,
+          position: position,
           projectId: selectedProject!,
         );
-        if (response.hasError || response.data == null) {
+        if (response.hasError) {
           throw Exception(response.message ?? 'Unexpected error');
         } else {
           var correspondingStep = steps.firstWhere((step) => step.id == stepId);
-          correspondingStep.name = newName;
+          correspondingStep.name = name;
+          correspondingStep.position = position;
         }
       }
     });
@@ -104,6 +100,17 @@ class HomeProvider extends BaseProvider {
         throw Exception(response.message ?? 'Unexpected error');
       } else {
         _steps = response.data;
+      }
+    });
+  }
+
+  Future<void> deleteStep(String stepId) async {
+    await super.operate(() async {
+      var response = await _stepRepo.deleteStep(stepId);
+      if (response.hasError) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        _steps.removeWhere((step) => step.id == stepId);
       }
     });
   }
