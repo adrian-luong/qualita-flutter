@@ -1,29 +1,30 @@
 import 'package:qualita/data/models/base_model.dart';
 
-class StepModel extends PositionalModel {
+class TagModel extends BaseModel {
   final String fkProjectId;
+  String? description;
 
-  StepModel({
+  TagModel({
     super.id,
     required super.name,
-    super.position,
     required this.fkProjectId,
+    this.description,
   });
 
-  factory StepModel.fromMap(Map<String, dynamic> map) => StepModel(
+  factory TagModel.fromMap(Map<String, dynamic> map) => TagModel(
     id: map['id'] as String,
     name: map['name'] as String,
-    position: map['position'] as int,
+    description: map['description'],
     fkProjectId: map['fk_project_id'] as String,
   );
 
-  factory StepModel.getEmptyModel({required String customProjectId}) =>
-      StepModel(name: '', fkProjectId: customProjectId);
+  factory TagModel.getEmptyModel({required String customProjectId}) =>
+      TagModel(name: '', fkProjectId: customProjectId);
 
   @override
   Map<String, dynamic> toDTOMap() => {
     'name': name,
-    'position': position,
+    'description': description,
     'fk_project_id': fkProjectId,
   };
 

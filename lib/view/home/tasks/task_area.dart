@@ -4,7 +4,6 @@ import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/utils/common_types.dart';
 import 'package:qualita/utils/display_dialog.dart';
-import 'package:qualita/utils/empty_objects.dart';
 import 'package:qualita/view/home/tasks/task_form.dart';
 import 'package:qualita/view/home/tasks/task_item.dart';
 
@@ -59,7 +58,7 @@ class _AreaState extends State<TaskArea> {
 
             return Container(
               width: 300,
-              height: 400,
+              height: 500,
               decoration: BoxDecoration(
                 color: bgColor,
                 border: Border.all(color: borderColor, width: borderWidth),
@@ -74,7 +73,7 @@ class _AreaState extends State<TaskArea> {
                         () => displayDialog(context, [
                           TaskForm(
                             formMode: FormTypes.create,
-                            task: getEmptyTask(
+                            task: TaskModel.getEmptyModel(
                               customStepId: widget.stepId,
                               customProjectId: provider.selectedProject!,
                             ),

@@ -1,13 +1,12 @@
 import 'package:qualita/data/models/base_model.dart';
 
 class ProjectModel extends BaseModel {
-  final String name;
   final String? description;
   final String fkUserId;
 
   ProjectModel({
     super.id,
-    required this.name,
+    required super.name,
     required this.description,
     required this.fkUserId,
   });
@@ -18,6 +17,9 @@ class ProjectModel extends BaseModel {
     description: map['description'],
     fkUserId: map['fk_user_id'] as String,
   );
+
+  factory ProjectModel.getEmptyModel({required String customUserId}) =>
+      ProjectModel(name: '', description: '', fkUserId: customUserId);
 
   @override
   Map<String, dynamic> toDTOMap() => {

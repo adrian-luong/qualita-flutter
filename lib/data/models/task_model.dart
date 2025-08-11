@@ -1,18 +1,21 @@
 import 'package:qualita/data/models/base_model.dart';
 
 class TaskModel extends PositionalModel {
-  final String name;
-  final String? description;
+  String? description;
   int value;
   String fkStepId;
+  bool isPinned;
   final String fkProjectId;
+  List<String> tags;
 
   TaskModel({
     super.id,
-    required this.name,
+    required super.name,
     this.value = 1,
     super.position,
     this.description,
+    this.isPinned = false,
+    this.tags = const [],
     required this.fkProjectId,
     required this.fkStepId,
   });
@@ -23,9 +26,20 @@ class TaskModel extends PositionalModel {
     description: map['description'],
     value: map['value'] as int,
     position: map['position'] as int,
+    isPinned: map['is_pinned'] != null ? map['is_pinned'] as bool : false,
     fkProjectId: map['fk_project_id'] as String,
     fkStepId: map['fk_step_id'] as String,
+    tags:
+        (map['tag_ids'] as List).contains(null)
+            ? []
+            : List<String>.from(map['tag_ids'] as List),
   );
+
+  factory TaskModel.getEmptyModel({
+    required String customStepId,
+    required String customProjectId,
+  }) =>
+      TaskModel(name: '', fkProjectId: customProjectId, fkStepId: customStepId);
 
   factory TaskModel.clone(TaskModel model) => TaskModel(
     id: model.id,
@@ -33,8 +47,10 @@ class TaskModel extends PositionalModel {
     description: model.description,
     value: model.value,
     position: model.position,
+    isPinned: model.isPinned,
     fkProjectId: model.fkProjectId,
     fkStepId: model.fkStepId,
+    tags: model.tags,
   );
 
   @override
@@ -43,6 +59,7 @@ class TaskModel extends PositionalModel {
     'description': description,
     'value': value,
     'position': position,
+    'is_pinned': isPinned,
     'fk_project_id': fkProjectId,
     'fk_step_id': fkStepId,
   };
