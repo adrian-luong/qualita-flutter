@@ -7,6 +7,10 @@ abstract class BaseModel {
   BaseModel.fromMap(Map<String, dynamic> map)
     : id = map['id'] as String,
       name = map['name'] as String;
+
+  // Abstract factory constructor to create an empty model for form
+  BaseModel.getEmptyModel() : id = null, name = '';
+
   // Abstract method to convert the model to a JSON map
   Map<String, dynamic> toMap();
   // Abstract method to convert the model to a DTO JSON map

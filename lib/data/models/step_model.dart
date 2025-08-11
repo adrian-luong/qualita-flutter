@@ -17,6 +17,9 @@ class StepModel extends PositionalModel {
     fkProjectId: map['fk_project_id'] as String,
   );
 
+  factory StepModel.getEmptyModel({required String customProjectId}) =>
+      StepModel(name: '', fkProjectId: customProjectId);
+
   @override
   Map<String, dynamic> toDTOMap() => {
     'name': name,

@@ -35,6 +35,12 @@ class TaskModel extends PositionalModel {
             : List<String>.from(map['tag_ids'] as List),
   );
 
+  factory TaskModel.getEmptyModel({
+    required String customStepId,
+    required String customProjectId,
+  }) =>
+      TaskModel(name: '', fkProjectId: customProjectId, fkStepId: customStepId);
+
   factory TaskModel.clone(TaskModel model) => TaskModel(
     id: model.id,
     name: model.name,
