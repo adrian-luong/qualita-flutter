@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.1 (June 25th, 2025) - Albuquerque
+## 0.0.1 (June 25th, 2025)
 
 * Initial public release with **web** pages:
 * Home: managing projects, steps and tasks
@@ -10,3 +10,10 @@
 * Settings: customizable options for better usage
   * UI: changing application dark/light mode.
   * Profile: changing password and logging out.
+
+## 0.1.0 (11th August, 2025)
+
+* Home: Each project is separated into views for better management
+  * Kanban: project's tasks and steps, the default view.
+  * Settings: project's information (editable), project's tag table (for adding, deleting or editing tag)
+  * Project's tasks can now be setup with tags in their edit form.

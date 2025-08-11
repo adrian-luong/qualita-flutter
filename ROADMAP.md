@@ -1,6 +1,6 @@
 # Roadmap
 
-## Version 1.0
+## Version 0.0
 
 * Home: managing projects, steps and tasks
   * Projects: selecting, adding new project.
@@ -10,15 +10,19 @@
   * UI: changing application dark/light mode.
   * Profile: changing password and logging out.
 
-## Version 1.1
+## Version 0.1
 
 * Home: turn projects UI into tabs
-  * Projects & Steps: edit project (by a modal form).
-  * Tasks: pinning, add/edit/remove tags & time range.
-* Settings: add new settings & login options
-  * UI: changing application's font size and style.
+  * Projects & Steps: edit project and step (by a modal form).
+  * Tasks: pinning, add/edit/remove tags.
 
-## Version 1.2
+## Version 0.2
+
+* Settings: customizable options for better usage
+  * Font size, font type
+  * Languages (for now, only English, Vietnamese and Japanese)
+
+## Version 1.0
 
 * Calendar: new page/screen for managing events and time
   * Navigation: picking dates, viewing by day, week, month.
@@ -26,21 +30,21 @@
 * Settings: add new settings
   * Profile: changing application's timezone.
 
-## Version 1.3
+## Version 1.1
 
 * Home: managing projects, steps and tasks
   * Projects: supporting project's view modes (list, Kanban, Gantt, etc.)
   * Tasks: supporting sub-tasks and associated/related tasks.
 * Supports Internal links (to projects, tasks and notes)
 
-## Version 1.4
+## Version 1.2
 
 * Home:
   * Steps: supporting sub-steps and step navigation.
 * Calendar: managing events and time
   * Events: supporting recurring and spanning events.
 
-## Version 1.5
+## Version 1.3
 
 * Settings: add new login options
   * Google: make a new account via input Gmail & login via Gmail.
