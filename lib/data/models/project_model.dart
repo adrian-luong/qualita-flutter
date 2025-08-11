@@ -18,6 +18,9 @@ class ProjectModel extends BaseModel {
     fkUserId: map['fk_user_id'] as String,
   );
 
+  factory ProjectModel.getEmptyModel({required String customUserId}) =>
+      ProjectModel(name: '', description: '', fkUserId: customUserId);
+
   @override
   Map<String, dynamic> toDTOMap() => {
     'name': name,

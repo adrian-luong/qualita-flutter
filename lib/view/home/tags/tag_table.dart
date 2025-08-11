@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qualita/data/models/tag_model.dart';
 import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/global_keys.dart';
 import 'package:qualita/utils/common_types.dart';
 import 'package:qualita/utils/display_dialog.dart';
-import 'package:qualita/utils/empty_objects.dart';
 import 'package:qualita/view/home/tags/tag_form.dart';
 
 class TagTable extends StatefulWidget {
@@ -51,7 +51,7 @@ class _TableState extends State<TagTable> {
                     () => displayDialog(context, [
                       TagForm(
                         formMode: FormTypes.create,
-                        tag: getEmptyTag(
+                        tag: TagModel.getEmptyModel(
                           customProjectId: provider.selectedProject!,
                         ),
                       ),

@@ -10,12 +10,16 @@ class TagModel extends BaseModel {
     required this.fkProjectId,
     this.description,
   });
+
   factory TagModel.fromMap(Map<String, dynamic> map) => TagModel(
     id: map['id'] as String,
     name: map['name'] as String,
     description: map['description'],
     fkProjectId: map['fk_project_id'] as String,
   );
+
+  factory TagModel.getEmptyModel({required String customProjectId}) =>
+      TagModel(name: '', fkProjectId: customProjectId);
 
   @override
   Map<String, dynamic> toDTOMap() => {

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/providers/home_provider.dart';
 import 'package:qualita/data/providers/project_provider.dart';
 import 'package:qualita/global_keys.dart';
 import 'package:qualita/utils/common_types.dart';
 import 'package:qualita/utils/display_dialog.dart';
-import 'package:qualita/utils/empty_objects.dart';
 import 'package:qualita/view/home/projects/project_form.dart';
 
 class ProjectSelect extends StatefulWidget {
@@ -68,7 +68,9 @@ class _SelectState extends State<ProjectSelect> {
               displayDialog(context, [
                 ProjectForm(
                   formMode: FormTypes.create,
-                  project: getEmptyProject(customUserId: getCurrentUser()!.id),
+                  project: ProjectModel.getEmptyModel(
+                    customUserId: getCurrentUser()!.id,
+                  ),
                 ),
               ]);
             }
