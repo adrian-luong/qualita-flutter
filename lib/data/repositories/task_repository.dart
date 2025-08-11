@@ -1,16 +1,18 @@
 import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/repositories/base_repository.dart';
 import 'package:qualita/utils/common_functions.dart';
-import 'package:qualita/utils/query_responses.dart';
+import 'package:qualita/data/query_responses.dart';
 
 class TaskRepository extends BaseRepository {
   Future<MultipleDataResponse<TaskModel>> fetchTasks(
     String projectId,
     String stepId,
+    String? term,
   ) async {
-    return await returnMany(
-      () async => await taskServices.getByProjectStep(projectId, stepId),
-    );
+    return await returnMany(() async {
+      var many = await taskServices.getByProjectStep(projectId, stepId, term);
+      return many;
+    });
   }
 
   Future<SingleDataResponse<TaskModel>> addTask({
@@ -19,6 +21,7 @@ class TaskRepository extends BaseRepository {
     String? description,
     required String stepId,
     required String projectId,
+    required List<String> selectedTags,
   }) async {
     return await returnOne(() async {
       var model = TaskModel(
@@ -27,9 +30,17 @@ class TaskRepository extends BaseRepository {
         description: description,
         fkProjectId: projectId,
         fkStepId: stepId,
+        tags: selectedTags,
       );
-      await taskServices.insert(model);
-      return model;
+      var task = await taskServices.insert(model);
+
+      // Adding new tags
+      if (task.id != null) {
+        for (var tag in selectedTags) {
+          await tagServices.addTagToTask(task.id!, tag);
+        }
+      }
+      return task;
     });
   }
 
@@ -37,6 +48,7 @@ class TaskRepository extends BaseRepository {
     required int oldPosition,
     required int newPosition,
     required List<TaskModel> taskList,
+    bool isPinning = false,
   }) async {
     return await returnMany(() async {
       List<TaskModel> newOrder = reorder(
@@ -44,6 +56,17 @@ class TaskRepository extends BaseRepository {
         newPosition: newPosition,
         oldOrder: taskList,
       );
+
+      // In case of pinning a task, the pinned task should be the only one which isPinned = True
+      // This is temporary until allowable-pinned-tasks setting is available
+      // Also, newPosition is always 0 (the first task to be rendered in the list)
+      if (isPinning) {
+        newOrder[newPosition].isPinned = true;
+        for (var item in newOrder.sublist(1)) {
+          item.isPinned = false;
+        }
+      }
+
       await taskServices.reposition(newOrder);
       return newOrder;
     });
@@ -69,17 +92,39 @@ class TaskRepository extends BaseRepository {
     required String name,
     required int value,
     String? description,
+    bool isPinned = false,
     required String projectId,
     required String stepId,
+    required List<String> newTags,
+    required List<String> currentTags,
   }) async {
     return await returnOne(() async {
+      if (newTags != currentTags) {
+        // Check for removal of tags
+        for (var currentTag in currentTags) {
+          if (!newTags.contains(currentTag)) {
+            await tagServices.removeTagFromTask(id, currentTag);
+          }
+        }
+
+        // Check for adding new tags
+        for (var newTag in newTags) {
+          if (!currentTags.contains(newTag)) {
+            await tagServices.addTagToTask(id, newTag);
+          }
+        }
+      }
+
+      // Update for other fields
       var model = TaskModel(
         id: id,
         name: name,
         value: value,
+        isPinned: isPinned,
         description: description,
         fkProjectId: projectId,
         fkStepId: stepId,
+        tags: newTags,
       );
       await taskServices.update(model);
       return model;

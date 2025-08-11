@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qualita/data/models/step_model.dart';
 import 'package:qualita/data/providers/home_provider.dart';
+import 'package:qualita/utils/common_types.dart';
 import 'package:qualita/utils/display_dialog.dart';
-import 'package:qualita/view/home/steps/add_step_form.dart';
+import 'package:qualita/view/home/steps/step_form.dart';
 import 'package:qualita/view/home/steps/step_panel.dart';
 import 'package:qualita/view/home/tasks/task_area.dart';
 
@@ -47,41 +49,48 @@ class _AreaState extends State<StepArea> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        StepPanel(
-                          step: step,
-                          stepAmount: provider.steps.length,
-                        ),
+                        StepPanel(step: step),
                         SizedBox(height: 16),
-                        TaskArea(stepId: step.id!),
+                        Expanded(child: TaskArea(stepId: step.id!)),
                       ],
                     ),
                   ),
                 )
                 .toList();
 
-        return ReorderableListView(
-          scrollDirection: Axis.horizontal,
-          footer: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: IconButton(
-                    onPressed: () => displayDialog(context, [AddStepForm()]),
-                    icon: Icon(Icons.add_box_outlined),
-                    selectedIcon: Icon(Icons.add_box),
+        return Expanded(
+          child: ReorderableListView(
+            scrollDirection: Axis.horizontal,
+            footer: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: IconButton(
+                      onPressed:
+                          () => displayDialog(context, [
+                            StepForm(
+                              formMode: FormTypes.create,
+                              step: StepModel.getEmptyModel(
+                                customProjectId: provider.selectedProject!,
+                              ),
+                            ),
+                          ]),
+                      icon: Icon(Icons.add_box_outlined),
+                      selectedIcon: Icon(Icons.add_box),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            onReorder: (oldIndex, newIndex) async {
+              if (mounted) {
+                await provider.reorderStep(oldIndex, newIndex);
+              }
+            },
+            children: panels,
           ),
-          onReorder: (oldIndex, newIndex) async {
-            if (mounted) {
-              await provider.reorderStep(oldIndex, newIndex);
-            }
-          },
-          children: panels,
         );
       },
     );

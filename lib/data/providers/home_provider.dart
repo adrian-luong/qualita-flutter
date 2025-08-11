@@ -1,68 +1,37 @@
-import 'package:qualita/data/models/project_model.dart';
 import 'package:qualita/data/models/step_model.dart';
+import 'package:qualita/data/models/tag_model.dart';
 import 'package:qualita/data/models/task_model.dart';
 import 'package:qualita/data/providers/base_provider.dart';
-import 'package:qualita/data/repositories/project_repository.dart';
 import 'package:qualita/data/repositories/step_repository.dart';
+import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
 
 class HomeProvider extends BaseProvider {
-  final _projectRepo = ProjectRepository();
   final _stepRepo = StepRepository();
   final _taskRepo = TaskRepository();
+  final _tagRepo = TagRepository();
 
-  List<ProjectModel> _projects = [];
-  List<ProjectModel> get projects => _projects;
   String? selectedProject;
 
   List<StepModel> _steps = [];
   List<StepModel> get steps => _steps;
-  String? selectedStep;
+  List<String> _projectSteps = [];
 
   final Map<String, List<TaskModel>> _tasks = {};
   Map<String, List<TaskModel>> get tasks => _tasks;
 
-  // Constructor to fetch initial data
-  HomeProvider() {
-    fetchProjects();
-  }
+  List<TagModel> _tags = [];
+  List<TagModel> get tags => _tags;
+  final Map<String, List<TagModel>> _taskTags = {};
+  Map<String, List<TagModel>> get taskTags => _taskTags;
 
   void selectProject(String? id) {
     selectedProject = id;
     if (selectedProject != null) {
       fetchSteps();
+      fetchTags();
     }
     notifyListeners();
-  }
-
-  void editStep(String? id) {
-    selectedStep = id;
-    notifyListeners();
-  }
-
-  Future<void> fetchProjects() async {
-    await operate(() async {
-      var response = await _projectRepo.fetchProjects();
-      if (response.hasError) {
-        throw Exception(response.message ?? 'Unexpected error');
-      } else {
-        _projects = response.data;
-      }
-    });
-  }
-
-  Future<void> addProject({required String name, String? description}) async {
-    await operate(() async {
-      var response = await _projectRepo.addProject(
-        name: name,
-        description: description,
-      );
-      if (response.hasError || response.data == null) {
-        throw Exception(response.message ?? 'Unexpected error');
-      } else {
-        _projects.add(response.data!); // Add the new todo to the local list
-      }
-    });
   }
 
   Future<void> fetchSteps() async {
@@ -74,19 +43,10 @@ class HomeProvider extends BaseProvider {
           throw Exception(fetchStepResult.message ?? 'Unexpected error');
         } else {
           _steps = fetchStepResult.data;
-        }
+          _projectSteps = fetchStepResult.data.map((step) => step.id!).toList();
 
-        // Get tasks for each steps
-        for (var step in fetchStepResult.data) {
-          final fetchTaskResult = await _taskRepo.fetchTasks(
-            selectedProject!,
-            step.id!,
-          );
-          if (fetchTaskResult.hasError) {
-            throw Exception(fetchTaskResult.message ?? 'Unexpected error');
-          } else {
-            _tasks[step.id!] = fetchTaskResult.data;
-          }
+          // Get tasks for each steps
+          await fetchTasks(null);
         }
       }
     });
@@ -105,19 +65,25 @@ class HomeProvider extends BaseProvider {
     });
   }
 
-  Future<void> renameStep(String stepId, String newName) async {
+  Future<void> editStep({
+    required String stepId,
+    required int position,
+    required String name,
+  }) async {
     await super.operate(() async {
       if (selectedProject != null) {
-        var response = await _stepRepo.renameStep(
+        var response = await _stepRepo.editStep(
           stepId: stepId,
-          newName: newName,
+          newName: name,
+          position: position,
           projectId: selectedProject!,
         );
-        if (response.hasError || response.data == null) {
+        if (response.hasError) {
           throw Exception(response.message ?? 'Unexpected error');
         } else {
           var correspondingStep = steps.firstWhere((step) => step.id == stepId);
-          correspondingStep.name = newName;
+          correspondingStep.name = name;
+          correspondingStep.position = position;
         }
       }
     });
@@ -138,11 +104,42 @@ class HomeProvider extends BaseProvider {
     });
   }
 
+  Future<void> deleteStep(String stepId) async {
+    await super.operate(() async {
+      var response = await _stepRepo.deleteStep(stepId);
+      if (response.hasError) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        _steps.removeWhere((step) => step.id == stepId);
+      }
+    });
+  }
+
+  Future<void> fetchTasks(String? searchTerm) async {
+    await super.operate(() async {
+      if (_projectSteps.isNotEmpty) {
+        for (var step in _projectSteps) {
+          final fetchTaskResult = await _taskRepo.fetchTasks(
+            selectedProject!,
+            step,
+            searchTerm,
+          );
+          if (fetchTaskResult.hasError) {
+            throw Exception(fetchTaskResult.message ?? 'Unexpected error');
+          } else {
+            _tasks[step] = fetchTaskResult.data;
+          }
+        }
+      }
+    });
+  }
+
   Future<void> addTask({
     required String name,
     required int value,
     String? description,
     required String stepId,
+    required List<String> tags,
   }) async {
     await super.operate(() async {
       if (selectedProject != null) {
@@ -152,7 +149,9 @@ class HomeProvider extends BaseProvider {
           value: value,
           stepId: stepId,
           projectId: selectedProject!,
+          selectedTags: tags,
         );
+
         if (response.hasError || response.data == null) {
           throw Exception(response.message ?? 'Unexpected error');
         } else if (_tasks[stepId] != null) {
@@ -178,6 +177,48 @@ class HomeProvider extends BaseProvider {
           throw Exception(response.message ?? 'Unexpected error');
         } else {
           _tasks[stepId] = response.data;
+        }
+      }
+    });
+  }
+
+  Future<void> pinTask(TaskModel task) async {
+    await super.operate(() async {
+      if (_tasks[task.fkStepId] != null) {
+        var response = await _taskRepo.reorderTask(
+          oldPosition: task.position,
+          newPosition: 0,
+          taskList: _tasks[task.fkStepId]!,
+          isPinning: true,
+        );
+        if (response.hasError || response.data.isEmpty) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          _tasks[task.fkStepId] = response.data;
+        }
+      }
+    });
+  }
+
+  Future<void> unpinTask(String taskId, String stepId) async {
+    await super.operate(() async {
+      if (_tasks[stepId] != null) {
+        var theTask = _tasks[stepId]!.firstWhere((task) => task.id == taskId);
+        theTask.isPinned = false;
+
+        var response = await _taskRepo.updateTask(
+          id: theTask.id!,
+          name: theTask.name,
+          value: theTask.value,
+          projectId: theTask.fkProjectId,
+          stepId: theTask.fkStepId,
+          isPinned: theTask.isPinned,
+          newTags: theTask.tags,
+          currentTags: theTask.tags,
+        );
+
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
         }
       }
     });
@@ -235,6 +276,8 @@ class HomeProvider extends BaseProvider {
     required String name,
     required int value,
     String? description,
+    required List<String> currentTags,
+    required List<String> newTags,
     required String stepId,
   }) async {
     await super.operate(() async {
@@ -245,6 +288,8 @@ class HomeProvider extends BaseProvider {
           value: value,
           projectId: selectedProject!,
           stepId: stepId,
+          currentTags: currentTags,
+          newTags: newTags,
         );
         if (response.hasError || response.data == null) {
           throw Exception(response.message ?? 'Unexpected error');
@@ -266,6 +311,71 @@ class HomeProvider extends BaseProvider {
           var targetIndex = _tasks[stepId]!.indexWhere((task) => task.id == id);
           _tasks[stepId]!.removeAt(targetIndex);
         }
+      }
+    });
+  }
+
+  Future<void> fetchTags() async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var response = await _tagRepo.fetchTags(selectedProject!);
+        if (response.hasError) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          _tags = response.data;
+        }
+      }
+    });
+  }
+
+  Future<void> addTag({required String name, String? description}) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var response = await _tagRepo.addTag(
+          name: name,
+          description: description,
+          projectId: selectedProject!,
+        );
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          _tags.add(response.data!);
+        }
+      }
+    });
+  }
+
+  Future<void> updateTag({
+    required String id,
+    required String name,
+    String? description,
+  }) async {
+    await super.operate(() async {
+      if (selectedProject != null) {
+        var response = await _tagRepo.updateTag(
+          id: id,
+          name: name,
+          description: description,
+          projectId: selectedProject!,
+        );
+        if (response.hasError || response.data == null) {
+          throw Exception(response.message ?? 'Unexpected error');
+        } else {
+          var targetIndex = _tags.indexWhere((tag) => tag.id == id);
+          _tags[targetIndex] = response.data!;
+        }
+      }
+    });
+  }
+
+  Future<void> deleteTag(String id) async {
+    await super.operate(() async {
+      var response = await _tagRepo.deleteTag(id);
+      if (response.hasError) {
+        throw Exception(response.message ?? 'Unexpected error');
+      } else {
+        var targetIndex = _tags.indexWhere((tag) => tag.id == id);
+        _tags.removeAt(targetIndex);
       }
     });
   }

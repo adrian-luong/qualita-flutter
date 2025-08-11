@@ -1,7 +1,7 @@
 import 'package:qualita/data/models/step_model.dart';
 import 'package:qualita/data/repositories/base_repository.dart';
 import 'package:qualita/utils/common_functions.dart';
-import 'package:qualita/utils/query_responses.dart';
+import 'package:qualita/data/query_responses.dart';
 
 class StepRepository extends BaseRepository {
   Future<MultipleDataResponse<StepModel>> fetchSteps(String projectId) async {
@@ -21,14 +21,20 @@ class StepRepository extends BaseRepository {
     );
   }
 
-  Future<SingleDataResponse<StepModel>> renameStep({
+  Future<SingleDataResponse<StepModel>> editStep({
     required String stepId,
     required String newName,
+    required int position,
     required String projectId,
   }) async {
     return await returnOne(
       () async => await stepServices.update(
-        StepModel(id: stepId, name: newName, fkProjectId: projectId),
+        StepModel(
+          id: stepId,
+          name: newName,
+          position: position,
+          fkProjectId: projectId,
+        ),
       ),
     );
   }
@@ -46,6 +52,12 @@ class StepRepository extends BaseRepository {
       );
       await stepServices.reposition(newOrder);
       return newOrder;
+    });
+  }
+
+  Future<QueryResponse> deleteStep(String id) async {
+    return await returnNone(() async {
+      await stepServices.hardDelete(id);
     });
   }
 }
