@@ -21,7 +21,7 @@ class Layout extends StatelessWidget {
         tooltip: 'Create',
         child: const Icon(Icons.add),
       ),
-      floatingActionButtonLocation: .endDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: AnimatedContainer(
         duration: const Duration(milliseconds: 2500),
         child: BottomAppBar(
