@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:qualita/screens/home_screen.dart';
+import 'package:qualita/screens/settings_screen.dart';
+import 'package:qualita/screens/tasks_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,54 +13,20 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          title: const Text('Qualita'),
-        ),
-        body: Center(child: Text('Hello World!')),
-        floatingActionButton: FloatingActionButton(
-          shape: CircleBorder(),
-          onPressed: () {},
-          tooltip: 'Create',
-          child: const Icon(Icons.add),
-        ),
-        floatingActionButtonLocation: .endDocked,
-        bottomNavigationBar: AnimatedContainer(
-          duration: const Duration(milliseconds: 2500),
-          child: BottomAppBar(
-            shape: CircularNotchedRectangle(),
-            elevation: 0.1,
-            color: Colors.blue,
-            child: IconTheme(
-              data: IconThemeData(color: scheme.onPrimary),
-              child: Row(
-                children: [
-                  IconButton(
-                    tooltip: 'Home',
-                    icon: const Icon(Icons.home),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    tooltip: 'Tasks',
-                    icon: const Icon(Icons.checklist),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    tooltip: 'Settings',
-                    icon: const Icon(Icons.settings),
-                    onPressed: () {},
-                  ),
-                  Spacer(),
-                ],
-              ),
-            ),
+      routerConfig: GoRouter(
+        routes: [
+          GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+          GoRoute(
+            path: '/tasks',
+            builder: (context, state) => const TasksScreen(),
           ),
-        ),
+          GoRoute(
+            path: '/settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+        ],
       ),
     );
   }
