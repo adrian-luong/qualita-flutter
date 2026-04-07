@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:qualita/layout.dart';
 import 'package:qualita/models/task.dart';
 import 'package:qualita/repositories/task_repository.dart';
@@ -42,11 +43,19 @@ class _TaskScreenState extends State<TasksScreen> {
                     padding: const EdgeInsets.all(8),
                     itemCount: tasks.length,
                     itemBuilder: (context, index) {
+                      Task task = tasks[index];
+                      String? startDate = DateFormat.yMd().format(
+                        task.startDate,
+                      );
+                      String? endDate = task.endDate != null
+                          ? DateFormat.yMd().format(task.endDate!)
+                          : '';
+
                       return Container(
                         height: 50,
                         color: Colors.blue[index],
                         child: Center(
-                          child: Text('Entry ${tasks[index].title}'),
+                          child: Text('${task.title} ($startDate - $endDate)'),
                         ),
                       );
                     },

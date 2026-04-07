@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qualita/dialogs/task_upsert_dialog.dart';
 import 'package:qualita/models/task.dart';
-import 'package:qualita/repositories/task_repository.dart';
+import 'package:qualita/utils/constant_enums.dart';
 
 class Layout extends StatelessWidget {
   final Widget screen;
@@ -20,8 +21,14 @@ class Layout extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
         onPressed: () {
-          final now = DateTime.now();
-          TaskRepository.addTask(Task(title: 'Test task N', startDate: now));
+          showDialog(
+            context: context,
+            builder: (context) => TaskUpsertDialog(
+              mode: FormMode.create,
+              task: Task.empty(),
+              context: context,
+            ),
+          );
         },
         tooltip: 'Create',
         child: const Icon(Icons.add),
