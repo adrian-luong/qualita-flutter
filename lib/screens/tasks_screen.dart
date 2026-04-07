@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:qualita/layout.dart';
 import 'package:qualita/models/task.dart';
 import 'package:qualita/repositories/task_repository.dart';
@@ -11,12 +12,16 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TasksScreen> {
-  List<Task> _tasks = [];
-
   @override
   void initState() {
-    _tasks = TaskRepository.getAllTasks();
+    TaskRepository.setupTestData();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    TaskRepository.box.deleteAll(TaskRepository.box.keys);
+    super.dispose();
   }
 
   @override
@@ -28,14 +33,23 @@ class _TaskScreenState extends State<TasksScreen> {
           children: [
             Text('Task List'),
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: _tasks.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    height: 50,
-                    color: Colors.blue[index],
-                    child: Center(child: Text('Entry ${_tasks[index].title}')),
+              child: ValueListenableBuilder(
+                valueListenable: TaskRepository.box.listenable(),
+                builder: (context, box, child) {
+                  List<Task> tasks = TaskRepository.getAllTasks();
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        height: 50,
+                        color: Colors.blue[index],
+                        child: Center(
+                          child: Text('Entry ${tasks[index].title}'),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

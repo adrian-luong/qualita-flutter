@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qualita/models/task.dart';
+import 'package:qualita/repositories/task_repository.dart';
 
 class Layout extends StatelessWidget {
   final Widget screen;
@@ -17,7 +19,10 @@ class Layout extends StatelessWidget {
       body: screen,
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
-        onPressed: () {},
+        onPressed: () {
+          final now = DateTime.now();
+          TaskRepository.addTask(Task(title: 'Test task N', startDate: now));
+        },
         tooltip: 'Create',
         child: const Icon(Icons.add),
       ),
