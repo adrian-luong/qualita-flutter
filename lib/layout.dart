@@ -20,6 +20,7 @@ class Layout extends StatelessWidget {
       body: screen,
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
+        backgroundColor: scheme.primary,
         onPressed: () {
           showDialog(
             context: context,
@@ -30,7 +31,7 @@ class Layout extends StatelessWidget {
             ),
           );
         },
-        tooltip: 'Create',
+        tooltip: 'Create a new task',
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -39,7 +40,7 @@ class Layout extends StatelessWidget {
         child: BottomAppBar(
           shape: CircularNotchedRectangle(),
           elevation: 0.1,
-          color: Colors.blue,
+          color: scheme.primary,
           child: IconTheme(
             data: IconThemeData(color: scheme.onPrimary),
             child: Row(

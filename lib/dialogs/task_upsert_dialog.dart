@@ -8,11 +8,13 @@ class TaskUpsertDialog extends StatefulWidget {
   final BuildContext context;
   final FormMode mode;
   final Task task;
+  final int? taskKey;
   const TaskUpsertDialog({
     super.key,
     required this.mode,
     required this.task,
     required this.context,
+    this.taskKey,
   });
 
   @override
@@ -20,7 +22,6 @@ class TaskUpsertDialog extends StatefulWidget {
 }
 
 class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
-  final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _startDateController = TextEditingController();
   final _endDateController = TextEditingController();
@@ -38,23 +39,42 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
       startDate: newStart ?? DateTime.now(),
       endDate: newEnd,
     );
-    TaskRepository.addTask(newTask);
+
+    if (widget.mode == FormMode.edit && widget.taskKey != null) {
+      TaskRepository.editTask(widget.taskKey!, newTask);
+    } else {
+      TaskRepository.addTask(newTask);
+    }
+
+    Navigator.of(context).pop();
+  }
+
+  void _delete() {
+    TaskRepository.deleteTask(widget.taskKey!);
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      child: Form(
+    _titleController.text = widget.task.title;
+    _startDateController.text = DateFormat.yMd().format(widget.task.startDate);
+    _endDateController.text = widget.task.endDate != null
+        ? DateFormat.yMd().format(widget.task.endDate!)
+        : '';
+
+    return AlertDialog(
+      title: Text(
+        widget.mode == FormMode.create
+            ? 'Add new task'
+            : 'Edit task ${widget.task.title}',
+      ),
+      content: Form(
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                widget.mode == FormMode.create ? 'Add new task' : 'Edit task',
-              ),
               Divider(),
               TextFormField(
                 controller: _titleController,
@@ -104,9 +124,21 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                 },
               ),
               Divider(),
-              ElevatedButton(
-                onPressed: _submit,
-                child: Text(widget.mode == FormMode.create ? 'Add' : 'Edit'),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: _submit,
+                    child: Text(
+                      widget.mode == FormMode.create ? 'Add' : 'Edit',
+                    ),
+                  ),
+                  Spacer(),
+                  if (widget.mode == FormMode.edit)
+                    ElevatedButton(
+                      onPressed: widget.taskKey != null ? _delete : null,
+                      child: Text('Delete'),
+                    ),
+                ],
               ),
             ],
           ),

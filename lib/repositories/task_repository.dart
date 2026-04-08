@@ -32,11 +32,11 @@ class TaskRepository {
 
   // update data for particular user in hive
   static Future<void> editTask(int key, Task task) async {
-    await box.put(key, task);
+    await box.putAt(key, task);
   }
 
   // delete data for particular user in hive
-  static void deleteTask(int key) async {
-    await box.delete(key);
+  static Future<void> deleteTask(int key) async {
+    await box.deleteAt(key);
   }
 }
