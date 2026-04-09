@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qualita/data/models/task.dart';
+import 'package:qualita/data/models/task_status.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
 import 'package:qualita/utils/constant_enums.dart';
 
@@ -19,9 +20,10 @@ class TaskUpsertDialog extends StatefulWidget {
 }
 
 class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
-  late String newTitle;
-  late DateTime newStartDate;
-  late DateTime? newEndDate;
+  late String formTitle;
+  late DateTime formStartDate;
+  late DateTime? formEndDate;
+  late TaskStatus formStatus;
 
   final rangeStart = DateTime.now().subtract(const Duration(days: 30));
   final rangeEnd = DateTime.now().add(const Duration(days: 30));
@@ -29,18 +31,19 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
   @override
   void initState() {
     setState(() {
-      newTitle = widget.task.title;
-      newStartDate = widget.task.startDate;
-      newEndDate = widget.task.endDate;
+      formTitle = widget.task.title;
+      formStartDate = widget.task.startDate;
+      formEndDate = widget.task.endDate;
+      formStatus = widget.task.status;
     });
     super.initState();
   }
 
   void _submit() {
     final newTask = Task(
-      title: newTitle,
-      startDate: newStartDate,
-      endDate: newEndDate,
+      title: formTitle,
+      startDate: formStartDate,
+      endDate: formEndDate,
     );
 
     if (widget.mode == FormMode.edit && widget.taskKey != null) {
@@ -74,24 +77,40 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
             children: [
               Divider(),
               TextFormField(
-                initialValue: newTitle,
+                initialValue: formTitle,
                 decoration: InputDecoration(labelText: 'Task title'),
-                onChanged: (value) => setState(() => newTitle = value),
+                onChanged: (value) => setState(() => formTitle = value),
               ),
               InputDatePickerFormField(
                 firstDate: rangeStart,
                 lastDate: rangeEnd,
-                initialDate: newStartDate,
+                initialDate: formStartDate,
                 onDateSubmitted: (value) =>
-                    setState(() => newStartDate = value),
+                    setState(() => formStartDate = value),
                 fieldLabelText: 'Task start date',
               ),
               InputDatePickerFormField(
                 firstDate: rangeStart,
                 lastDate: rangeEnd,
-                initialDate: newStartDate,
-                onDateSubmitted: (value) => setState(() => newEndDate = value),
+                initialDate: formEndDate,
+                onDateSubmitted: (value) => setState(() => formEndDate = value),
                 fieldLabelText: 'Task end date',
+              ),
+
+              DropdownMenu<TaskStatus>(
+                initialSelection: formStatus,
+                requestFocusOnTap: true,
+                label: const Text('Select task status'),
+                onSelected: (value) =>
+                    setState(() => formStatus = value ?? TaskStatus.inProgress),
+                dropdownMenuEntries: TaskStatus.values
+                    .map(
+                      (status) => DropdownMenuEntry(
+                        value: status,
+                        label: TaskStatus.getLabel(status),
+                      ),
+                    )
+                    .toList(),
               ),
               Divider(),
               Row(
