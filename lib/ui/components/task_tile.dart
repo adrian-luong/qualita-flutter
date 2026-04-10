@@ -21,16 +21,6 @@ class TaskTile extends StatelessWidget {
 
     bool isOnhold = task.status == TaskStatus.onHold;
     bool isCompleted = task.status == TaskStatus.completed;
-    Color paintTile() {
-      switch (task.status) {
-        case TaskStatus.completed:
-          return Colors.green;
-        case TaskStatus.onHold:
-          return Colors.amber;
-        case TaskStatus.inProgress:
-          return Colors.blue;
-      }
-    }
 
     return Container(
       decoration: BoxDecoration(
@@ -38,7 +28,7 @@ class TaskTile extends StatelessWidget {
           color: Colors.transparent, // Border color
           width: 2.0, // Border thickness
         ),
-        color: paintTile(),
+        color: TaskStatus.getColor(task.status),
       ),
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -47,7 +37,13 @@ class TaskTile extends StatelessWidget {
           children: [
             Column(
               spacing: 5,
-              children: [Text(task.title), Text('($startDate - $endDate)')],
+              children: [
+                Text(task.title, style: TextStyle(color: Colors.white)),
+                Text(
+                  '($startDate - $endDate)',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
             ),
             Column(
               children: [
