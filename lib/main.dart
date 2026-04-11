@@ -1,10 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:qualita/models/task.dart';
-import 'package:qualita/screens/home_screen.dart';
-import 'package:qualita/screens/settings_screen.dart';
-import 'package:qualita/screens/tasks_screen.dart';
-import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:qualita/data/models/task.dart';
+import 'package:qualita/ui/screens/home_screen.dart';
+import 'package:qualita/ui/screens/settings_screen.dart';
+import 'package:qualita/ui/screens/tasks_screen.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -18,9 +18,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShadcnApp.router(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorScheme: ColorSchemes.darkGray.blue),
       routerConfig: GoRouter(
         routes: [
           GoRoute(path: '/', builder: (context, state) => const HomeScreen()),

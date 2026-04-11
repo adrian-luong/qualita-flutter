@@ -1,9 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:qualita/layout.dart';
-import 'package:qualita/models/task.dart';
-import 'package:qualita/repositories/task_repository.dart';
-import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'package:qualita/components/task_tile.dart';
+import 'package:qualita/ui/components/task_tile.dart';
+import 'package:qualita/ui/screen_layout.dart';
+import 'package:qualita/data/models/task.dart';
+import 'package:qualita/data/repositories/task_repository.dart';
 
 class TasksScreen extends StatefulWidget {
   const TasksScreen({super.key});
@@ -27,12 +27,11 @@ class _TaskScreenState extends State<TasksScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Layout(
+    return ScreenLayout(
       screen: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Task List'),
             Expanded(
               child: ValueListenableBuilder(
                 valueListenable: TaskRepository.box.listenable(),

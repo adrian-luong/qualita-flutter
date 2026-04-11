@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qualita/models/task.dart';
-import 'package:qualita/repositories/task_repository.dart';
+import 'package:qualita/data/models/task.dart';
+import 'package:qualita/data/repositories/task_repository.dart';
 import 'package:qualita/utils/constant_enums.dart';
 
 class TaskUpsertDialog extends StatefulWidget {

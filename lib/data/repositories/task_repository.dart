@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:qualita/models/task.dart';
+import 'package:qualita/data/models/task.dart';
 
 class TaskRepository {
   // Box which will use to store the things

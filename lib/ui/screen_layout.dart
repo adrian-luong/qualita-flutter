@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qualita/dialogs/task_upsert_dialog.dart';
-import 'package:qualita/models/task.dart';
+import 'package:qualita/ui/dialogs/task_upsert_dialog.dart';
+import 'package:qualita/data/models/task.dart';
 import 'package:qualita/utils/constant_enums.dart';
 
-class Layout extends StatelessWidget {
+class ScreenLayout extends StatelessWidget {
   final Widget screen;
-  const Layout({super.key, required this.screen});
+  const ScreenLayout({super.key, required this.screen});
 
   @override
   Widget build(BuildContext context) {
