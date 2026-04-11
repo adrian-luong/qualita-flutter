@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:qualita/data/models/task.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
 import 'package:qualita/utils/constant_enums.dart';
 
 class TaskUpsertDialog extends StatefulWidget {
-  final BuildContext context;
   final FormMode mode;
   final Task task;
   final int? taskKey;
@@ -13,7 +11,6 @@ class TaskUpsertDialog extends StatefulWidget {
     super.key,
     required this.mode,
     required this.task,
-    required this.context,
     this.taskKey,
   });
 
@@ -22,22 +19,28 @@ class TaskUpsertDialog extends StatefulWidget {
 }
 
 class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
-  final _titleController = TextEditingController();
-  final _startDateController = TextEditingController();
-  final _endDateController = TextEditingController();
+  late String newTitle;
+  late DateTime newStartDate;
+  late DateTime? newEndDate;
 
   final rangeStart = DateTime.now().subtract(const Duration(days: 30));
   final rangeEnd = DateTime.now().add(const Duration(days: 30));
 
-  void _submit() {
-    String newTitle = _titleController.text;
-    DateTime? newStart = DateTime.tryParse(_startDateController.text);
-    DateTime? newEnd = DateTime.tryParse(_endDateController.text);
+  @override
+  void initState() {
+    setState(() {
+      newTitle = widget.task.title;
+      newStartDate = widget.task.startDate;
+      newEndDate = widget.task.endDate;
+    });
+    super.initState();
+  }
 
+  void _submit() {
     final newTask = Task(
       title: newTitle,
-      startDate: newStart ?? DateTime.now(),
-      endDate: newEnd,
+      startDate: newStartDate,
+      endDate: newEndDate,
     );
 
     if (widget.mode == FormMode.edit && widget.taskKey != null) {
@@ -56,88 +59,55 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
 
   @override
   Widget build(BuildContext context) {
-    _titleController.text = widget.task.title;
-    _startDateController.text = DateFormat.yMd().format(widget.task.startDate);
-    _endDateController.text = widget.task.endDate != null
-        ? DateFormat.yMd().format(widget.task.endDate!)
-        : '';
-
     return AlertDialog(
       title: Text(
         widget.mode == FormMode.create
             ? 'Add new task'
-            : 'Edit task ${widget.task.title}',
+            : 'Edit ${widget.task.title}',
       ),
       content: Form(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
+        child: IntrinsicWidth(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 10,
             children: [
               Divider(),
               TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: 'Task title',
-                  prefixIcon: Icon(Icons.task),
-                ),
+                initialValue: newTitle,
+                decoration: InputDecoration(labelText: 'Task title'),
+                onChanged: (value) => setState(() => newTitle = value),
               ),
-              TextFormField(
-                controller: _startDateController,
-                decoration: InputDecoration(
-                  labelText: 'Task start date',
-                  prefixIcon: Icon(Icons.calendar_today),
-                ),
-                readOnly: true,
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: widget.task.startDate,
-                    firstDate: rangeStart,
-                    lastDate: rangeEnd,
-                  );
-                  if (pickedDate != null) {
-                    String date = DateFormat.yMd().format(pickedDate);
-                    _startDateController.text = date;
-                  }
-                },
+              InputDatePickerFormField(
+                firstDate: rangeStart,
+                lastDate: rangeEnd,
+                initialDate: newStartDate,
+                onDateSubmitted: (value) =>
+                    setState(() => newStartDate = value),
+                fieldLabelText: 'Task start date',
               ),
-              TextFormField(
-                controller: _endDateController,
-                decoration: InputDecoration(
-                  labelText: 'Task end date',
-                  prefixIcon: Icon(Icons.calendar_month),
-                ),
-                readOnly: true,
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: widget.task.endDate,
-                    firstDate: rangeStart,
-                    lastDate: rangeEnd,
-                  );
-                  if (pickedDate != null) {
-                    String date = DateFormat.yMd().format(pickedDate);
-                    _endDateController.text = date;
-                  }
-                },
+              InputDatePickerFormField(
+                firstDate: rangeStart,
+                lastDate: rangeEnd,
+                initialDate: newStartDate,
+                onDateSubmitted: (value) => setState(() => newEndDate = value),
+                fieldLabelText: 'Task end date',
               ),
               Divider(),
               Row(
                 children: [
-                  ElevatedButton(
+                  if (widget.mode == FormMode.edit)
+                    FilledButton(
+                      onPressed: widget.taskKey != null ? _delete : null,
+                      child: Text('Delete'),
+                    ),
+                  Spacer(),
+                  FilledButton(
                     onPressed: _submit,
                     child: Text(
                       widget.mode == FormMode.create ? 'Add' : 'Edit',
                     ),
                   ),
-                  Spacer(),
-                  if (widget.mode == FormMode.edit)
-                    ElevatedButton(
-                      onPressed: widget.taskKey != null ? _delete : null,
-                      child: Text('Delete'),
-                    ),
                 ],
               ),
             ],

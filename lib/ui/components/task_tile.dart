@@ -46,7 +46,6 @@ class TaskTile extends StatelessWidget {
                         mode: FormMode.edit,
                         task: task,
                         taskKey: taskKey,
-                        context: context,
                       ),
                     ),
                   ),

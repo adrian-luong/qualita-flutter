@@ -24,11 +24,8 @@ class ScreenLayout extends StatelessWidget {
         onPressed: () {
           showDialog(
             context: context,
-            builder: (context) => TaskUpsertDialog(
-              mode: FormMode.create,
-              task: Task.empty(),
-              context: context,
-            ),
+            builder: (context) =>
+                TaskUpsertDialog(mode: FormMode.create, task: Task.empty()),
           );
         },
         tooltip: 'Create a new task',
