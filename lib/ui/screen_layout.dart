@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:go_router/go_router.dart';
 import 'package:qualita/ui/dialogs/task_upsert_dialog.dart';
 import 'package:qualita/data/models/task.dart';
+import 'package:qualita/ui/screen_provider.dart';
 import 'package:qualita/utils/constant_enums.dart';
 
-class ScreenLayout extends StatelessWidget {
+class ScreenLayout extends ConsumerWidget {
   final Widget screen;
   const ScreenLayout({super.key, required this.screen});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
+    final screenNotifier = ref.read(screenProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,17 +48,20 @@ class ScreenLayout extends StatelessWidget {
                 IconButton(
                   tooltip: 'Home',
                   icon: const Icon(Icons.home),
-                  onPressed: () => context.go('/'),
+                  // onPressed: () => context.go('/'),
+                  onPressed: () => screenNotifier.switchScreen(Screen.home),
                 ),
                 IconButton(
                   tooltip: 'Tasks',
                   icon: const Icon(Icons.checklist),
-                  onPressed: () => context.go('/tasks'),
+                  // onPressed: () => context.go('/tasks'),
+                  onPressed: () => screenNotifier.switchScreen(Screen.tasks),
                 ),
                 IconButton(
                   tooltip: 'Settings',
                   icon: const Icon(Icons.settings),
-                  onPressed: () => context.go('/settings'),
+                  // onPressed: () => context.go('/settings'),
+                  onPressed: () => screenNotifier.switchScreen(Screen.settings),
                 ),
                 Spacer(),
               ],

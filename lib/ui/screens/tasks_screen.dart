@@ -10,10 +10,10 @@ class TasksScreen extends StatefulWidget {
   const TasksScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => _TaskScreenState();
+  State<StatefulWidget> createState() => _TaskScreentate();
 }
 
-class _TaskScreenState extends State<TasksScreen> {
+class _TaskScreentate extends State<TasksScreen> {
   TaskStatus? filter;
   // onChanged: (value) => setState(() => filter = value),
   @override

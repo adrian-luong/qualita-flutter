@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:qualita/data/models/task.dart';
 import 'package:qualita/data/models/task_status.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
+import 'package:qualita/ui/screen_provider.dart';
 import 'package:qualita/ui/screens/home_screen.dart';
 import 'package:qualita/ui/screens/settings_screen.dart';
 import 'package:qualita/ui/screens/tasks_screen.dart';
+import 'package:qualita/utils/constant_enums.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -15,29 +18,29 @@ void main() async {
   await Hive.openBox<Task>('tasks');
   TaskRepository.setupTestData();
 
-  runApp(const MainApp());
+  runApp(ProviderScope(child: const MainApp()));
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends ConsumerWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Screen screen = ref.watch(screenProvider);
+    Widget renderScreen(Screen screen) {
+      switch (screen) {
+        case Screen.home:
+          return HomeScreen();
+        case Screen.tasks:
+          return TasksScreen();
+        case Screen.settings:
+          return SettingsScreen();
+      }
+    }
+
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      routerConfig: GoRouter(
-        routes: [
-          GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
-          GoRoute(
-            path: '/tasks',
-            builder: (context, state) => const TasksScreen(),
-          ),
-          GoRoute(
-            path: '/settings',
-            builder: (context, state) => const SettingsScreen(),
-          ),
-        ],
-      ),
+      home: renderScreen(screen),
     );
   }
 }
