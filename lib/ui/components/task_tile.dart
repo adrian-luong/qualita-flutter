@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:qualita/data/models/tag.dart';
 import 'package:qualita/data/models/task_status.dart';
+import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
 import 'package:qualita/ui/dialogs/task_upsert_dialog.dart';
 import 'package:qualita/data/models/task.dart';
@@ -14,13 +15,21 @@ class TaskTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? startDate = DateFormat.yMd().format(task.startDate);
-    String? endDate = task.endDate != null
-        ? DateFormat.yMd().format(task.endDate!)
-        : '';
-
     bool isOnhold = task.status == TaskStatus.onHold;
     bool isCompleted = task.status == TaskStatus.completed;
+
+    List<Widget> renderBadges(List<int> tagIndexes) {
+      List<Widget> badges = [];
+      for (int index in tagIndexes) {
+        Tag? foundTag = TagRepository.findTag(index);
+        if (foundTag != null) {
+          badges.add(
+            Badge(padding: EdgeInsets.all(5), label: Text(foundTag.label)),
+          );
+        }
+      }
+      return badges;
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -39,10 +48,7 @@ class TaskTile extends StatelessWidget {
               spacing: 5,
               children: [
                 Text(task.title, style: TextStyle(color: Colors.white)),
-                Text(
-                  '($startDate - $endDate)',
-                  style: TextStyle(color: Colors.white),
-                ),
+                Row(spacing: 10, children: renderBadges(task.tags)),
               ],
             ),
             Column(

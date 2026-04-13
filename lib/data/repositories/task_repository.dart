@@ -8,9 +8,9 @@ class TaskRepository {
   static Future<void> setupTestData() async {
     final now = DateTime.now();
     final testTasks = [
-      Task(title: 'Test Task 1', startDate: now),
-      Task(title: 'Test Task 2', startDate: now),
-      Task(title: 'Test Task 3', startDate: now),
+      Task(title: 'Test Task 1', startDate: now, tags: [0]),
+      Task(title: 'Test Task 2', startDate: now, tags: [1]),
+      Task(title: 'Test Task 3', startDate: now, tags: [0, 1]),
     ];
     await box.addAll(testTasks);
   }
