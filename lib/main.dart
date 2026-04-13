@@ -9,6 +9,7 @@ import 'package:qualita/ui/screen_provider.dart';
 import 'package:qualita/ui/screens/home_screen.dart';
 import 'package:qualita/ui/screens/settings_screen.dart';
 import 'package:qualita/ui/screens/tasks_screen.dart';
+import 'package:qualita/ui/theme_provider.dart';
 import 'package:qualita/utils/constant_enums.dart';
 
 void main() async {
@@ -27,6 +28,8 @@ class MainApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final Screen screen = ref.watch(screenProvider);
+    final ThemeMode mode = ref.watch(themeProvider);
+
     Widget renderScreen(Screen screen) {
       switch (screen) {
         case Screen.home:
@@ -41,6 +44,9 @@ class MainApp extends ConsumerWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: renderScreen(screen),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: mode,
     );
   }
 }
