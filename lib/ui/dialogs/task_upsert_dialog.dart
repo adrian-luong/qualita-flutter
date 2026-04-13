@@ -64,9 +64,7 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        widget.mode == FormMode.create
-            ? 'Add new task'
-            : 'Edit ${widget.task.title}',
+        widget.mode == FormMode.create ? 'Add new task' : 'Edit $formTitle',
       ),
       content: Form(
         child: IntrinsicWidth(

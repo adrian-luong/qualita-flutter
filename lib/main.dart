@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:qualita/data/models/tag.dart';
 
 import 'package:qualita/data/models/task.dart';
 import 'package:qualita/data/models/task_status.dart';
+import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
 import 'package:qualita/ui/screen_provider.dart';
 import 'package:qualita/ui/screens/home_screen.dart';
@@ -16,8 +18,11 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter<Task>(TaskAdapter());
   Hive.registerAdapter<TaskStatus>(TaskStatusAdapter());
+  Hive.registerAdapter<Tag>(TagAdapter());
   await Hive.openBox<Task>('tasks');
+  await Hive.openBox<Tag>('tags');
   TaskRepository.setupTestData();
+  TagRepository.setupTestData();
 
   runApp(ProviderScope(child: const MainApp()));
 }
