@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:multi_dropdown/multi_dropdown.dart';
+import 'package:collection/collection.dart';
+
+import 'package:qualita/data/models/tag.dart';
 import 'package:qualita/data/models/task.dart';
 import 'package:qualita/data/models/task_status.dart';
+import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
 import 'package:qualita/utils/constant_enums.dart';
 
@@ -24,6 +30,7 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
   late DateTime formStartDate;
   late DateTime? formEndDate;
   late TaskStatus formStatus;
+  late List<int> formTags;
 
   final rangeStart = DateTime.now().subtract(const Duration(days: 30));
   final rangeEnd = DateTime.now().add(const Duration(days: 30));
@@ -35,6 +42,7 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
       formStartDate = widget.task.startDate;
       formEndDate = widget.task.endDate;
       formStatus = widget.task.status;
+      formTags = widget.task.tags;
     });
     super.initState();
   }
@@ -44,6 +52,8 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
       title: formTitle,
       startDate: formStartDate,
       endDate: formEndDate,
+      status: formStatus,
+      tags: formTags,
     );
 
     if (widget.mode == FormMode.edit && widget.taskKey != null) {
@@ -94,7 +104,6 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                 onDateSubmitted: (value) => setState(() => formEndDate = value),
                 fieldLabelText: 'Task end date',
               ),
-
               DropdownMenu<TaskStatus>(
                 initialSelection: formStatus,
                 requestFocusOnTap: true,
@@ -109,6 +118,29 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                       ),
                     )
                     .toList(),
+              ),
+              ValueListenableBuilder(
+                valueListenable: TagRepository.box.listenable(),
+                builder: (context, box, child) {
+                  List<Tag> tags = TagRepository.getAllTags();
+                  return MultiDropdown<int>(
+                    fieldDecoration: FieldDecoration(
+                      labelText: 'Select task tags',
+                      suffixIcon: const Icon(Icons.tag),
+                    ),
+                    items: tags
+                        .mapIndexed(
+                          (index, tag) => DropdownItem(
+                            label: tag.label,
+                            value: index,
+                            selected: formTags.contains(index),
+                          ),
+                        )
+                        .toList(),
+                    onSelectionChange: (selected) =>
+                        setState(() => formTags = selected),
+                  );
+                },
               ),
               Divider(),
               Row(
