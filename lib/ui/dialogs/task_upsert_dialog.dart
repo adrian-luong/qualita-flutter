@@ -13,13 +13,7 @@ import 'package:qualita/utils/constant_enums.dart';
 class TaskUpsertDialog extends StatefulWidget {
   final FormMode mode;
   final Task task;
-  final int? taskKey;
-  const TaskUpsertDialog({
-    super.key,
-    required this.mode,
-    required this.task,
-    this.taskKey,
-  });
+  const TaskUpsertDialog({super.key, required this.mode, required this.task});
 
   @override
   State<StatefulWidget> createState() => _TaskUpsertDialogState();
@@ -49,6 +43,7 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
 
   void _submit() {
     final newTask = Task(
+      id: widget.task.id,
       title: formTitle,
       startDate: formStartDate,
       endDate: formEndDate,
@@ -56,8 +51,8 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
       tags: formTags,
     );
 
-    if (widget.mode == FormMode.edit && widget.taskKey != null) {
-      TaskRepository.editTask(widget.taskKey!, newTask);
+    if (widget.mode == FormMode.edit) {
+      TaskRepository.editTask(newTask);
     } else {
       TaskRepository.addTask(newTask);
     }
@@ -66,7 +61,7 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
   }
 
   void _delete() {
-    TaskRepository.deleteTask(widget.taskKey!);
+    TaskRepository.deleteTask(widget.task.id);
     Navigator.of(context).pop();
   }
 
@@ -146,10 +141,7 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
               Row(
                 children: [
                   if (widget.mode == FormMode.edit)
-                    FilledButton(
-                      onPressed: widget.taskKey != null ? _delete : null,
-                      child: Text('Delete'),
-                    ),
+                    FilledButton(onPressed: _delete, child: Text('Delete')),
                   Spacer(),
                   FilledButton(
                     onPressed: _submit,

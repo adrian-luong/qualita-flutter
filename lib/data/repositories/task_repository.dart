@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:qualita/data/models/task.dart';
+import 'package:qualita/utils/generate_id.dart';
 
 class TaskRepository {
   // Box which will use to store the things
@@ -7,12 +8,27 @@ class TaskRepository {
 
   static Future<void> setupTestData() async {
     final now = DateTime.now();
-    final testTasks = [
-      Task(title: 'Test Task 1', startDate: now, tags: [0]),
-      Task(title: 'Test Task 2', startDate: now, tags: [1]),
-      Task(title: 'Test Task 3', startDate: now, tags: [0, 1]),
-    ];
-    await box.addAll(testTasks);
+    final testTasks = {
+      ...Task(
+        id: generateID(),
+        title: 'Test Task 1',
+        startDate: now,
+        tags: [0],
+      ).formMap(),
+      ...Task(
+        id: generateID(),
+        title: 'Test Task 2',
+        startDate: now,
+        tags: [1],
+      ).formMap(),
+      ...Task(
+        id: generateID(),
+        title: 'Test Task 3',
+        startDate: now,
+        tags: [0, 1],
+      ).formMap(),
+    };
+    await box.putAll(testTasks);
   }
 
   // Create or add single data in hive
@@ -26,17 +42,17 @@ class TaskRepository {
   }
 
   // Get data for particular user in hive
-  static Task? findTask(int key) {
-    return box.get(key);
+  static Task? findTask(String id) {
+    return box.get(id);
   }
 
   // update data for particular user in hive
-  static Future<void> editTask(int key, Task task) async {
-    await box.putAt(key, task);
+  static Future<void> editTask(Task task) async {
+    await box.put(task.id, task);
   }
 
   // delete data for particular user in hive
-  static Future<void> deleteTask(int key) async {
-    await box.deleteAt(key);
+  static Future<void> deleteTask(String id) async {
+    await box.delete(id);
   }
 }

@@ -60,11 +60,8 @@ class TaskTile extends StatelessWidget {
                     icon: const Icon(Icons.edit),
                     onPressed: () => showDialog(
                       context: context,
-                      builder: (context) => TaskUpsertDialog(
-                        mode: FormMode.edit,
-                        task: task,
-                        taskKey: taskKey,
-                      ),
+                      builder: (context) =>
+                          TaskUpsertDialog(mode: FormMode.edit, task: task),
                     ),
                   ),
                 ),
@@ -82,7 +79,7 @@ class TaskTile extends StatelessWidget {
                       task.status = !isOnhold
                           ? TaskStatus.onHold
                           : TaskStatus.inProgress;
-                      TaskRepository.editTask(taskKey, task);
+                      TaskRepository.editTask(task);
                     },
                   ),
                 ),
@@ -100,7 +97,7 @@ class TaskTile extends StatelessWidget {
                       task.status = !isCompleted
                           ? TaskStatus.completed
                           : TaskStatus.inProgress;
-                      TaskRepository.editTask(taskKey, task);
+                      TaskRepository.editTask(task);
                     },
                   ),
                 ),
