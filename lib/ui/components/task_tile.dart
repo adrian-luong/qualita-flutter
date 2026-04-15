@@ -9,19 +9,18 @@ import 'package:qualita/utils/constant_enums.dart';
 
 class TaskTile extends StatelessWidget {
   final Task task;
-  final int taskKey;
 
-  const TaskTile({super.key, required this.task, required this.taskKey});
+  const TaskTile({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {
     bool isOnhold = task.status == TaskStatus.onHold;
     bool isCompleted = task.status == TaskStatus.completed;
 
-    List<Widget> renderBadges(List<int> tagIndexes) {
+    List<Widget> renderBadges(List<String> tagIds) {
       List<Widget> badges = [];
-      for (int index in tagIndexes) {
-        Tag? foundTag = TagRepository.findTag(index);
+      for (String tagId in tagIds) {
+        Tag? foundTag = TagRepository.findTag(id: tagId);
         if (foundTag != null) {
           badges.add(
             Badge(padding: EdgeInsets.all(5), label: Text(foundTag.label)),

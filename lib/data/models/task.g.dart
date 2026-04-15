@@ -19,7 +19,7 @@ class TaskAdapter extends TypeAdapter<Task> {
     return Task(
       id: fields[0] as String,
       title: fields[1] as String,
-      tags: (fields[2] as List).cast<int>(),
+      tags: (fields[2] as List).cast<String>(),
       startDate: fields[3] as DateTime,
       endDate: fields[4] as DateTime?,
       status: fields[5] as TaskStatus,

@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:qualita/data/models/task.dart';
+import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/utils/generate_id.dart';
 
 class TaskRepository {
@@ -13,19 +14,19 @@ class TaskRepository {
         id: generateID(),
         title: 'Test Task 1',
         startDate: now,
-        tags: [0],
+        tags: [TagRepository.testingTagId],
       ).formMap(),
       ...Task(
         id: generateID(),
         title: 'Test Task 2',
         startDate: now,
-        tags: [1],
+        tags: [TagRepository.productionTagId],
       ).formMap(),
       ...Task(
         id: generateID(),
         title: 'Test Task 3',
         startDate: now,
-        tags: [0, 1],
+        tags: [TagRepository.testingTagId, TagRepository.productionTagId],
       ).formMap(),
     };
     await box.putAll(testTasks);

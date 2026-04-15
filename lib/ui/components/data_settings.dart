@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:collection/collection.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:qualita/data/models/tag.dart';
 import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/ui/dialogs/tag_upsert_dialog.dart';
@@ -51,8 +51,8 @@ class DataSettings extends StatelessWidget {
                     ),
                   ],
                 ),
-                ...tags.mapIndexed(
-                  (index, tag) => TableRow(
+                ...tags.map(
+                  (tag) => TableRow(
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(5),
@@ -73,7 +73,6 @@ class DataSettings extends StatelessWidget {
                                 builder: (context) => TagUpsertDialog(
                                   mode: FormMode.edit,
                                   tag: tag,
-                                  tagKey: index,
                                 ),
                               ),
                               child: Text('Edit'),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
-import 'package:collection/collection.dart';
 
 import 'package:qualita/data/models/tag.dart';
 import 'package:qualita/data/models/task.dart';
@@ -9,6 +8,7 @@ import 'package:qualita/data/models/task_status.dart';
 import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
 import 'package:qualita/utils/constant_enums.dart';
+import 'package:qualita/utils/generate_id.dart';
 
 class TaskUpsertDialog extends StatefulWidget {
   final FormMode mode;
@@ -24,7 +24,7 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
   late DateTime formStartDate;
   late DateTime? formEndDate;
   late TaskStatus formStatus;
-  late List<int> formTags;
+  late List<String> formTags;
 
   final rangeStart = DateTime.now().subtract(const Duration(days: 30));
   final rangeEnd = DateTime.now().add(const Duration(days: 30));
@@ -43,7 +43,7 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
 
   void _submit() {
     final newTask = Task(
-      id: widget.task.id,
+      id: widget.task.id != '' ? widget.task.id : generateID(),
       title: formTitle,
       startDate: formStartDate,
       endDate: formEndDate,
@@ -118,17 +118,17 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                 valueListenable: TagRepository.box.listenable(),
                 builder: (context, box, child) {
                   List<Tag> tags = TagRepository.getAllTags();
-                  return MultiDropdown<int>(
+                  return MultiDropdown<String>(
                     fieldDecoration: FieldDecoration(
                       labelText: 'Select task tags',
                       suffixIcon: const Icon(Icons.tag),
                     ),
                     items: tags
-                        .mapIndexed(
-                          (index, tag) => DropdownItem(
+                        .map(
+                          (tag) => DropdownItem(
                             label: tag.label,
-                            value: index,
-                            selected: formTags.contains(index),
+                            value: tag.id,
+                            selected: formTags.contains(tag.id),
                           ),
                         )
                         .toList(),

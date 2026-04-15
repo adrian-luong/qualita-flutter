@@ -10,7 +10,7 @@ class Task extends HiveObject {
   @HiveField(1)
   String title;
   @HiveField(2)
-  List<int> tags;
+  List<String> tags;
   @HiveField(3)
   DateTime startDate;
   @HiveField(4)

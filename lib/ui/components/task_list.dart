@@ -12,8 +12,7 @@ class TaskList extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.all(8),
       itemCount: tasks.length,
-      itemBuilder: (context, index) =>
-          TaskTile(task: tasks[index], taskKey: index),
+      itemBuilder: (context, index) => TaskTile(task: tasks[index]),
       separatorBuilder: (context, index) => SizedBox(height: 15),
     );
   }

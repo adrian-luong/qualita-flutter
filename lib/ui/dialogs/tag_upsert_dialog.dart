@@ -2,18 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:qualita/data/models/tag.dart';
 import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/utils/constant_enums.dart';
+import 'package:qualita/utils/generate_id.dart';
 
 class TagUpsertDialog extends StatefulWidget {
   final FormMode mode;
   final Tag tag;
-  final int? tagKey;
 
-  const TagUpsertDialog({
-    super.key,
-    required this.mode,
-    required this.tag,
-    this.tagKey,
-  });
+  const TagUpsertDialog({super.key, required this.mode, required this.tag});
 
   @override
   State<StatefulWidget> createState() => _TagUpsertDialogState();
@@ -33,10 +28,14 @@ class _TagUpsertDialogState extends State<TagUpsertDialog> {
   }
 
   void _submit() {
-    final newTag = Tag(label: formLabel, description: formDesc);
+    final newTag = Tag(
+      id: widget.tag.id != '' ? widget.tag.id : generateID(),
+      label: formLabel,
+      description: formDesc,
+    );
 
-    if (widget.mode == FormMode.edit && widget.tagKey != null) {
-      TagRepository.editTag(widget.tagKey!, newTag);
+    if (widget.mode == FormMode.edit) {
+      TagRepository.editTag(newTag);
     } else {
       TagRepository.addTag(newTag);
     }
@@ -45,7 +44,7 @@ class _TagUpsertDialogState extends State<TagUpsertDialog> {
   }
 
   void _delete() {
-    TagRepository.deleteTag(widget.tagKey!);
+    TagRepository.deleteTag(widget.tag.id);
     Navigator.of(context).pop();
   }
 
@@ -77,10 +76,7 @@ class _TagUpsertDialogState extends State<TagUpsertDialog> {
               Row(
                 children: [
                   if (widget.mode == FormMode.edit)
-                    FilledButton(
-                      onPressed: widget.tagKey != null ? _delete : null,
-                      child: Text('Delete'),
-                    ),
+                    FilledButton(onPressed: _delete, child: Text('Delete')),
                   Spacer(),
                   FilledButton(
                     onPressed: _submit,
