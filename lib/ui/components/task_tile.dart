@@ -50,6 +50,7 @@ class TaskTile extends StatelessWidget {
                 Row(spacing: 10, children: renderBadges(task.tags)),
               ],
             ),
+            Spacer(),
             Column(
               children: [
                 Tooltip(

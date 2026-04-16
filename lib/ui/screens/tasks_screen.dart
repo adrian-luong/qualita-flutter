@@ -53,6 +53,9 @@ class _TaskScreentate extends State<TasksScreen> {
                         .where((task) => task.status == filter)
                         .toList();
                   }
+                  tasks.sort(
+                    (taskA, taskB) => taskA.order.compareTo(taskB.order),
+                  );
                   return TaskList(tasks: tasks);
                 },
               ),

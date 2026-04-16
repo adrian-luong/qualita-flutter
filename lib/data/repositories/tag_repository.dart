@@ -9,6 +9,7 @@ class TagRepository {
   static final productionTagId = generateID();
 
   static Future<void> setupTestData() async {
+    await box.clear();
     final testTags = {
       ...Tag(
         id: testingTagId,
