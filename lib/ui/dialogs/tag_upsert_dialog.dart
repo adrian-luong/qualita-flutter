@@ -50,43 +50,50 @@ class _TagUpsertDialogState extends State<TagUpsertDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        widget.mode == FormMode.create ? 'Add new tag' : 'Edit $formLabel',
-      ),
-      content: Form(
-        child: IntrinsicWidth(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 10,
-            children: [
-              Divider(),
-              TextFormField(
-                initialValue: formLabel,
-                decoration: InputDecoration(labelText: 'Tag label'),
-                onChanged: (value) => setState(() => formLabel = value),
-              ),
-              TextFormField(
-                initialValue: formDesc,
-                decoration: InputDecoration(labelText: 'Tag description'),
-                onChanged: (value) => setState(() => formDesc = value),
-              ),
-              Divider(),
-              Row(
-                children: [
-                  if (widget.mode == FormMode.edit)
-                    FilledButton(onPressed: _delete, child: Text('Delete')),
-                  Spacer(),
-                  FilledButton(
-                    onPressed: _submit,
-                    child: Text(
-                      widget.mode == FormMode.create ? 'Add' : 'Edit',
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Form(
+          child: IntrinsicWidth(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 10,
+              children: [
+                Text(
+                  widget.mode == FormMode.create
+                      ? 'Add new tag'
+                      : 'Edit $formLabel',
+                ),
+                Divider(),
+                TextFormField(
+                  initialValue: formLabel,
+                  decoration: InputDecoration(labelText: 'Tag label'),
+                  onChanged: (value) => setState(() => formLabel = value),
+                ),
+                TextFormField(
+                  initialValue: formDesc,
+                  minLines: 2,
+                  maxLines: 20,
+                  decoration: InputDecoration(labelText: 'Tag description'),
+                  onChanged: (value) => setState(() => formDesc = value),
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    if (widget.mode == FormMode.edit)
+                      FilledButton(onPressed: _delete, child: Text('Delete')),
+                    Spacer(),
+                    FilledButton(
+                      onPressed: _submit,
+                      child: Text(
+                        widget.mode == FormMode.create ? 'Add' : 'Edit',
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -72,107 +72,117 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return AlertDialog(
-      title: Text(
-        widget.mode == FormMode.create ? 'Add new task' : 'Edit $formTitle',
-      ),
-      content: Form(
-        child: IntrinsicWidth(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 15,
-            children: [
-              Divider(),
-              TextFormField(
-                initialValue: formTitle,
-                decoration: InputDecoration(labelText: 'Task title'),
-                onChanged: (value) => setState(() => formTitle = value),
-              ),
-              InputDatePickerFormField(
-                firstDate: rangeStart,
-                lastDate: rangeEnd,
-                initialDate: formStartDate,
-                onDateSubmitted: (value) =>
-                    setState(() => formStartDate = value),
-                fieldLabelText: 'Task start date',
-              ),
-              InputDatePickerFormField(
-                firstDate: rangeStart,
-                lastDate: rangeEnd,
-                initialDate: formEndDate,
-                onDateSubmitted: (value) => setState(() => formEndDate = value),
-                fieldLabelText: 'Task end date',
-              ),
-              DropdownMenu<TaskStatus>(
-                initialSelection: formStatus,
-                requestFocusOnTap: true,
-                label: const Text('Task status'),
-                onSelected: (value) =>
-                    setState(() => formStatus = value ?? TaskStatus.inProgress),
-                dropdownMenuEntries: TaskStatus.values
-                    .map(
-                      (status) => DropdownMenuEntry(
-                        value: status,
-                        label: TaskStatus.getLabel(status),
-                      ),
-                    )
-                    .toList(),
-              ),
-              ValueListenableBuilder(
-                valueListenable: TagRepository.box.listenable(),
-                builder: (context, box, child) {
-                  List<Tag> tags = TagRepository.getAllTags();
-                  return MultiDropdown<String>(
-                    fieldDecoration: FieldDecoration(
-                      labelText: 'Task tags',
-                      suffixIcon: const Icon(Icons.tag),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: colorScheme.secondary),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: colorScheme.primary),
-                      ),
-                    ),
-                    items: tags
-                        .map(
-                          (tag) => DropdownItem(
-                            label: tag.label,
-                            value: tag.id,
-                            selected: formTags.contains(tag.id),
-                          ),
-                        )
-                        .toList(),
-                    onSelectionChange: (selected) =>
-                        setState(() => formTags = selected),
-                  );
-                },
-              ),
-              TextFormField(
-                initialValue: formOrder.toString(),
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly, // Limits input to 0-9
-                ],
-                decoration: InputDecoration(labelText: "Task order"),
-                onChanged: (value) =>
-                    setState(() => formOrder = int.tryParse(value) ?? 0),
-              ),
-              Divider(),
-              Row(
-                children: [
-                  if (widget.mode == FormMode.edit)
-                    FilledButton(onPressed: _delete, child: Text('Delete')),
-                  Spacer(),
-                  FilledButton(
-                    onPressed: _submit,
-                    child: Text(
-                      widget.mode == FormMode.create ? 'Add' : 'Edit',
-                    ),
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Form(
+          child: IntrinsicWidth(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 15,
+              children: [
+                Text(
+                  widget.mode == FormMode.create
+                      ? 'Add new task'
+                      : 'Edit $formTitle',
+                ),
+                Divider(),
+                TextFormField(
+                  initialValue: formTitle,
+                  decoration: InputDecoration(labelText: 'Task title'),
+                  onChanged: (value) => setState(() => formTitle = value),
+                ),
+                InputDatePickerFormField(
+                  firstDate: rangeStart,
+                  lastDate: rangeEnd,
+                  initialDate: formStartDate,
+                  onDateSubmitted: (value) =>
+                      setState(() => formStartDate = value),
+                  fieldLabelText: 'Task start date',
+                ),
+                InputDatePickerFormField(
+                  firstDate: rangeStart,
+                  lastDate: rangeEnd,
+                  initialDate: formEndDate,
+                  onDateSubmitted: (value) =>
+                      setState(() => formEndDate = value),
+                  fieldLabelText: 'Task end date',
+                ),
+                DropdownMenu<TaskStatus>(
+                  initialSelection: formStatus,
+                  requestFocusOnTap: true,
+                  expandedInsets: EdgeInsets.zero,
+                  label: const Text('Task status'),
+                  onSelected: (value) => setState(
+                    () => formStatus = value ?? TaskStatus.inProgress,
                   ),
-                ],
-              ),
-            ],
+                  dropdownMenuEntries: TaskStatus.values
+                      .map(
+                        (status) => DropdownMenuEntry(
+                          value: status,
+                          label: TaskStatus.getLabel(status),
+                        ),
+                      )
+                      .toList(),
+                ),
+
+                ValueListenableBuilder(
+                  valueListenable: TagRepository.box.listenable(),
+                  builder: (context, box, child) {
+                    List<Tag> tags = TagRepository.getAllTags();
+                    return MultiDropdown<String>(
+                      fieldDecoration: FieldDecoration(
+                        labelText: 'Task tags',
+                        suffixIcon: const Icon(Icons.tag),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: colorScheme.secondary),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: colorScheme.primary),
+                        ),
+                      ),
+                      items: tags
+                          .map(
+                            (tag) => DropdownItem(
+                              label: tag.label,
+                              value: tag.id,
+                              selected: formTags.contains(tag.id),
+                            ),
+                          )
+                          .toList(),
+                      onSelectionChange: (selected) =>
+                          setState(() => formTags = selected),
+                    );
+                  },
+                ),
+                TextFormField(
+                  initialValue: formOrder.toString(),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter
+                        .digitsOnly, // Limits input to 0-9
+                  ],
+                  decoration: InputDecoration(labelText: "Task order"),
+                  onChanged: (value) =>
+                      setState(() => formOrder = int.tryParse(value) ?? 0),
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    if (widget.mode == FormMode.edit)
+                      FilledButton(onPressed: _delete, child: Text('Delete')),
+                    Spacer(),
+                    FilledButton(
+                      onPressed: _submit,
+                      child: Text(
+                        widget.mode == FormMode.create ? 'Add' : 'Edit',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
