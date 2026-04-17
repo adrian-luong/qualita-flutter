@@ -41,6 +41,15 @@ class TaskRepository {
     await box.add(newTask);
   }
 
+  static Future<void> importTasks(List<Task> taskList) async {
+    await box.clear();
+    Map<String, Task> map = {};
+    for (Task task in taskList) {
+      map = {...task.formMap()};
+    }
+    await box.putAll(map);
+  }
+
   // Get All data  stored in hive
   static List<Task> getAllTasks() {
     return box.values.toList();

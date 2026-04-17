@@ -103,6 +103,7 @@ class TaskTile extends StatelessWidget {
                 ),
               ],
             ),
+            SizedBox(width: 32),
           ],
         ),
       ),
