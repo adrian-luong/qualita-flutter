@@ -38,7 +38,14 @@ class TaskRepository {
 
   // Create or add single data in hive
   static Future<void> addTask(Task newTask) async {
-    await box.add(newTask);
+    if (newTask.order == 0) {
+      getAllTasks().map((task) async {
+        final reorderedTask = task;
+        task.order += 1;
+        await editTask(reorderedTask);
+      });
+    }
+    await box.put(newTask.id, newTask);
   }
 
   static Future<void> importTasks(List<Task> taskList) async {

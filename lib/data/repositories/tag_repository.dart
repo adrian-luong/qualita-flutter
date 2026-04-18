@@ -27,7 +27,7 @@ class TagRepository {
 
   // Create or add single data in hive
   static Future<void> addTag(Tag newTag) async {
-    await box.add(newTag);
+    await box.put(newTag.id, newTag);
   }
 
   // Get All data  stored in hive
