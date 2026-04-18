@@ -57,18 +57,20 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
     } else {
       TaskRepository.addTask(newTask);
     }
-
-    Navigator.of(context).pop();
   }
 
-  void _delete() {
-    TaskRepository.deleteTask(widget.task.id);
-    Navigator.of(context).pop();
-  }
+  void _delete() => TaskRepository.deleteTask(widget.task.id);
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final messenger = ScaffoldMessenger.of(context);
+
+    void closeDialog(String message) {
+      Navigator.of(context).pop();
+      messenger.showSnackBar(SnackBar(content: Text(message)));
+    }
+
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -157,10 +159,23 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                 Row(
                   children: [
                     if (widget.mode == FormMode.edit)
-                      FilledButton(onPressed: _delete, child: Text('Delete')),
+                      FilledButton(
+                        onPressed: () {
+                          _delete();
+                          closeDialog('Successfully removed task');
+                        },
+                        child: Text('Delete'),
+                      ),
                     Spacer(),
                     FilledButton(
-                      onPressed: _submit,
+                      onPressed: () {
+                        _submit();
+                        closeDialog(
+                          widget.mode == FormMode.edit
+                              ? 'Successfully edited task'
+                              : 'Successfully created task',
+                        );
+                      },
                       child: Text(
                         widget.mode == FormMode.create ? 'Add' : 'Edit',
                       ),

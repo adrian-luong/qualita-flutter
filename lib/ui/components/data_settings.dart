@@ -13,6 +13,7 @@ class DataSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final messenger = ScaffoldMessenger.of(context);
 
     return Column(
       children: [
@@ -66,6 +67,11 @@ class DataSettings extends StatelessWidget {
                               description: tag.description,
                             );
                             await TagRepository.editTag(newTag);
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text('Successfully edited tag'),
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -80,6 +86,11 @@ class DataSettings extends StatelessWidget {
                               description: newDesc,
                             );
                             await TagRepository.editTag(newTag);
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text('Successfully edited tag'),
+                              ),
+                            );
                           },
                         ),
                       ),

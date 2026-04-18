@@ -39,17 +39,18 @@ class _TagUpsertDialogState extends State<TagUpsertDialog> {
     } else {
       TagRepository.addTag(newTag);
     }
-
-    Navigator.of(context).pop();
   }
 
-  void _delete() {
-    TagRepository.deleteTag(widget.tag.id);
-    Navigator.of(context).pop();
-  }
+  void _delete() => TagRepository.deleteTag(widget.tag.id);
 
   @override
   Widget build(BuildContext context) {
+    final messenger = ScaffoldMessenger.of(context);
+    void closeDialog(String message) {
+      Navigator.of(context).pop();
+      messenger.showSnackBar(SnackBar(content: Text(message)));
+    }
+
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -82,10 +83,23 @@ class _TagUpsertDialogState extends State<TagUpsertDialog> {
                 Row(
                   children: [
                     if (widget.mode == FormMode.edit)
-                      FilledButton(onPressed: _delete, child: Text('Delete')),
+                      FilledButton(
+                        onPressed: () {
+                          _delete();
+                          closeDialog('Successfully removed tag');
+                        },
+                        child: Text('Delete'),
+                      ),
                     Spacer(),
                     FilledButton(
-                      onPressed: _submit,
+                      onPressed: () {
+                        _submit();
+                        closeDialog(
+                          widget.mode == FormMode.edit
+                              ? 'Successfully edited tag'
+                              : 'Successfully created tag',
+                        );
+                      },
                       child: Text(
                         widget.mode == FormMode.create ? 'Add' : 'Edit',
                       ),

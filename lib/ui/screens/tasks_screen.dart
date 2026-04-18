@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:qualita/data/models/task_status.dart';
 import 'package:qualita/ui/components/task_list.dart';
@@ -50,24 +51,23 @@ class _TaskScreentate extends State<TasksScreen> {
                     ),
                   ],
                   selected: <TaskStatus?>{_filter},
-                  onSelectionChanged: (newSet) {
-                    if (newSet.first == null) {
-                      _tasks.value = TaskRepository.getAllTasks();
-                    } else {
-                      _tasks.value = TaskRepository.getAllTasks()
-                          .where((task) => task.status == newSet.first)
-                          .toList();
-                    }
-                    setState(() => _filter = newSet.first);
-                  },
+                  onSelectionChanged: (newSet) =>
+                      setState(() => _filter = newSet.first),
                 ),
               ],
             ),
 
             ValueListenableBuilder(
-              valueListenable: _tasks,
-              builder: (context, tasks, child) =>
-                  Expanded(child: TaskList(tasks: tasks)),
+              valueListenable: TaskRepository.box.listenable(),
+              builder: (context, box, child) {
+                List<Task> tasks = box.values.toList();
+                if (_filter != null) {
+                  tasks = tasks
+                      .where((task) => task.status == _filter)
+                      .toList();
+                }
+                return Expanded(child: TaskList(tasks: tasks));
+              },
             ),
           ],
         ),
