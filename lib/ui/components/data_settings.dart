@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:qualita/data/models/tag.dart';
 import 'package:qualita/data/repositories/tag_repository.dart';
+import 'package:qualita/ui/components/inline_text_field.dart';
 import 'package:qualita/ui/dialogs/tag_upsert_dialog.dart';
 import 'package:qualita/utils/constant_enums.dart';
 
@@ -44,7 +45,7 @@ class DataSettings extends StatelessWidget {
                                 tag: Tag.empty(),
                               ),
                             ),
-                            child: Text('+'),
+                            child: Text('Create new tag'),
                           ),
                         ],
                       ),
@@ -56,28 +57,30 @@ class DataSettings extends StatelessWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(5),
-                        child: Text(tag.label),
+                        child: InlineTextField(
+                          defaultValue: tag.label,
+                          onSave: (newLabel) async {
+                            final newTag = Tag(
+                              id: tag.id,
+                              label: newLabel,
+                              description: tag.description,
+                            );
+                            await TagRepository.editTag(newTag);
+                          },
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(5),
-                        child: Text(tag.description ?? ''),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Row(
-                          spacing: 10,
-                          children: [
-                            FilledButton(
-                              onPressed: () => showDialog(
-                                context: context,
-                                builder: (context) => TagUpsertDialog(
-                                  mode: FormMode.edit,
-                                  tag: tag,
-                                ),
-                              ),
-                              child: Text('Edit'),
-                            ),
-                          ],
+                        child: InlineTextField(
+                          defaultValue: tag.description ?? '',
+                          onSave: (newDesc) async {
+                            final newTag = Tag(
+                              id: tag.id,
+                              label: tag.label,
+                              description: newDesc,
+                            );
+                            await TagRepository.editTag(newTag);
+                          },
                         ),
                       ),
                     ],
