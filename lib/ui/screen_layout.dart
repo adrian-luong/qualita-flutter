@@ -23,7 +23,6 @@ class ScreenLayout extends ConsumerWidget {
       body: screen,
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
-        backgroundColor: scheme.primary,
         onPressed: () {
           showDialog(
             context: context,

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:qualita/data/models/task.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
@@ -35,16 +37,38 @@ class _TaskList extends State<TaskList> {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final Color oddItemColor = colorScheme.primary.withValues(alpha: 0.05);
+    final Color evenItemColor = colorScheme.primary.withValues(alpha: 0.15);
+    final Color draggableItemColor = colorScheme.secondary;
+
     if (taskList.isEmpty) {
       return Center(child: Text('No task found.'));
     }
 
     return ReorderableListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      proxyDecorator: (child, index, animation) => AnimatedBuilder(
+        animation: animation,
+        builder: (BuildContext context, Widget? child) {
+          final double animValue = Curves.easeInOut.transform(animation.value);
+          final double elevation = lerpDouble(0, 6, animValue)!;
+          return Material(
+            elevation: elevation,
+            color: draggableItemColor,
+            shadowColor: draggableItemColor,
+            child: child,
+          );
+        },
+        child: child,
+      ),
       itemBuilder: (context, index) => Padding(
         key: ValueKey(taskList[index].id),
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: TaskTile(task: taskList[index]),
+        child: TaskTile(
+          task: taskList[index],
+          tileColor: index.isOdd ? oddItemColor : evenItemColor,
+        ),
       ),
       itemCount: taskList.length,
       onReorder: (oldIndex, newIndex) {
@@ -56,18 +80,12 @@ class _TaskList extends State<TaskList> {
         }
 
         final reorderTarget = clonedList.removeAt(oldIndex);
-        print(
-          'Target: ${reorderTarget.title} previously at $oldIndex, now at $newIndex',
-        );
         clonedList.insert(newIndex, reorderTarget);
         clonedList.asMap().forEach((index, item) async {
           item.order = index;
           await TaskRepository.editTask(item);
         });
         clonedList.sort((taskA, taskB) => taskA.order.compareTo(taskB.order));
-        print(
-          'Sorted list: ${clonedList.map((t) => "Task ${t.title} at ${t.order}")}',
-        );
 
         setState(() => taskList = clonedList);
       },

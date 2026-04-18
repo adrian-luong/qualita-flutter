@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
 
@@ -26,7 +25,6 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
   late DateTime? formEndDate;
   late TaskStatus formStatus;
   late List<String> formTags;
-  late int formOrder;
 
   final rangeStart = DateTime.now().subtract(const Duration(days: 30));
   final rangeEnd = DateTime.now().add(const Duration(days: 30));
@@ -39,7 +37,6 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
       formEndDate = widget.task.endDate;
       formStatus = widget.task.status;
       formTags = widget.task.tags;
-      formOrder = widget.task.order;
     });
     super.initState();
   }
@@ -52,7 +49,7 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
       endDate: formEndDate,
       status: formStatus,
       tags: formTags,
-      order: formOrder,
+      order: widget.task.order,
     );
 
     if (widget.mode == FormMode.edit) {
@@ -155,17 +152,6 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                           setState(() => formTags = selected),
                     );
                   },
-                ),
-                TextFormField(
-                  initialValue: formOrder.toString(),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter
-                        .digitsOnly, // Limits input to 0-9
-                  ],
-                  decoration: InputDecoration(labelText: "Task order"),
-                  onChanged: (value) =>
-                      setState(() => formOrder = int.tryParse(value) ?? 0),
                 ),
                 Divider(),
                 Row(

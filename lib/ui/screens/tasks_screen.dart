@@ -14,6 +14,7 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TaskScreentate extends State<TasksScreen> {
+  TaskStatus? _filter;
   final _tasks = ValueNotifier<List<Task>>([]);
 
   @override
@@ -33,20 +34,32 @@ class _TaskScreentate extends State<TasksScreen> {
               mainAxisSize: MainAxisSize.min,
               spacing: 5,
               children: [
-                OutlinedButton(
-                  onPressed: () => _tasks.value = TaskRepository.getAllTasks(),
-                  child: Text('All'),
-                ),
-                ...TaskStatus.values.map(
-                  (status) => OutlinedButton(
-                    onPressed: () => _tasks.value = TaskRepository.getAllTasks()
-                        .where((task) => task.status == status)
-                        .toList(),
-                    child: Text(
-                      TaskStatus.getLabel(status),
-                      style: TextStyle(color: TaskStatus.getTextColor(status)),
+                SegmentedButton<TaskStatus?>(
+                  segments: [
+                    ButtonSegment(value: null, label: Text('All')),
+                    ...TaskStatus.values.map(
+                      (status) => ButtonSegment(
+                        value: status,
+                        label: Text(
+                          TaskStatus.getLabel(status),
+                          style: TextStyle(
+                            color: TaskStatus.getTextColor(status),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
+                  selected: <TaskStatus?>{_filter},
+                  onSelectionChanged: (newSet) {
+                    if (newSet.first == null) {
+                      _tasks.value = TaskRepository.getAllTasks();
+                    } else {
+                      _tasks.value = TaskRepository.getAllTasks()
+                          .where((task) => task.status == newSet.first)
+                          .toList();
+                    }
+                    setState(() => _filter = newSet.first);
+                  },
                 ),
               ],
             ),
