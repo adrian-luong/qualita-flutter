@@ -15,42 +15,55 @@ class TagUpsertDialog extends StatefulWidget {
 }
 
 class _TagUpsertDialogState extends State<TagUpsertDialog> {
-  late String formLabel;
-  late String? formDesc;
+  late Tag formTag;
+  String labelError = '';
 
   @override
   void initState() {
     setState(() {
-      formLabel = widget.tag.label;
-      formDesc = widget.tag.description;
+      formTag = Tag(
+        id: widget.tag.id != '' ? widget.tag.id : generateID(),
+        label: widget.tag.label,
+        description: widget.tag.description,
+      );
     });
     super.initState();
   }
 
-  void _submit() {
-    final newTag = Tag(
-      id: widget.tag.id != '' ? widget.tag.id : generateID(),
-      label: formLabel,
-      description: formDesc,
-    );
-
-    if (widget.mode == FormMode.edit) {
-      TagRepository.editTag(newTag);
-    } else {
-      TagRepository.addTag(newTag);
+  bool _validate() {
+    if (formTag.label.isEmpty) {
+      setState(() => labelError = 'A task must have a title');
+      return false;
     }
+    return true;
+  }
+
+  void _submit() {
+    if (_validate()) {
+      if (widget.mode == FormMode.edit) {
+        TagRepository.editTag(formTag);
+      } else {
+        TagRepository.addTag(formTag);
+      }
+      _close(
+        widget.mode == FormMode.edit
+            ? 'Successfully edited tag'
+            : 'Successfully created tag',
+      );
+    }
+  }
+
+  void _close(String message) {
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _delete() => TagRepository.deleteTag(widget.tag.id);
 
   @override
   Widget build(BuildContext context) {
-    final messenger = ScaffoldMessenger.of(context);
-    void closeDialog(String message) {
-      Navigator.of(context).pop();
-      messenger.showSnackBar(SnackBar(content: Text(message)));
-    }
-
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -64,20 +77,24 @@ class _TagUpsertDialogState extends State<TagUpsertDialog> {
                 Text(
                   widget.mode == FormMode.create
                       ? 'Add new tag'
-                      : 'Edit $formLabel',
+                      : 'Edit ${formTag.label}',
                 ),
                 Divider(),
                 TextFormField(
-                  initialValue: formLabel,
-                  decoration: InputDecoration(labelText: 'Tag label'),
-                  onChanged: (value) => setState(() => formLabel = value),
+                  initialValue: formTag.label,
+                  decoration: InputDecoration(
+                    labelText: 'Tag label',
+                    errorText: labelError,
+                  ),
+                  onChanged: (value) => setState(() => formTag.label = value),
                 ),
                 TextFormField(
-                  initialValue: formDesc,
+                  initialValue: formTag.description,
                   minLines: 2,
                   maxLines: 20,
                   decoration: InputDecoration(labelText: 'Tag description'),
-                  onChanged: (value) => setState(() => formDesc = value),
+                  onChanged: (value) =>
+                      setState(() => formTag.description = value),
                 ),
                 Divider(),
                 Row(
@@ -86,20 +103,13 @@ class _TagUpsertDialogState extends State<TagUpsertDialog> {
                       FilledButton(
                         onPressed: () {
                           _delete();
-                          closeDialog('Successfully removed tag');
+                          _close('Successfully removed tag');
                         },
                         child: Text('Delete'),
                       ),
                     Spacer(),
                     FilledButton(
-                      onPressed: () {
-                        _submit();
-                        closeDialog(
-                          widget.mode == FormMode.edit
-                              ? 'Successfully edited tag'
-                              : 'Successfully created tag',
-                        );
-                      },
+                      onPressed: _submit,
                       child: Text(
                         widget.mode == FormMode.create ? 'Add' : 'Edit',
                       ),

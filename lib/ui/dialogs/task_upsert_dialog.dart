@@ -20,11 +20,8 @@ class TaskUpsertDialog extends StatefulWidget {
 }
 
 class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
-  late String formTitle;
-  late DateTime formStartDate;
-  late DateTime? formEndDate;
-  late TaskStatus formStatus;
-  late List<String> formTags;
+  late Task formTask;
+  String titleError = '';
 
   final rangeStart = DateTime.now().subtract(const Duration(days: 30));
   final rangeEnd = DateTime.now().add(const Duration(days: 30));
@@ -32,30 +29,46 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
   @override
   void initState() {
     setState(() {
-      formTitle = widget.task.title;
-      formStartDate = widget.task.startDate;
-      formEndDate = widget.task.endDate;
-      formStatus = widget.task.status;
-      formTags = widget.task.tags;
+      formTask = Task(
+        id: widget.task.id != '' ? widget.task.id : generateID(),
+        title: widget.task.title,
+        startDate: widget.task.startDate,
+        endDate: widget.task.endDate,
+        tags: widget.task.tags,
+        status: widget.task.status,
+        order: widget.task.order,
+      );
     });
     super.initState();
   }
 
-  void _submit() {
-    final newTask = Task(
-      id: widget.task.id != '' ? widget.task.id : generateID(),
-      title: formTitle,
-      startDate: formStartDate,
-      endDate: formEndDate,
-      status: formStatus,
-      tags: formTags,
-      order: widget.task.order,
-    );
+  bool _validate() {
+    if (formTask.title.isEmpty) {
+      setState(() => titleError = 'A task must have a title');
+      return false;
+    }
+    return true;
+  }
 
-    if (widget.mode == FormMode.edit) {
-      TaskRepository.editTask(newTask);
-    } else {
-      TaskRepository.addTask(newTask);
+  void _close(String message) {
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _submit() {
+    if (_validate()) {
+      if (widget.mode == FormMode.edit) {
+        TaskRepository.editTask(formTask);
+      } else {
+        TaskRepository.addTask(formTask);
+      }
+      _close(
+        widget.mode == FormMode.edit
+            ? 'Successfully edited task'
+            : 'Successfully created task',
+      );
     }
   }
 
@@ -64,12 +77,6 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final messenger = ScaffoldMessenger.of(context);
-
-    void closeDialog(String message) {
-      Navigator.of(context).pop();
-      messenger.showSnackBar(SnackBar(content: Text(message)));
-    }
 
     return Dialog(
       child: Padding(
@@ -84,37 +91,40 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                 Text(
                   widget.mode == FormMode.create
                       ? 'Add new task'
-                      : 'Edit $formTitle',
+                      : 'Edit ${formTask.title}',
                 ),
                 Divider(),
                 TextFormField(
-                  initialValue: formTitle,
-                  decoration: InputDecoration(labelText: 'Task title'),
-                  onChanged: (value) => setState(() => formTitle = value),
+                  initialValue: formTask.title,
+                  decoration: InputDecoration(
+                    labelText: 'Task title',
+                    errorText: titleError,
+                  ),
+                  onChanged: (value) => setState(() => formTask.title = value),
                 ),
                 InputDatePickerFormField(
                   firstDate: rangeStart,
                   lastDate: rangeEnd,
-                  initialDate: formStartDate,
+                  initialDate: formTask.startDate,
                   onDateSubmitted: (value) =>
-                      setState(() => formStartDate = value),
+                      setState(() => formTask.startDate = value),
                   fieldLabelText: 'Task start date',
                 ),
                 InputDatePickerFormField(
                   firstDate: rangeStart,
                   lastDate: rangeEnd,
-                  initialDate: formEndDate,
+                  initialDate: formTask.endDate,
                   onDateSubmitted: (value) =>
-                      setState(() => formEndDate = value),
+                      setState(() => formTask.endDate = value),
                   fieldLabelText: 'Task end date',
                 ),
                 DropdownMenu<TaskStatus>(
-                  initialSelection: formStatus,
+                  initialSelection: formTask.status,
                   requestFocusOnTap: true,
                   expandedInsets: EdgeInsets.zero,
                   label: const Text('Task status'),
                   onSelected: (value) => setState(
-                    () => formStatus = value ?? TaskStatus.inProgress,
+                    () => formTask.status = value ?? TaskStatus.inProgress,
                   ),
                   dropdownMenuEntries: TaskStatus.values
                       .map(
@@ -146,12 +156,12 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                             (tag) => DropdownItem(
                               label: tag.label,
                               value: tag.id,
-                              selected: formTags.contains(tag.id),
+                              selected: formTask.tags.contains(tag.id),
                             ),
                           )
                           .toList(),
                       onSelectionChange: (selected) =>
-                          setState(() => formTags = selected),
+                          setState(() => formTask.tags = selected),
                     );
                   },
                 ),
@@ -162,20 +172,13 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                       FilledButton(
                         onPressed: () {
                           _delete();
-                          closeDialog('Successfully removed task');
+                          _close('Successfully removed task');
                         },
                         child: Text('Delete'),
                       ),
                     Spacer(),
                     FilledButton(
-                      onPressed: () {
-                        _submit();
-                        closeDialog(
-                          widget.mode == FormMode.edit
-                              ? 'Successfully edited task'
-                              : 'Successfully created task',
-                        );
-                      },
+                      onPressed: _submit,
                       child: Text(
                         widget.mode == FormMode.create ? 'Add' : 'Edit',
                       ),

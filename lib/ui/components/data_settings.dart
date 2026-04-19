@@ -94,6 +94,7 @@ class DataSettings extends StatelessWidget {
                           },
                         ),
                       ),
+                      Padding(padding: const EdgeInsets.all(5)),
                     ],
                   ),
                 ),
