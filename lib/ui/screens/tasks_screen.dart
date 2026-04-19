@@ -16,6 +16,7 @@ class TasksScreen extends StatefulWidget {
 
 class _TaskScreentate extends State<TasksScreen> {
   TaskStatus? _filter;
+  DateTime _date = DateTime.now();
   final _tasks = ValueNotifier<List<Task>>([]);
 
   @override
@@ -26,11 +27,55 @@ class _TaskScreentate extends State<TasksScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final firstDate = _date.subtract(Duration(days: 365));
+    final lastDate = _date.add(Duration(days: 365));
+
     return ScreenLayout(
       screen: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => setState(() {
+                      _date = _date.subtract(Duration(days: 1));
+                    }),
+                    icon: Icon(Icons.arrow_back),
+                  ),
+                  Spacer(),
+                  Text(
+                    '${_date.day}/${_date.month}/${_date.year}',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      final pickedDate = showDatePicker(
+                        context: context,
+                        firstDate: firstDate,
+                        lastDate: lastDate,
+                      );
+                      pickedDate.then((value) {
+                        if (value != null) {
+                          setState(() => _date = value);
+                        }
+                      });
+                    },
+                    icon: Icon(Icons.calendar_month),
+                  ),
+                  Spacer(),
+                  IconButton(
+                    onPressed: () => setState(() {
+                      _date = _date.add(Duration(days: 1));
+                    }),
+                    icon: Icon(Icons.arrow_forward),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
             Row(
               mainAxisSize: MainAxisSize.min,
               spacing: 5,
@@ -61,6 +106,21 @@ class _TaskScreentate extends State<TasksScreen> {
               valueListenable: TaskRepository.box.listenable(),
               builder: (context, box, child) {
                 List<Task> tasks = box.values.toList();
+                tasks = tasks.where((task) {
+                  final startDate = task.startDate;
+                  final endDate = task.endDate;
+                  var condition =
+                      startDate.isBefore(_date.toLocal()) ||
+                      startDate.isAtSameMomentAs(_date.toLocal());
+                  if (endDate != null) {
+                    condition =
+                        condition &&
+                        (endDate.isAfter(_date.toLocal()) ||
+                            endDate.isAtSameMomentAs(_date.toLocal()));
+                  }
+                  return condition;
+                }).toList();
+
                 if (_filter != null) {
                   tasks = tasks
                       .where((task) => task.status == _filter)
