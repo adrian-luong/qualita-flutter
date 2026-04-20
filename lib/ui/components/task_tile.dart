@@ -77,7 +77,7 @@ class TaskTile extends StatelessWidget {
                   : TaskStatus.inProgress,
             ),
             foregroundColor: Colors.white,
-            icon: task.status != TaskStatus.inProgress
+            icon: task.status != TaskStatus.completed
                 ? Icons.check
                 : Icons.play_arrow,
             label: task.status != TaskStatus.completed

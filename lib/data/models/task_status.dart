@@ -44,4 +44,15 @@ enum TaskStatus {
         return Colors.blue.shade700;
     }
   }
+
+  static String getName(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.completed:
+        return 'Completed';
+      case TaskStatus.inProgress:
+        return 'In Progress';
+      case TaskStatus.onHold:
+        return 'On Hold';
+    }
+  }
 }
