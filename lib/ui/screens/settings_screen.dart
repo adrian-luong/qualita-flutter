@@ -17,8 +17,8 @@ class SettingsScreen extends StatelessWidget {
             children: [
               TabBar(
                 tabs: [
-                  Tab(text: "Visual"),
-                  Tab(text: "Data"),
+                  Tab(text: "Visual", icon: const Icon(Icons.palette)),
+                  Tab(text: "Data", icon: const Icon(Icons.storage)),
                 ],
                 labelColor: Colors.blue,
               ),

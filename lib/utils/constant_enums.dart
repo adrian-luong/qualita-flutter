@@ -1,3 +1,3 @@
 enum FormMode { create, edit, delete }
 
-enum Screen { home, tasks, settings }
+enum Screen { home, settings }

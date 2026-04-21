@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:qualita/data/models/tag.dart';
+import 'package:qualita/data/models/task_status.dart';
 import 'package:qualita/data/repositories/tag_repository.dart';
+import 'package:qualita/ui/components/dashboard_box.dart';
 import 'package:qualita/ui/components/inline_text_field.dart';
 import 'package:qualita/ui/dialogs/tag_upsert_dialog.dart';
 import 'package:qualita/utils/constant_enums.dart';
@@ -16,7 +18,27 @@ class DataSettings extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
 
     return Column(
+      spacing: 15,
       children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 10,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: DashboardBox(status: TaskStatus.onHold),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: DashboardBox(status: TaskStatus.inProgress),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: DashboardBox(status: TaskStatus.completed),
+            ),
+          ],
+        ),
+
         ValueListenableBuilder(
           valueListenable: TagRepository.box.listenable(),
           builder: (context, box, child) {
@@ -33,24 +55,6 @@ class DataSettings extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(5),
                       child: Text('Tag description'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FilledButton(
-                            onPressed: () => showDialog(
-                              context: context,
-                              builder: (context) => TagUpsertDialog(
-                                mode: FormMode.create,
-                                tag: Tag.empty(),
-                              ),
-                            ),
-                            child: Text('Add tag +'),
-                          ),
-                        ],
-                      ),
                     ),
                   ],
                 ),
@@ -95,13 +99,27 @@ class DataSettings extends StatelessWidget {
                           },
                         ),
                       ),
-                      Padding(padding: const EdgeInsets.all(5)),
                     ],
                   ),
                 ),
               ],
             );
           },
+        ),
+
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          child: Tooltip(
+            message: 'Create a new tag',
+            child: FilledButton(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (context) =>
+                    TagUpsertDialog(mode: FormMode.create, tag: Tag.empty()),
+              ),
+              child: const Text('+'),
+            ),
+          ),
         ),
       ],
     );

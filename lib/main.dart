@@ -9,9 +9,8 @@ import 'package:qualita/data/models/task_status.dart';
 import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
 import 'package:qualita/ui/screen_provider.dart';
-import 'package:qualita/ui/screens/home_screen.dart';
 import 'package:qualita/ui/screens/settings_screen.dart';
-import 'package:qualita/ui/screens/tasks_screen.dart';
+import 'package:qualita/ui/screens/home_screen.dart';
 import 'package:qualita/ui/theme_provider.dart';
 import 'package:qualita/utils/constant_enums.dart';
 
@@ -40,8 +39,6 @@ class MainApp extends ConsumerWidget {
       switch (screen) {
         case Screen.home:
           return HomeScreen();
-        case Screen.tasks:
-          return TasksScreen();
         case Screen.settings:
           return SettingsScreen();
       }
