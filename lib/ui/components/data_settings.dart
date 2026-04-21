@@ -37,6 +37,7 @@ class DataSettings extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(5),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           FilledButton(
                             onPressed: () => showDialog(
@@ -46,7 +47,7 @@ class DataSettings extends StatelessWidget {
                                 tag: Tag.empty(),
                               ),
                             ),
-                            child: Text('Create new tag'),
+                            child: Text('Add tag +'),
                           ),
                         ],
                       ),

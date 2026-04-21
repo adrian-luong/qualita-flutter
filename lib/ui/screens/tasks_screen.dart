@@ -89,7 +89,9 @@ class _TaskScreentate extends State<TasksScreen> {
                         label: Text(
                           TaskStatus.getLabel(status),
                           style: TextStyle(
-                            color: TaskStatus.getTextColor(status),
+                            color: _filter == status
+                                ? Colors.white
+                                : TaskStatus.getTextColor(status),
                           ),
                         ),
                       ),
