@@ -9,26 +9,25 @@ class TaskRepository {
 
   static Future<void> setupTestData() async {
     await box.clear();
-    final now = DateTime.now();
     final testTasks = {
       ...Task(
         id: generateID(),
         title: 'Test Task 1',
-        startDate: now,
+        startDate: DateTime.now(),
         tags: [TagRepository.testingTagId],
         order: 0,
       ).formMap(),
       ...Task(
         id: generateID(),
         title: 'Test Task 2',
-        startDate: now,
+        startDate: DateTime.now(),
         tags: [TagRepository.productionTagId],
         order: 1,
       ).formMap(),
       ...Task(
         id: generateID(),
         title: 'Test Task 3',
-        startDate: now,
+        startDate: DateTime.now(),
         tags: [TagRepository.testingTagId, TagRepository.productionTagId],
         order: 2,
       ).formMap(),
