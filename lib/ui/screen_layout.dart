@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:qualita/ui/screen_provider.dart';
+import 'package:qualita/ui/providers/screen_provider.dart';
 import 'package:qualita/utils/constant_enums.dart';
 
 class ScreenLayout extends ConsumerWidget {

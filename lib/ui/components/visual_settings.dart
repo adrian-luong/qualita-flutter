@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qualita/ui/theme_provider.dart';
+import 'package:qualita/ui/providers/theme_provider.dart';
 
 class VisualSettings extends ConsumerWidget {
   const VisualSettings({super.key});

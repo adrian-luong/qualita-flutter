@@ -8,10 +8,10 @@ import 'package:qualita/data/models/task.dart';
 import 'package:qualita/data/models/task_status.dart';
 import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
-import 'package:qualita/ui/screen_provider.dart';
-import 'package:qualita/ui/screens/settings_screen.dart';
-import 'package:qualita/ui/screens/home_screen.dart';
-import 'package:qualita/ui/theme_provider.dart';
+import 'package:qualita/ui/providers/screen_provider.dart';
+import 'package:qualita/ui/settings_screen.dart';
+import 'package:qualita/ui/home_screen.dart';
+import 'package:qualita/ui/providers/theme_provider.dart';
 import 'package:qualita/utils/constant_enums.dart';
 
 void main() async {
