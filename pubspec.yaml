@@ -27,3 +27,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/help/create_task.gif
+    - assets/help/edit_task.gif
+    - assets/help/filter_tasks.gif
+    - assets/help/upsert_tag.gif
+    - assets/help/switch_theme.gif

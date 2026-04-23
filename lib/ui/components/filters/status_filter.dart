@@ -3,13 +3,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qualita/data/models/task_status.dart';
 import 'package:qualita/ui/providers/task_filter_provider.dart';
 
-class StatusFilter extends ConsumerWidget {
+class StatusFilter extends ConsumerStatefulWidget {
   const StatusFilter({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StatusFilter> createState() => _StatusFilterState();
+}
+
+class _StatusFilterState extends ConsumerState<StatusFilter> {
+  TaskStatus? _status;
+
+  @override
+  void initState() {
+    setState(
+      () => _status = ref.read(taskFilterProvider.notifier).currentStatus,
+    );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final notifier = ref.read(taskFilterProvider.notifier);
-    final status = notifier.currentStatus;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -24,7 +38,7 @@ class StatusFilter extends ConsumerWidget {
                 label: Text(
                   TaskStatus.getLabel(status),
                   style: TextStyle(
-                    color: status == status
+                    color: _status == status
                         ? Colors.white
                         : TaskStatus.getTextColor(status),
                   ),
@@ -32,8 +46,11 @@ class StatusFilter extends ConsumerWidget {
               ),
             ),
           ],
-          selected: <TaskStatus?>{status},
-          onSelectionChanged: (newSet) => notifier.switchStatus(newSet.first),
+          selected: <TaskStatus?>{_status},
+          onSelectionChanged: (newSet) {
+            setState(() => _status = newSet.first);
+            notifier.switchStatus(newSet.first);
+          },
         ),
       ],
     );

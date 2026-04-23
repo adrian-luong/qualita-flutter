@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'package:qualita/ui/components/home/date_filter.dart';
-import 'package:qualita/ui/components/home/search_filter.dart';
-import 'package:qualita/ui/components/home/status_filter.dart';
+import 'package:qualita/ui/components/filters/date_filter.dart';
+import 'package:qualita/ui/components/filters/search_filter.dart';
+import 'package:qualita/ui/components/filters/status_filter.dart';
 import 'package:qualita/ui/components/task_list.dart';
 import 'package:qualita/ui/dialogs/task_upsert_dialog.dart';
 import 'package:qualita/ui/providers/task_filter_provider.dart';

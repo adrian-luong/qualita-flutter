@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qualita/ui/dialogs/help_dialog.dart';
 
 import 'package:qualita/ui/screens/home_screen.dart';
 import 'package:qualita/ui/screens/settings_screen.dart';
@@ -30,7 +31,10 @@ class _ScreenLayoutState extends State<ScreenLayout> {
       body: screens[_screenIndex],
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
-        onPressed: () {},
+        onPressed: () => showDialog(
+          context: context,
+          builder: (context) => const HelpDialog(),
+        ),
         tooltip: 'Help',
         child: const Icon(Icons.help),
       ),

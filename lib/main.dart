@@ -12,6 +12,8 @@ import 'package:qualita/ui/screen_layout.dart';
 import 'package:qualita/ui/providers/theme_provider.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   await Hive.initFlutter();
   Hive.registerAdapter<Task>(TaskAdapter());
   Hive.registerAdapter<TaskStatus>(TaskStatusAdapter());
