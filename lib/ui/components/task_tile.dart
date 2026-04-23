@@ -5,6 +5,7 @@ import 'package:qualita/data/models/tag.dart';
 import 'package:qualita/data/models/task_status.dart';
 import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
+import 'package:qualita/ui/components/triangle_clipper.dart';
 import 'package:qualita/ui/dialogs/task_upsert_dialog.dart';
 import 'package:qualita/data/models/task.dart';
 import 'package:qualita/utils/constant_enums.dart';
@@ -89,7 +90,15 @@ class TaskTile extends StatelessWidget {
       child: ListTile(
         tileColor: tileColor,
         contentPadding: const EdgeInsets.all(0),
-        leading: Container(color: TaskStatus.getColor(task.status), width: 15),
+        // leading: Container(color: TaskStatus.getColor(task.status), width: 15),
+        leading: ClipPath(
+          clipper: TriangleClipper(),
+          child: Container(
+            width: 25,
+            height: 45,
+            color: TaskStatus.getColor(task.status),
+          ),
+        ),
         title: Text(task.title),
         subtitle: Row(spacing: 10, children: renderBadges(task.tags)),
         onTap: () => showDialog(
