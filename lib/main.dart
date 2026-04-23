@@ -8,11 +8,8 @@ import 'package:qualita/data/models/task.dart';
 import 'package:qualita/data/models/task_status.dart';
 import 'package:qualita/data/repositories/tag_repository.dart';
 import 'package:qualita/data/repositories/task_repository.dart';
-import 'package:qualita/ui/providers/screen_provider.dart';
-import 'package:qualita/ui/settings_screen.dart';
-import 'package:qualita/ui/home_screen.dart';
+import 'package:qualita/ui/screen_layout.dart';
 import 'package:qualita/ui/providers/theme_provider.dart';
-import 'package:qualita/utils/constant_enums.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -32,21 +29,11 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final Screen screen = ref.watch(screenProvider);
     final ThemeMode mode = ref.watch(themeProvider);
-
-    Widget renderScreen(Screen screen) {
-      switch (screen) {
-        case Screen.home:
-          return HomeScreen();
-        case Screen.settings:
-          return SettingsScreen();
-      }
-    }
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: renderScreen(screen),
+      home: ScreenLayout(),
       theme: FlexThemeData.light(scheme: FlexScheme.bahamaBlue),
       darkTheme: FlexThemeData.dark(scheme: FlexScheme.bahamaBlue),
       themeMode: mode,
