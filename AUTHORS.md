@@ -10,4 +10,4 @@ Thanks to everyone for your contributions!
 [Dart](https://github.com/dart-lang)'s Authors
 [Supabase Inc.](https://supabase.com/)
 
-Adrian [Luong Xuan Trung Dung](https://github.com/adrian-luong) <luongxuantrungdung211@gmail.com>
+Adrian [Luong Xuan Trung Dung](https://github.com/adrian-luong) <luongxuantrungdung211@gmail.com> <https://adrian-luong.github.io/>
