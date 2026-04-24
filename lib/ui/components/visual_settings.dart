@@ -2,11 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qualita/ui/providers/theme_provider.dart';
 
-class VisualSettings extends ConsumerWidget {
+class VisualSettings extends ConsumerStatefulWidget {
   const VisualSettings({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<VisualSettings> createState() => _VisualSettingsState();
+}
+
+class _VisualSettingsState extends ConsumerState<VisualSettings> {
+  late ThemeMode _mode;
+
+  @override
+  void initState() {
+    setState(() => _mode = ref.read(themeProvider.notifier).currentMode);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final themeNotifier = ref.read(themeProvider.notifier);
 
     return Column(
@@ -28,9 +41,11 @@ class VisualSettings extends ConsumerWidget {
                   icon: Icon(Icons.dark_mode),
                 ),
               ],
-              selected: {themeNotifier.currentMode},
-              onSelectionChanged: (Set<ThemeMode> value) =>
-                  themeNotifier.toggleTheme(value.first),
+              selected: {_mode},
+              onSelectionChanged: (Set<ThemeMode> value) {
+                setState(() => _mode = value.first);
+                themeNotifier.toggleTheme(value.first);
+              },
             ),
           ],
         ),
