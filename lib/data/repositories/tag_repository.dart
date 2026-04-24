@@ -1,49 +1,56 @@
-import 'package:qualita/data/models/tag_model.dart';
-import 'package:qualita/data/query_responses.dart';
-import 'package:qualita/data/repositories/base_repository.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:qualita/data/models/tag.dart';
+import 'package:qualita/utils/generate_id.dart';
 
-class TagRepository extends BaseRepository {
-  Future<MultipleDataResponse<TagModel>> fetchTags(String projectId) async {
-    return await returnMany(
-      () async => await tagServices.getByProject(projectId),
-    );
+class TagRepository {
+  // Box which will use to store the things
+  static final box = Hive.box<Tag>('tags');
+  static final testingTagId = generateID();
+  static final productionTagId = generateID();
+
+  static Future<void> setupTestData() async {
+    await box.clear();
+    final testTags = {
+      ...Tag(
+        id: testingTagId,
+        label: 'Testing',
+        description: 'Testing 123',
+      ).formMap(),
+      ...Tag(
+        id: productionTagId,
+        label: 'Production',
+        description: 'Ready to launch',
+      ).formMap(),
+    };
+    await box.putAll(testTags);
   }
 
-  Future<SingleDataResponse<TagModel>> addTag({
-    required String name,
-    String? description,
-    required String projectId,
-  }) async {
-    return await returnOne(() async {
-      var model = TagModel(
-        name: name,
-        description: description,
-        fkProjectId: projectId,
-      );
-      await tagServices.insert(model);
-      return model;
-    });
+  // Create or add single data in hive
+  static Future<void> addTag(Tag newTag) async {
+    await box.put(newTag.id, newTag);
   }
 
-  Future<SingleDataResponse<TagModel>> updateTag({
-    required String id,
-    required String name,
-    String? description,
-    required String projectId,
-  }) async {
-    return await returnOne(() async {
-      var model = TagModel(
-        id: id,
-        name: name,
-        description: description,
-        fkProjectId: projectId,
-      );
-      await tagServices.update(model);
-      return model;
-    });
+  // Get All data  stored in hive
+  static List<Tag> getAllTags() {
+    return box.values.toList();
   }
 
-  Future<QueryResponse> deleteTag(String id) async {
-    return await returnNone(() async => await tagServices.hardDelete(id));
+  // Get data for particular user in hive
+  static Tag? findTag({String? id, String? label}) {
+    if (id != null) return box.get(id);
+    if (label != null) {
+      return getAllTags().firstWhere((tag) => tag.label == label);
+    }
+    return null;
+  }
+
+  // update data for particular user in hive
+  static Future<void> editTag(Tag tag) async {
+    await box.put(tag.id, tag);
+  }
+
+  // delete data for particular user in hive
+  static Future<void> deleteTag(String id) async {
+    await box.delete(id);
   }
 }
