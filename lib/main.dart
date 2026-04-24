@@ -1,51 +1,44 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart';
-import 'package:qualita/data/providers/home_provider.dart';
-import 'package:qualita/data/providers/project_provider.dart';
-import 'package:qualita/data/providers/settings_provider.dart';
-import 'package:qualita/global_keys.dart';
-import 'package:qualita/view/splash_screen.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:qualita/data/models/tag.dart';
 
-Future<void> main() async {
+import 'package:qualita/data/models/task.dart';
+import 'package:qualita/data/models/task_status.dart';
+import 'package:qualita/data/repositories/tag_repository.dart';
+import 'package:qualita/data/repositories/task_repository.dart';
+import 'package:qualita/ui/screen_layout.dart';
+import 'package:qualita/ui/providers/theme_provider.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
-  await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_KEY']!,
-  );
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => HomeProvider()),
-        ChangeNotifierProvider(create: (context) => ProjectProvider()),
-        ChangeNotifierProvider(create: (context) => SettingsProvider()),
-      ],
-      child: const MainApplication(),
-    ),
-  );
+
+  await Hive.initFlutter();
+  Hive.registerAdapter<Task>(TaskAdapter());
+  Hive.registerAdapter<TaskStatus>(TaskStatusAdapter());
+  Hive.registerAdapter<Tag>(TagAdapter());
+  await Hive.openBox<Task>('tasks');
+  await Hive.openBox<Tag>('tags');
+  TaskRepository.setupTestData();
+  TagRepository.setupTestData();
+
+  runApp(ProviderScope(child: const MainApp()));
 }
 
-class MainApplication extends StatelessWidget {
-  const MainApplication({super.key});
+class MainApp extends ConsumerWidget {
+  const MainApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<SettingsProvider>(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ThemeMode mode = ref.watch(themeProvider);
+
     return MaterialApp(
-      title: 'Qualita',
       debugShowCheckedModeBanner: false,
-      scaffoldMessengerKey: messenger,
-      navigatorKey: navigator,
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode:
-          provider.colorMode == Brightness.dark
-              ? ThemeMode.dark
-              : ThemeMode.system,
-      home: SplashScreen(),
+      home: ScreenLayout(),
+      theme: FlexThemeData.light(scheme: FlexScheme.bahamaBlue),
+      darkTheme: FlexThemeData.dark(scheme: FlexScheme.bahamaBlue),
+      themeMode: mode,
     );
   }
 }
