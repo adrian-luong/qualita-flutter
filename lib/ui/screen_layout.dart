@@ -30,7 +30,7 @@ class _ScreenLayoutState extends State<ScreenLayout> {
       ),
       body: screens[_screenIndex],
       floatingActionButton: FloatingActionButton(
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
         onPressed: () => showDialog(
           context: context,
           builder: (context) => const HelpDialog(),

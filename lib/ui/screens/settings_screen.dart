@@ -21,9 +21,9 @@ class SettingsScreen extends StatelessWidget {
               ],
               labelColor: scheme.primary,
             ),
-            Expanded(
+            const Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(15),
+                padding: EdgeInsets.all(15),
                 child: TabBarView(children: [VisualSettings(), DataSettings()]),
               ),
             ),

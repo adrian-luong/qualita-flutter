@@ -93,7 +93,7 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                       ? 'Add new task'
                       : 'Edit ${formTask.title}',
                 ),
-                Divider(),
+                const Divider(),
                 TextFormField(
                   initialValue: formTask.title,
                   decoration: InputDecoration(
@@ -165,7 +165,7 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                     );
                   },
                 ),
-                Divider(),
+                const Divider(),
                 Row(
                   children: [
                     if (widget.mode == FormMode.edit)
@@ -174,9 +174,9 @@ class _TaskUpsertDialogState extends State<TaskUpsertDialog> {
                           _delete();
                           _close('Successfully removed task');
                         },
-                        child: Text('Delete'),
+                        child: const Text('Delete'),
                       ),
-                    Spacer(),
+                    const Spacer(),
                     FilledButton(
                       onPressed: _submit,
                       child: Text(

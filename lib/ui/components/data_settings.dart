@@ -20,20 +20,20 @@ class DataSettings extends StatelessWidget {
     return Column(
       spacing: 15,
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 10,
           children: [
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               child: DashboardBox(status: TaskStatus.onHold),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               child: DashboardBox(status: TaskStatus.inProgress),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               child: DashboardBox(status: TaskStatus.completed),
             ),
           ],
@@ -46,14 +46,14 @@ class DataSettings extends StatelessWidget {
             return Table(
               border: TableBorder.all(color: scheme.primary),
               children: [
-                TableRow(
+                const TableRow(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(5),
+                      padding: EdgeInsets.all(5),
                       child: Text('Tag label'),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(5),
+                      padding: EdgeInsets.all(5),
                       child: Text('Tag description'),
                     ),
                   ],
@@ -74,7 +74,7 @@ class DataSettings extends StatelessWidget {
                             await TagRepository.editTag(newTag);
                             messenger.showSnackBar(
                               SnackBar(
-                                content: Text('Successfully edited tag'),
+                                content: const Text('Successfully edited tag'),
                               ),
                             );
                           },
@@ -93,7 +93,7 @@ class DataSettings extends StatelessWidget {
                             await TagRepository.editTag(newTag);
                             messenger.showSnackBar(
                               SnackBar(
-                                content: Text('Successfully edited tag'),
+                                content: const Text('Successfully edited tag'),
                               ),
                             );
                           },

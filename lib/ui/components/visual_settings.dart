@@ -14,9 +14,9 @@ class VisualSettings extends ConsumerWidget {
         Row(
           spacing: 10,
           children: [
-            Text('Color mode'),
+            const Text('Color mode'),
             SegmentedButton<ThemeMode>(
-              segments: [
+              segments: const [
                 ButtonSegment<ThemeMode>(
                   value: ThemeMode.light,
                   label: Text('Light'),

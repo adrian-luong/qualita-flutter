@@ -9,20 +9,20 @@ class DateFilter extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notifier = ref.read(taskFilterProvider.notifier);
     final date = notifier.currentDate;
-    final firstDate = date.subtract(Duration(days: 365));
-    final lastDate = date.add(Duration(days: 365));
+    final firstDate = date.subtract(const Duration(days: 365));
+    final lastDate = date.add(const Duration(days: 365));
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
           onPressed: () =>
-              notifier.switchDate(date.subtract(Duration(days: 1))),
-          icon: Icon(Icons.arrow_back),
+              notifier.switchDate(date.subtract(const Duration(days: 1))),
+          icon: const Icon(Icons.arrow_back),
         ),
         Text(
           '${date.day}/${date.month}/${date.year}',
-          style: TextStyle(fontSize: 20),
+          style: const TextStyle(fontSize: 20),
         ),
         IconButton(
           onPressed: () {
@@ -37,11 +37,12 @@ class DateFilter extends ConsumerWidget {
               }
             });
           },
-          icon: Icon(Icons.calendar_month),
+          icon: const Icon(Icons.calendar_month),
         ),
         IconButton(
-          onPressed: () => notifier.switchDate(date.add(Duration(days: 1))),
-          icon: Icon(Icons.arrow_forward),
+          onPressed: () =>
+              notifier.switchDate(date.add(const Duration(days: 1))),
+          icon: const Icon(Icons.arrow_forward),
         ),
       ],
     );

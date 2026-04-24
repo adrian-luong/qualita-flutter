@@ -38,15 +38,15 @@ class _TaskScreentate extends ConsumerState<TaskScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: DateFilter(),
+            child: const DateFilter(),
           ),
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 10,
-              children: const [SearchFilter(), StatusFilter()],
+              children: [SearchFilter(), StatusFilter()],
             ),
           ),
 

@@ -73,11 +73,6 @@ class HelpDialog extends StatelessWidget {
                   ),
                 ],
               ),
-              // const SizedBox(height: 8),
-
-              // Image.asset('help/switch_theme.gif'),
-              // const SizedBox(height: 8),
-              // const Text('6. Enjoy a clean and intuitive user interface'),
             ],
           ),
         ),

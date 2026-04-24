@@ -40,7 +40,9 @@ class _InlineTextFieldState extends State<InlineTextField> {
             ? Expanded(
                 child: TextField(
                   controller: _controller,
-                  decoration: InputDecoration(border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
                   onSubmitted: (value) {
                     widget.onSave(value);
                     setState(() => isEditing = false);

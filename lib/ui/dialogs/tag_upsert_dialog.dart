@@ -79,7 +79,7 @@ class _TagUpsertDialogState extends State<TagUpsertDialog> {
                       ? 'Add new tag'
                       : 'Edit ${formTag.label}',
                 ),
-                Divider(),
+                const Divider(),
                 TextFormField(
                   initialValue: formTag.label,
                   decoration: InputDecoration(
@@ -92,11 +92,13 @@ class _TagUpsertDialogState extends State<TagUpsertDialog> {
                   initialValue: formTag.description,
                   minLines: 2,
                   maxLines: 20,
-                  decoration: InputDecoration(labelText: 'Tag description'),
+                  decoration: const InputDecoration(
+                    labelText: 'Tag description',
+                  ),
                   onChanged: (value) =>
                       setState(() => formTag.description = value),
                 ),
-                Divider(),
+                const Divider(),
                 Row(
                   children: [
                     if (widget.mode == FormMode.edit)
@@ -107,7 +109,7 @@ class _TagUpsertDialogState extends State<TagUpsertDialog> {
                         },
                         child: Text('Delete'),
                       ),
-                    Spacer(),
+                    const Spacer(),
                     FilledButton(
                       onPressed: _submit,
                       child: Text(
