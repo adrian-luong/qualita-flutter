@@ -17,3 +17,18 @@
   * Kanban: project's tasks and steps, the default view.
   * Settings: project's information (editable), project's tag table (for adding, deleting or editing tag)
   * Project's tasks can now be setup with tags in their edit form.
+
+## 0.2.0 (24th April, 2026)
+
+* Home: Planned features
+* Tasks:
+  * Reorderable Task list:
+    * Click on task to edit
+    * Swipe to quickly update task status
+  * Search bar, filters (status, date)
+  * Add task button
+* Settings:
+  * Visual settings: Color mode switch
+  * Tag management: inline-edit tag, add tag
+  * Dashboard: amount of tasks by each status
+* Help dialog
