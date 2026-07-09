@@ -26,5 +26,3 @@ linter:
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
 include: package:flutter_lints/flutter.yaml
-plugins:
-  riverpod_lint: ^2.3.10
